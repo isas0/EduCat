@@ -1,0 +1,61 @@
+@charset "UTF-8";
+
+/*
+<meta name="viewport" content="initial-scale=1, width=device-width">
+<link rel="stylesheet" href="responsive.css" type="text/css"> 
+*/
+
+#page {
+max-width: 1280px;
+margin: auto;
+margin-top: 20px;
+}
+
+header, footer {
+width: 100%;
+margin: 0px;
+padding: 0px;
+}
+
+section {
+width: 60%;
+float: left;
+margin-bottom: 20px;
+}
+
+aside {
+width: 19%;
+float: left;
+margin: 0 0 20px 1%;
+}
+
+footer {
+clear: both;
+}
+
+@media screen and (max-width: 1000px) {
+aside {
+width: 39%;
+}
+
+}
+
+
+
+@media screen and (max-width: 600px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    padding: 10px;
+  }
+
+  .button-1, .button-2 {
+    font-size: 14px;
+    padding: 8px;
+  }
+}
+
+@media screen and (max-width: 550px) {
+section, aside {
+width: 100%;
+}
+}
