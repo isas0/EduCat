@@ -1,14 +1,15 @@
-package it.unisa.educat.storage;
+package it.unisa.educat.model;
 
 import java.time.LocalDate;
 
 public class UtenteDTO {
-	protected String nome;
-	protected String cognome;
-	protected String email;
-	protected String password; // Hashed
-	protected LocalDate dataNascita;
-	protected String indirizzo; // Composto da Via, Civico, Città, CAP
+	private int UID;
+	private String nome;
+	private String cognome;
+	private String email;
+	private String password; // Hashed
+	private LocalDate dataNascita;
+	private String indirizzo; // Composto da Via, Civico, Città, CAP
 
 	// Costruttore
 	public UtenteDTO(String nome, String cognome, String email, String password, 
@@ -24,6 +25,14 @@ public class UtenteDTO {
 	//Getters e Setters
 	public String getNome() {
 		return nome;
+	}
+
+	public int getUID() {
+		return UID;
+	}
+
+	public void setUID(int uID) {
+		UID = uID;
 	}
 
 	public void setNome(String nome) {

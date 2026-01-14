@@ -1,4 +1,4 @@
-package it.unisa.educat.storage;
+package it.unisa.educat.model;
 
 import java.time.LocalDate;
 
