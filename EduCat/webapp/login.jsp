@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@page import="it.unisa.educat.control.*"%>
-<%@page import="it.unisa.educat.storage.*"%>
+<%@page import="it.unisa.educat.controller.*"%>
+<%@page import="it.unisa.educat.model.*"%>
 <%@page import="java.util.ArrayList"%>
 
 
