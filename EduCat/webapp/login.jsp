@@ -54,7 +54,7 @@
 							<hr id="indicator">
 						</div>
 
-						<form action="<%=request.getContextPath()%>/common/loginServlet"
+						<form action="<%=request.getContextPath()%>/login"
 							id="loginForm" method="post">
 							<input id="login-username" name="login-username" type="text"
 								placeholder="Username"> <input id="login-password"
@@ -63,7 +63,7 @@
 							<button type="submit" class="btn">Login</button>
 						</form>
 
-						<form action="<%=request.getContextPath()%>/common/register"
+						<form action="<%=request.getContextPath()%>/registrazione"
 							id="regForm" method="post">
 							<input id="register-email" name="register-email" type="email"
 								placeholder="Email"> <input id="register-username"

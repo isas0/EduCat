@@ -12,6 +12,8 @@ public class UtenteDTO {
 	private String indirizzo; // Composto da Via, Civico, Città, CAP
 
 	// Costruttore
+	public UtenteDTO() {}
+	
 	public UtenteDTO(String nome, String cognome, String email, String password, 
 			LocalDate dataNascita, String indirizzo) {
 		this.nome = nome;
