@@ -28,7 +28,7 @@ public class RegistrazioneServlet extends HttpServlet {
 
 		// Contratto OCL pre: !self.utenti → includes(nuovoUtente)
 		// Verifica se email già esiste
-		String email = request.getParameter("email");
+		String email = request.getParameter("register-email");
 
 		try {
 			UtenteDTO esistente = utenzaDAO.doRetrieveByEmail(email);
@@ -40,12 +40,12 @@ public class RegistrazioneServlet extends HttpServlet {
 
 			// Crea nuovo utente
 			UtenteDTO nuovoUtente = new UtenteDTO();
-			nuovoUtente.setNome(request.getParameter("nome"));
-			nuovoUtente.setCognome(request.getParameter("cognome"));
+			nuovoUtente.setNome(request.getParameter("register-nome"));
+			nuovoUtente.setCognome(request.getParameter("register-cognome"));
 			nuovoUtente.setEmail(email);
-			nuovoUtente.setPassword(toHash(request.getParameter("password")));
-			nuovoUtente.setDataNascita(LocalDate.parse(request.getParameter("dataNascita")));
-			nuovoUtente.setIndirizzo(request.getParameter("indirizzo"));
+			nuovoUtente.setPassword(toHash(request.getParameter("register-password")));
+			//nuovoUtente.setDataNascita(LocalDate.parse(request.getParameter("dataNascita")));
+			//nuovoUtente.setIndirizzo(request.getParameter("indirizzo"));
 
 			// Contratto OCL post: self.utenti → includes(nuovoUtente) and nuovoUtente.stato = CONFIRMED
 			boolean success = utenzaDAO.doSave(nuovoUtente);
@@ -61,7 +61,7 @@ public class RegistrazioneServlet extends HttpServlet {
 
 		} catch (Exception e) {
 			request.setAttribute("errorMessage", "Errore durante la registrazione");
-			request.getRequestDispatcher("/error.jsp").forward(request, response);
+			e.printStackTrace()	;		//request.getRequestDispatcher("/error.jsp").forward(request, response);
 		}
 	}
 

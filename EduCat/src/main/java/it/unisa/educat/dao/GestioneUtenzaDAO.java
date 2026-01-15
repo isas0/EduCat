@@ -38,20 +38,8 @@ public class GestioneUtenzaDAO {
     private static final String DELETE_UTENTE = 
         "DELETE FROM Utente WHERE idUtente = ?";
     
-    /**
-     * Ottiene una connessione al database
-     * @return Connection
-     * @throws SQLException
-     */
-    public Connection getConnection() throws SQLException {
-        // Implementa la tua logica di connessione
-        // Esempio con DriverManager:
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/educat", "root", "root");
-        
-        // Oppure usa un Connection Pool (consigliato per produzione)
-        // return DataSourceManager.getConnection();
-
-    }
+    private static final String SELECT_BY_CRITERIO = 
+    		"SELECT * FROM Utente WHERE nome, cognome, email, citta, tipoUtente LIKE '%word1%'";
     
     public boolean doSave(UtenteDTO u) throws SQLException {
         Connection conn = null;
@@ -63,18 +51,24 @@ public class GestioneUtenzaDAO {
             ps = conn.prepareStatement(INSERT_UTENTE, Statement.RETURN_GENERATED_KEYS);
             
             // Estrai i componenti dell'indirizzo
-            String[] indirizzoParts = parseIndirizzo(u.getIndirizzo());
+           // String[] indirizzoParts = parseIndirizzo(u.getIndirizzo());
             
             // Imposta i parametri
             ps.setString(1, u.getNome());
             ps.setString(2, u.getCognome());
             ps.setString(3, u.getEmail());
             ps.setString(4, u.getPassword()); // Password già hashed
-            ps.setDate(5, java.sql.Date.valueOf(u.getDataNascita()));
-            ps.setString(6, indirizzoParts[0]); // via
-            ps.setString(7, indirizzoParts[1]); // civico
-            ps.setString(8, indirizzoParts[2]); // città
-            ps.setString(9, indirizzoParts[3]); // cap
+            ps.setDate(5, null);
+            ps.setString(6, null); // via
+            ps.setString(7, null); // civico
+            ps.setString(8, null); // città
+            ps.setString(9, null); // cap
+            ps.setString(10, null);
+            //ps.setDate(5, java.sql.Date.valueOf(u.getDataNascita()));
+            //ps.setString(6, indirizzoParts[0]); // via
+            //ps.setString(7, indirizzoParts[1]); // civico
+            //ps.setString(8, indirizzoParts[2]); // città
+            //ps.setString(9, indirizzoParts[3]); // cap
             
             // Determina tipoUtente in base alla classe concreta
             //String tipoUtente = determineTipoUtente(u);
@@ -107,7 +101,7 @@ public class GestioneUtenzaDAO {
         ResultSet rs = null;
         
         try {
-            conn = getConnection();
+        	conn = DatasourceManager.getConnection();
             ps = conn.prepareStatement(SELECT_BY_EMAIL);
             ps.setString(1, email);
             rs = ps.executeQuery();
@@ -126,12 +120,38 @@ public class GestioneUtenzaDAO {
         }
     }
     
+    public UtenteDTO doRetrieveByCriterio(String stringa) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+        	conn = DatasourceManager.getConnection();
+            ps = conn.prepareStatement(SELECT_BY_CRITERIO);
+            ps.setString(1, stringa);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToUtente(rs);
+            }
+            
+            return null;
+            
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Errore: " + stringa, e);
+            throw e;
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+    }
+
+    
     public boolean doDelete(int id) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
         
         try {
-            conn = getConnection();
+        	conn = DatasourceManager.getConnection();
             ps = conn.prepareStatement(DELETE_UTENTE);
             ps.setInt(1, id);
             
@@ -152,7 +172,7 @@ public class GestioneUtenzaDAO {
         ResultSet rs = null;
         
         try {
-            conn = getConnection();
+        	conn = DatasourceManager.getConnection();
             ps = conn.prepareStatement(SELECT_BY_ID);
             ps.setInt(1, id);
             rs = ps.executeQuery();
@@ -176,7 +196,7 @@ public class GestioneUtenzaDAO {
         PreparedStatement ps = null;
         
         try {
-            conn = getConnection();
+        	conn = DatasourceManager.getConnection();
             ps = conn.prepareStatement(UPDATE_UTENTE);
             
             // Estrai i componenti dell'indirizzo
@@ -226,21 +246,21 @@ public class GestioneUtenzaDAO {
                           rs.getString("cap");
         
         // Crea l'utente in base al tipo
-        /*switch (tipoUtente.toUpperCase()) {
+        switch (tipoUtente) {
             case "STUDENTE":
-                utente = new Studente();
+                //utente = new Studente();
                 // Imposta attributi specifici studente se necessario
                 break;
             case "TUTOR":
-                utente = new Tutor();
+                //utente = new Tutor();
                 // Imposta attributi specifici tutor se necessario
                 break;
-            case "AMMINISTRATORE":
-                utente = new Amministratore();
+            case "AMMINISTRATORE_UTENTI":
+                //utente = new Amministratore();
                 break;
             default:
-                utente = new Utente(); // Utente generico
-        }*/
+                //utente = new Utente(); // Utente generico
+        }
         
         // Imposta gli attributi comuni
         utente.setUID(rs.getInt("idUtente"));
