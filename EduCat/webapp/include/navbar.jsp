@@ -1,13 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@page import="it.unisa.educat.control.*"%>
-<%@page import="it.unisa.educat.storage.*"%>
+<%@page import="it.unisa.educat.controller.*"%>
+<%@page import="it.unisa.educat.model.*"%>
 <%@ page import="java.util.ArrayList"%>
 
 
 <%
-
-String utente = null;
+UtenteDTO utente = (UtenteDTO) request.getAttribute("user"); //recupero l'attributo dalla sessione dell'utente
+if (utente != null) { //se l'user appartiene alla sessione
+	request.setAttribute("user", utente); //lo aggiunge agli attributi della richiesta
+}
 %>
 <!-- navbar  -->
 
@@ -28,13 +30,13 @@ String utente = null;
 					<li><a
 						href="<%=request.getContextPath()%>/common/index?all=yes">Tutti
 							gli eventi</a></li>
-					<%if(true){ %>
+					<%if(utente==null){ %>
 
 					<li><a href="<%= request.getContextPath() %>/common/login.jsp">Log
 							in</a></li>
 					<%} %>
 
-					<%if(true){ %>
+					<%if(utente!=null){ %>
 					<li><a
 						href="<%=request.getContextPath() %>/common/order-history">Ordini</a></li>
 

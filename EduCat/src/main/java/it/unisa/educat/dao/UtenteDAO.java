@@ -46,7 +46,7 @@ public class UtenteDAO {
     private Connection getConnection() throws SQLException {
         // Implementa la tua logica di connessione
         // Esempio con DriverManager:
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/educat", "username", "password");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3307/educat", "isabella", "root");
         
         // Oppure usa un Connection Pool (consigliato per produzione)
         // return DataSourceManager.getConnection();
