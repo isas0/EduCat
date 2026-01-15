@@ -88,11 +88,11 @@ public class LezioneDTO {
 		this.tutor = tutor;
 	}
 
-	public String getCittà() {
+	public String getCitta() {
 		return città;
 	}
 
-	public void setCittà(String città) {
+	public void setCitta(String città) {
 		this.città = città;
 	}
 }

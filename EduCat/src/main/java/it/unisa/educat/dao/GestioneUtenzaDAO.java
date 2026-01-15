@@ -39,7 +39,7 @@ public class GestioneUtenzaDAO {
         "DELETE FROM Utente WHERE idUtente = ?";
     
     private static final String SELECT_BY_CRITERIO = 
-    		"SELECT * FROM Utente WHERE nome, cognome, email, citta, tipoUtente LIKE '%word1%'";
+    		"SELECT * FROM Utente WHERE nome LIKE '%?%' OR cognome LIKE '%?%' OR email LIKE '%?%' OR citta LIKE '%?%' OR tipoUtente LIKE '%?%'";
     
     public boolean doSave(UtenteDTO u) throws SQLException {
         Connection conn = null;
