@@ -10,18 +10,23 @@ public class UtenteDTO {
 	private String password; // Hashed
 	private LocalDate dataNascita;
 	private String indirizzo; // Composto da Via, Civico, Città, CAP
+	
+	private enum TipoUtente{STUDENTE, GENITORE, TUTOR, AMMINISTRATORE_UTENTI}
 
+	private TipoUtente tipo;
+	
 	// Costruttore
 	public UtenteDTO() {}
 	
 	public UtenteDTO(String nome, String cognome, String email, String password, 
-			LocalDate dataNascita, String indirizzo) {
+			LocalDate dataNascita, String indirizzo, TipoUtente tipo) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.email = email;
 		this.password = password;
 		this.dataNascita = dataNascita;
 		this.indirizzo = indirizzo;
+		this.tipo = tipo;
 	}
 
 	//Getters e Setters
@@ -80,4 +85,14 @@ public class UtenteDTO {
 	public void setIndirizzo(String indirizzo) {
 		this.indirizzo = indirizzo;
 	}
+
+	public TipoUtente getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(TipoUtente tipo) {
+		this.tipo = tipo;
+	}
+	
+	
 }
