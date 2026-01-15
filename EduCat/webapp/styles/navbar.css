@@ -1,0 +1,144 @@
+/* css/navbar.css */
+
+/* RESET: Toglie i bordi bianchi fastidiosi del browser */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Evita scroll orizzontale se qualcosa sborda */
+}
+
+/* 1. Container Principale & FONT GLOBALE */
+.header {
+    background-color: #1A5C61; /* Verde Scuro */
+    width: 100%;
+    height: 100px; /* Altezza fissa */
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    
+    /* AGGIUNTO: Lo stesso font della Landing Page */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    width: 100%;
+    padding: 0 40px;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* 2. LOGO */
+.logo {
+    flex-shrink: 0;
+}
+
+.header-logo-img {
+    height: 80px;
+    width: auto;
+    display: block;
+    
+    border-radius: 15px; /* Arrotonda gli angoli */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2); /* Aggiunge una piccola ombra per staccarlo */
+}
+
+/* 3. MENU DI NAVIGAZIONE (Tutto a destra) */
+nav {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end; /* Spinge tutto a destra */
+    align-items: center;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    /* SPAZIATURA LARGA tra i testi */
+    gap: 50px; 
+}
+
+/* Stile dei Link (Stato Normale) */
+nav ul li a {
+    text-decoration: none;
+    
+    /* COLORE: Bianco Puro */
+    color: #FFFFFF !important; 
+    
+    /* DIMENSIONE & FONT */
+    font-size: 1.4rem; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Ribadito per sicurezza */
+    font-weight: 500; /* Peso medio */
+    
+    padding-bottom: 5px; /* Spazio per la linea sotto */
+    border-bottom: 3px solid transparent; /* Bordo invisibile per evitare scatti */
+    
+    transition: all 0.2s ease-in-out;
+}
+
+/* 4. HOVER MENU  */
+nav ul li a:hover {
+    color: #FFFFFF !important; /* Resta bianco */
+    background-color: transparent; /* Nessuno sfondo */
+    
+    /* TRUCCO ANTI-SALTO: 
+       Simula il grassetto con un'ombra, così il testo non si allarga 
+       e gli altri link non si spostano. */
+    text-shadow: 0 0 1px #FFFFFF, 0 0 1px #FFFFFF; 
+    
+    /* Sottolineatura bianca */
+    border-bottom: 3px solid #FFFFFF; 
+}
+
+/* 5. CARRELLO (Tutto a destra, statico) */
+.cart-icon {
+    width: 32px;
+    height: 32px;
+    display: block;
+    cursor: pointer;
+    
+    /* Rende l'icona bianca (se l'immagine originale è nera) */
+    filter: brightness(0) invert(1); 
+    
+    margin-left: 50px; /* Spazio extra tra l'ultimo link del menu e il carrello */
+}
+
+/* Icona menu mobile */
+.menu-icon {
+    width: 30px;
+    margin-left: 20px;
+    cursor: pointer;
+    filter: invert(1);
+    display: none;
+}
+
+/* Responsività base */
+@media only screen and (max-width: 900px) {
+    nav ul {
+        position: absolute;
+        top: 100px;
+        left: 0;
+        background: #1A5C61;
+        width: 100%;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s;
+    }
+    
+    .menu-icon {
+        display: block;
+    }
+}

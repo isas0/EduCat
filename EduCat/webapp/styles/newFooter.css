@@ -1,0 +1,124 @@
+/* css/newFooter.css */
+
+/* Reset di base */
+.footer-clean {
+    background-color: #1A5C61; /* Il tuo colore verde scuro */
+    color: #ffffff;
+    padding: 50px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* CONTENITORE PRINCIPALE */
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    /* FLEXBOX: Mette tutto sulla stessa riga */
+    display: flex; 
+    align-items: flex-start; /* Allinea in alto */
+    flex-wrap: wrap; /* Permette di andare a capo su mobile */
+    gap: 60px; /* Spazio tra le colonne di testo */
+}
+
+/* STILE COLONNE */
+.footer-col {
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* TRUCCO PER L'IMMAGINE TARGET:
+   Spinge l'ultima colonna (Social) tutta a destra */
+.footer-col.social-col {
+    margin-left: auto; 
+    text-align: right; /* Allinea il contenuto a destra */
+}
+
+/* TITOLI (H3) */
+.footer-clean h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #ffffff; /* Bianco come nella tua foto */
+    text-transform: capitalize; /* Prima lettera maiuscola */
+}
+
+/* LISTE */
+.footer-clean ul {
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+.footer-clean ul li {
+    margin-bottom: 8px;
+}
+
+.footer-clean ul a {
+    color: #f0f0f0;
+    text-decoration: none;
+    opacity: 0.9;
+    font-size: 1rem;
+    transition: opacity 0.3s;
+}
+
+.footer-clean ul a:hover {
+    opacity: 1;
+    text-decoration: underline; /* O styling a piacere */
+}
+
+/* SOCIAL ICONS */
+.social-icons-wrapper {
+    display: flex;
+    gap: 10px; /* Spazio tra le icone */
+    justify-content: flex-end; /* Allinea icone a destra */
+    margin-bottom: 10px;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ffffff; /* Bordo bianco */
+    border-radius: 50%; /* Cerchio */
+    color: #ffffff;
+    font-size: 18px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    background-color: #ffffff;
+    color: #1A5C61; /* Diventa verde scuro su sfondo bianco */
+}
+
+.copyright {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-top: 5px;
+}
+
+/* RESPONSIVITÀ (Mobile) */
+@media (max-width: 850px) {
+    .footer-container {
+        flex-direction: column; /* Impila tutto verticalmente */
+        align-items: center;
+        text-align: center;
+        gap: 30px;
+    }
+
+    .footer-col.social-col {
+        margin-left: 0; /* Rimuove la spinta a destra su mobile */
+        text-align: center;
+    }
+    
+    .social-icons-wrapper {
+        justify-content: center;
+    }
+}
