@@ -1,21 +1,21 @@
 package it.unisa.educat.dao;
 
-import javax.sql.DataSource;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DatasourceManager {
    
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/educat", "root", "root");
-    }
-    
-    // Metodi utility
-    public static void close(Connection conn, PreparedStatement stmt, ResultSet rs) {
-        try { if (rs != null) rs.close(); } catch (SQLException e) {}
-        try { if (stmt != null) stmt.close(); } catch (SQLException e) {}
-        try { if (conn != null) conn.close(); } catch (SQLException e) {}
+        try {
+            // Carica il driver (necessario per le Web App su Tomcat)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            // Se manca il driver, rilanciamo l'errore come SQLException
+            throw new SQLException("Driver MySQL non trovato nel classpath!", e);
+        }
+
+        // Ritorna la connessione
+        return DriverManager.getConnection("jdbc:mysql://100.108.252.88:3307/educat", "anna", "anna");
     }
 }
