@@ -1,0 +1,280 @@
+/* =========================================
+   1. RESET E IMPOSTAZIONI DI BASE
+   ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* =========================================
+   2. HERO SECTION (HOME PAGE GENERICA)
+   ========================================= */
+.hero-container {
+    height: 100vh;
+    width: 100%;
+    /* Immagine di sfondo */
+    background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1740&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #FFFAFF;
+}
+
+/* Overlay scuro per leggere meglio il testo */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 92, 97, 0.75); /* Verde scuro #1A5C61 con trasparenza */
+    z-index: 1;
+}
+
+.content {
+    z-index: 2; /* Sta sopra l'overlay */
+    padding: 20px;
+    max-width: 800px;
+}
+
+h1 {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    font-weight: 700;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    color: #FFFAFF;
+}
+
+p {
+    font-size: 1.5rem;
+    margin-bottom: 50px;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* --- BOTTONI HOME PAGE --- */
+.btn-container {
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    text-decoration: none;
+    padding: 18px 45px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    min-width: 200px;
+    cursor: pointer;
+    border: none;
+    color: #FFFAFF;
+    display: inline-block;
+}
+
+/* Bottone Login (Verde Scuro Solido) */
+.btn-login {
+    background-color: #1A5C61;
+    border: 2px solid #1A5C61; /* Bordo per consistenza */
+}
+
+.btn-login:hover {
+    background-color: #14494d;
+    border-color: #14494d;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Bottone Registrazione (Turchese Brillante) */
+.btn-register {
+    background-color: #38B4BC;
+    border: 2px solid #38B4BC;
+}
+
+.btn-register:hover {
+    background-color: #2a9ea6;
+    border-color: #2a9ea6;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(56, 180, 188, 0.4);
+}
+
+/* =========================================
+   3. MODALE SCELTA RUOLO (POPUP)
+   ========================================= */
+.modal-overlay {
+    display: none; /* Nascosto finché non clicchi */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 92, 97, 0.9); /* Sfondo molto scuro */
+    z-index: 2000; /* Altissimo per stare sopra a tutto */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px); /* Sfoca lo sfondo dietro */
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 50px 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    position: relative;
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Animazione di entrata */
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title {
+    color: #1A5C61;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+/* Bottoni Scelta Ruolo dentro il modale */
+.role-choice-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px; /* Spazio tra icona e testo */
+    width: 100%;
+    padding: 20px;
+    margin-bottom: 15px;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.role-student {
+    background-color: #e0f2f1; /* Verde acqua chiarissimo */
+    color: #00695c; /* Testo scuro */
+}
+
+.role-student:hover {
+    background-color: #b2dfdb;
+    transform: scale(1.02);
+}
+
+.role-tutor {
+    background-color: #1A5C61; /* Verde scuro */
+    color: #ffffff;
+}
+
+.role-tutor:hover {
+    background-color: #14494d;
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(26, 92, 97, 0.3);
+}
+
+/* =========================================
+   4. STILE PER I FORM (Registrazione / Lezione)
+   ========================================= */
+.form-page-container {
+    background-color: #f4f7f6; /* Grigio chiarissimo */
+    min-height: 100vh;
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Allinea in alto ma con padding */
+}
+
+.form-box {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 550px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #1A5C61;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #eee; /* Bordo leggero */
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+    background-color: #fafafa;
+}
+
+.form-input:focus {
+    border-color: #38B4BC; /* Diventa Turchese al focus */
+    background-color: #fff;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: #38B4BC;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(56, 180, 188, 0.3);
+}
+
+.submit-btn:hover {
+    background: #2a9ea6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(56, 180, 188, 0.4);
+}

@@ -5,7 +5,7 @@
 <!-- inserire codice di validazione di sessione per utente -->
 
 
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/styles/navbar.css">
+<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/styles/new/navbar.css">
 
 <div class="header">
     <div class="container">

@@ -9,7 +9,7 @@
 
     <link rel="icon" href="<%= request.getContextPath() %>/images/mini-logo.png" type="image/png">
 
-    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/homeStudenteGenitore.css">
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/homeStudenteGenitore.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
