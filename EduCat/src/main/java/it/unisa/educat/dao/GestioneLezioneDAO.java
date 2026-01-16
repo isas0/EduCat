@@ -82,6 +82,42 @@ public class GestioneLezioneDAO {
         }
     }
     
+    public boolean doSaveSlot(SlotDTO slot) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            String sql = 
+                "INSERT INTO Slot (idLezione, idTutor, dataOraInizio, dataOraFine, " +
+                "stato, prezzo, idStudente, idPrenotazione) " +
+                "VALUES (?, ?, ?, ?, ?, ?, NULL, NULL)";
+            
+            ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, slot.getLezione().getIdLezione());
+            ps.setInt(2, slot.getTutor().getUID());
+            ps.setTimestamp(3, Timestamp.valueOf(slot.getDataOraInizio()));
+            ps.setTimestamp(4, Timestamp.valueOf(slot.getDataOraFine()));
+            ps.setString(5, slot.getStato().name());
+            ps.setFloat(6, slot.getPrezzo());
+            
+            int rows = ps.executeUpdate();
+            
+            if (rows > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    slot.setIdSlot(rs.getInt(1));
+                }
+                return true;
+            }
+            
+            return false;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, null);
+        }
+    }
+    
     /**
      * Recupera lezioni in base a criteri di ricerca
      */
