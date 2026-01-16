@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%if(!request.getAttribute("successMessage").equals(null))%>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -17,11 +16,24 @@
 	<div class="form-page-container">
 		<div class="form-box" style="max-width: 450px;">
 
-			<h2 style="text-align: center; color: #1A5C61; margin-bottom: 10px;">Bentornato!</h2>
+			<h2 style="text-align: center; color: #1A5C61; margin-bottom: 10px;">
+				<%
+				if (request.getAttribute("errorMessage") != null) {
+				%>
+				<%=request.getAttribute("errorMessage")%>
+				<%
+				} else {
+				%>
+				Bentornato!
+				<%
+				}
+				%>
+
+			</h2>
 			<p
 				style="text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9rem;">
 				<%
-				if (!request.getAttribute("successMessage").equals(null)) {
+				if (request.getAttribute("successMessage") != null) {
 				%>
 				<%=request.getAttribute("successMessage")%>
 				<%

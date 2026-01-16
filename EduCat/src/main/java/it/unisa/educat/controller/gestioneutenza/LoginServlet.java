@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import it.unisa.educat.dao.GestioneUtenzaDAO;
 import it.unisa.educat.model.UtenteDTO;
@@ -35,14 +36,22 @@ public class LoginServlet extends HttpServlet {
             // Contratto OCL: self.utenti → exists(u| u.email = email and u.password = password and result = u)
             UtenteDTO utente = utenzaDAO.doRetrieveByEmail(email);
             
-            if (utente != null && utente.getPassword().equals(hashPassword(password))) {
+            if (utente != null && utente.getPassword().equals(toHash(password))) {
                 // Login riuscito
                 HttpSession session = request.getSession();
                 session.setAttribute("utente", utente);
                 session.setAttribute("userId", utente.getUID());
                 
                 // Redirect alla dashboard in base al ruolo
-                response.sendRedirect("dashboard.jsp");
+                
+                if(utente.getTipo().toString().equals("STUDENTE") || utente.getTipo().toString().equals("GENITORE")) {
+                	response.sendRedirect("homePageStudenteGenitore.jsp");
+                } else if(utente.getTipo().toString().equals("TUTOR")) {
+                	response.sendRedirect("homeTutor.jsp");
+                } else if(utente.getTipo().toString().equals("AMMINISTRATORE_UTENTI")) {
+                	response.sendRedirect("homePageAdmin.jsp");
+                }
+                
             } else {
                 // Login fallito
                 request.setAttribute("errorMessage", "Email o password errati");
@@ -51,12 +60,23 @@ public class LoginServlet extends HttpServlet {
             
         } catch (Exception e) {
             request.setAttribute("errorMessage", "Errore durante il login");
-            request.getRequestDispatcher("/error.jsp").forward(request, response);
+            e.printStackTrace();
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
     }
     
-    private String hashPassword(String password) {
-        // Implementa hashing (es: BCrypt)
-        return password; // Sostituire con hashing reale
-    }
+    private String toHash(String password) {
+		String hashString = null;
+		try {
+			java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-512");
+			byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+			hashString = "";
+			for (int i = 0; i < hash.length; i++) {
+				hashString += Integer.toHexString((hash[i] & 0xFF) | 0x100).substring(1, 3);
+			}
+		} catch (java.security.NoSuchAlgorithmException e) {
+			System.out.println(e);
+		}
+		return hashString;
+	}
 }

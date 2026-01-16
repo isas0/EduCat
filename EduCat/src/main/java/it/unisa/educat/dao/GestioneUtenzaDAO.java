@@ -1,6 +1,7 @@
 package it.unisa.educat.dao;
 
 import it.unisa.educat.model.UtenteDTO;
+import it.unisa.educat.model.UtenteDTO.TipoUtente;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -251,7 +252,7 @@ public class GestioneUtenzaDAO {
      * Mappa un ResultSet a un oggetto Utente
      */
     private UtenteDTO mapResultSetToUtente(ResultSet rs) throws SQLException {
-    	UtenteDTO utente = null;
+    	UtenteDTO utente = new UtenteDTO();
         
         // Determina il tipo di utente in base al campo tipoUtente
         String tipoUtente = rs.getString("tipoUtente");
@@ -265,18 +266,17 @@ public class GestioneUtenzaDAO {
         // Crea l'utente in base al tipo
         switch (tipoUtente) {
             case "STUDENTE":
-                //utente = new Studente();
-                // Imposta attributi specifici studente se necessario
+                utente.setTipo(TipoUtente.STUDENTE);
                 break;
             case "TUTOR":
-                //utente = new Tutor();
-                // Imposta attributi specifici tutor se necessario
+            	utente.setTipo(TipoUtente.TUTOR);
+                break;
+            case "GENITORE":
+            	utente.setTipo(TipoUtente.TUTOR);
                 break;
             case "AMMINISTRATORE_UTENTI":
-                //utente = new Amministratore();
+            	utente.setTipo(TipoUtente.AMMINISTRATORE_UTENTI);
                 break;
-            default:
-                //utente = new Utente(); // Utente generico
         }
         
         // Imposta gli attributi comuni
