@@ -1,0 +1,180 @@
+/* styles/homeTutor.css */
+
+body {
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    margin: 0;
+}
+
+.tutor-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: 80vh;
+}
+
+/* --- SEZIONE TITOLI --- */
+.section-header {
+    margin-bottom: 25px;
+    border-left: 5px solid #38B4BC; /* Turchese */
+    padding-left: 15px;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: #1A5C61; /* Verde Scuro */
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.section-header p {
+    margin: 5px 0 0 0;
+    color: #666;
+    font-size: 1rem;
+}
+
+/* --- SEZIONE RECENSIONI --- */
+.reviews-section {
+    margin-bottom: 60px;
+}
+
+/* Griglia per le card */
+.reviews-grid {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+/* Card Recensione Singola */
+.review-card {
+    flex: 1;
+    min-width: 280px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-top: 4px solid #38B4BC; /* Accento colorato sopra */
+    transition: transform 0.2s;
+}
+
+.review-card:hover {
+    transform: translateY(-3px);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.student-name {
+    font-weight: 700;
+    color: #1A5C61;
+    font-size: 1.1rem;
+}
+
+/* Stelle */
+.stars {
+    color: #FFD700; /* Oro classico per le stelle */
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.review-text {
+    color: #555;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+/* Messaggio "Nessuna Recensione" */
+.no-reviews-box {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 40px;
+    text-align: center;
+    border-radius: 12px;
+    border: 2px dashed #ccc; /* Bordo tratteggiato per indicare "vuoto" */
+    color: #888;
+}
+
+.no-reviews-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #bbb;
+    margin: 0 0 10px 0;
+}
+
+/* --- SEZIONE TABELLA PRENOTAZIONI --- */
+.table-wrapper {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden; /* Per i bordi arrotondati della tabella */
+    overflow-x: auto;
+}
+
+.tutor-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.tutor-table thead {
+    background-color: #1A5C61;
+    color: #ffffff;
+}
+
+.tutor-table th, .tutor-table td {
+    padding: 18px 25px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.tutor-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.tutor-table tbody tr:hover {
+    background-color: #f9fbfb;
+}
+
+.tutor-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badge Stato */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Colori in base all'ENUM */
+.status-attiva {
+    background-color: #e0f2f1;
+    color: #00695c; /* Verde acqua scuro */
+}
+
+.status-annullata {
+    background-color: #ffebee;
+    color: #c62828; /* Rosso */
+}
+
+.status-conclusa {
+    background-color: #f5f5f5;
+    color: #757575; /* Grigio */
+}
+
+/* Info aggiuntive in tabella */
+.td-bold {
+    font-weight: 600;
+    color: #333;
+}
