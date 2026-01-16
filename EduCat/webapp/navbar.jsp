@@ -2,17 +2,13 @@
 <%@ page import="it.unisa.educat.model.UtenteDTO" %>
 
 <%
-    // Recupero Utente dalla Sessione
+    // Recupero Utente
     UtenteDTO utenteLoggato = (UtenteDTO) session.getAttribute("utente");
     
-    // Controllo se è multi-ruolo
-    Boolean isMultiRuolo = (Boolean) session.getAttribute("multiRuolo");
-    if (isMultiRuolo == null) isMultiRuolo = false;
-
-    // Link di default per il logo
+    // Link Home Default
     String homeLink = request.getContextPath() + "/index.jsp"; 
     
-    // Se loggato, calcolo la Home specifica in base al ruolo
+    // Calcolo Home Specifica
     if (utenteLoggato != null && utenteLoggato.getTipo() != null) {
         switch(utenteLoggato.getTipo().toString()) {
             case "STUDENTE": homeLink = request.getContextPath() + "/homeStudent.jsp"; break;
@@ -38,29 +34,16 @@
             <% if (utenteLoggato != null) { %>
                 <nav>
                     <ul id="MenuItems">
-                        
                         <li><a href="<%= homeLink %>">Home</a></li>
-
-                        <% if (isMultiRuolo) { %>
-                            <li><a href="<%= request.getContextPath() %>/sceltaRuolo.jsp">Cambio Ruolo</a></li>
-                        <% } %>
-
                         <li><a href="<%= request.getContextPath() %>/prenotazioni.jsp">Prenotazioni</a></li>
-
                         <li><a href="<%= request.getContextPath() %>/profilo.jsp">Account</a></li>
-                        
-                        <li>
-                            <a href="<%= request.getContextPath() %>/LogoutServlet" style="font-size: 0.9em; border: 1px solid white; padding: 5px 15px; border-radius: 20px;">
-                                Esci
-                            </a>
-                        </li>
                     </ul>
                 </nav>
                 
                 <img src="<%= request.getContextPath() %>/images/menu.png" class="menu-icon" onclick="menutoggle()">
             <% } %>
-            
-            </div>
+
+        </div>
     </div>
 </div>
 
@@ -68,7 +51,6 @@
 <script>
     var menuItems = document.querySelector("nav ul");
     menuItems.style.maxHeight = "0px";
-    
     function menutoggle() {
         if (menuItems.style.maxHeight == "0px") {
             menuItems.style.maxHeight = "200px";
