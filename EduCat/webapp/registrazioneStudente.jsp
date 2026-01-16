@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%request.setAttribute("tipoUtente", "STUDENTE"); %>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -18,7 +19,7 @@
                 Se sei minorenne, chiedi a un genitore di registrarsi.
             </p>
             
-            <form action="<%= request.getContextPath() %>/RegistrazioneServlet" method="POST">
+            <form action="<%= request.getContextPath() %>/registrazione" method="POST">
                 
                 <div class="form-group"><label class="form-label">Nome</label><input type="text" name="nome" class="form-input" required></div>
                 <div class="form-group"><label class="form-label">Cognome</label><input type="text" name="cognome" class="form-input" required></div>

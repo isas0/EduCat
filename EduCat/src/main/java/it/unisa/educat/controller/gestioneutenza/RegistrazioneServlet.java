@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 import it.unisa.educat.dao.GestioneUtenzaDAO;
 import it.unisa.educat.model.UtenteDTO;
+import it.unisa.educat.model.UtenteDTO.TipoUtente;
 
 @WebServlet("/registrazione")
 public class RegistrazioneServlet extends HttpServlet {
@@ -28,7 +29,7 @@ public class RegistrazioneServlet extends HttpServlet {
 
 		// Contratto OCL pre: !self.utenti → includes(nuovoUtente)
 		// Verifica se email già esiste
-		String email = request.getParameter("register-email");
+		String email = request.getParameter("email");
 
 		try {
 			UtenteDTO esistente = utenzaDAO.doRetrieveByEmail(email);
@@ -40,10 +41,30 @@ public class RegistrazioneServlet extends HttpServlet {
 
 			// Crea nuovo utente
 			UtenteDTO nuovoUtente = new UtenteDTO();
-			nuovoUtente.setNome(request.getParameter("register-nome"));
-			nuovoUtente.setCognome(request.getParameter("register-cognome"));
+			nuovoUtente.setNome(request.getParameter("nome"));
+			nuovoUtente.setCognome(request.getParameter("cognome"));
 			nuovoUtente.setEmail(email);
-			nuovoUtente.setPassword(toHash(request.getParameter("register-password")));
+			nuovoUtente.setPassword(toHash(request.getParameter("password")));
+			nuovoUtente.setDataNascita(request.getParameter("dataNascita").toString());
+			
+			String tipoUtente = request.getParameter("tipoUtente");
+			if(tipoUtente.equals("STUDENTE")) {
+				
+				nuovoUtente.setTipo(TipoUtente.STUDENTE);
+				
+			} else if(tipoUtente.equals("GENITORE")) {
+				
+				nuovoUtente.setTipo(TipoUtente.GENITORE);
+				nuovoUtente.setNomeFiglio(request.getParameter("nomeFiglio"));
+				nuovoUtente.setCognomeFiglio(request.getParameter("cognomeFiglio"));
+				nuovoUtente.setDataNascitaFiglio(request.getParameter("dataNascitaFiglio"));
+				
+			} else if(tipoUtente.equals("TUTOR")) {
+				
+					nuovoUtente.setTipo(TipoUtente.TUTOR);
+					
+			}
+			
 			//nuovoUtente.setDataNascita(LocalDate.parse(request.getParameter("dataNascita")));
 			//nuovoUtente.setIndirizzo(request.getParameter("indirizzo"));
 

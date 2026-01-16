@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%request.setAttribute("tipoUtente", "TUTOR"); %>
 <!DOCTYPE html>
+
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -18,7 +20,7 @@
                 Devi essere maggiorenne per insegnare su EduCat.
             </p>
             
-            <form action="<%= request.getContextPath() %>/RegistrazioneServlet" method="POST">
+            <form action="<%= request.getContextPath() %>/registrazione" method="POST">
                 
                 <div class="form-group"><label class="form-label">Nome</label><input type="text" name="nome" class="form-input" required></div>
                 <div class="form-group"><label class="form-label">Cognome</label><input type="text" name="cognome" class="form-input" required></div>

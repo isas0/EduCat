@@ -8,8 +8,12 @@ public class UtenteDTO {
 	private String cognome;
 	private String email;
 	private String password; // Hashed
-	private LocalDate dataNascita;
+	private String dataNascita;
 	private String indirizzo; // Composto da Via, Civico, Città, CAP
+	
+	private String nomeFiglio;
+	private String cognomeFiglio;
+	private String dataNascitaFiglio;
 	
 	public enum TipoUtente{STUDENTE, GENITORE, TUTOR, AMMINISTRATORE_UTENTI}
 
@@ -19,7 +23,7 @@ public class UtenteDTO {
 	public UtenteDTO() {}
 	
 	public UtenteDTO(String nome, String cognome, String email, String password, 
-			LocalDate dataNascita, String indirizzo, TipoUtente tipo) {
+			String dataNascita, String indirizzo, TipoUtente tipo) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.email = email;
@@ -70,11 +74,11 @@ public class UtenteDTO {
 		this.password = password;
 	}
 
-	public LocalDate getDataNascita() {
+	public String getDataNascita() {
 		return dataNascita;
 	}
 
-	public void setDataNascita(LocalDate dataNascita) {
+	public void setDataNascita(String dataNascita) {
 		this.dataNascita = dataNascita;
 	}
 
@@ -92,6 +96,30 @@ public class UtenteDTO {
 
 	public void setTipo(TipoUtente tipo) {
 		this.tipo = tipo;
+	}
+
+	public String getNomeFiglio() {
+		return nomeFiglio;
+	}
+
+	public void setNomeFiglio(String nomeFiglio) {
+		this.nomeFiglio = nomeFiglio;
+	}
+
+	public String getCognomeFiglio() {
+		return cognomeFiglio;
+	}
+
+	public void setCognomeFiglio(String cognomeFiglio) {
+		this.cognomeFiglio = cognomeFiglio;
+	}
+
+	public String getDataNascitaFiglio() {
+		return dataNascitaFiglio;
+	}
+
+	public void setDataNascitaFiglio(String dataNascitaFiglio) {
+		this.dataNascitaFiglio = dataNascitaFiglio;
 	}
 	
 	

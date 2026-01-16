@@ -18,7 +18,7 @@ public class DatasourceManager {
         }
 
         // Ritorna la connessione
-        return DriverManager.getConnection("jdbc:mysql://100.108.252.88:3307/educat", "anna", "anna");
+        return DriverManager.getConnection("jdbc:mysql://100.90.52.35:3307/educat", "isabella", "root");
     }
     
     public static void closeResources(Connection conn, PreparedStatement ps, ResultSet rs) {

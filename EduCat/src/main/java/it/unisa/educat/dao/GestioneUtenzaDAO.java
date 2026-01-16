@@ -3,6 +3,7 @@ package it.unisa.educat.dao;
 import it.unisa.educat.model.UtenteDTO;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +24,10 @@ public class GestioneUtenzaDAO {
     private static final String INSERT_UTENTE = 
         "INSERT INTO Utente (nome, cognome, email, password, dataNascita, via, civico, citta, cap, tipoUtente) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    
+    private static final String INSERT_UTENTE_CON_FIGLIO = 
+            "INSERT INTO Utente (nome, cognome, email, password, dataNascita, via, civico, citta, cap, tipoUtente, nomeFiglio, cognomeFiglio, dataNascitaFiglio) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
     private static final String SELECT_BY_EMAIL = 
         "SELECT * FROM Utente WHERE email = ?";
@@ -48,22 +53,34 @@ public class GestioneUtenzaDAO {
         
         try {
             conn = DatasourceManager.getConnection();
-            ps = conn.prepareStatement(INSERT_UTENTE, Statement.RETURN_GENERATED_KEYS);
+            if(u.getTipo().toString().equals("GENITORE"))
+            	ps = conn.prepareStatement(INSERT_UTENTE_CON_FIGLIO, Statement.RETURN_GENERATED_KEYS);
+            else
+            	ps = conn.prepareStatement(INSERT_UTENTE, Statement.RETURN_GENERATED_KEYS);
             
             // Estrai i componenti dell'indirizzo
-           // String[] indirizzoParts = parseIndirizzo(u.getIndirizzo());
+            //String[] indirizzoParts = parseIndirizzo(u.getIndirizzo());
             
             // Imposta i parametri
             ps.setString(1, u.getNome());
             ps.setString(2, u.getCognome());
             ps.setString(3, u.getEmail());
             ps.setString(4, u.getPassword()); // Password già hashed
-            ps.setDate(5, null);
+            ps.setString(5, u.getDataNascita().toString());
             ps.setString(6, null); // via
             ps.setString(7, null); // civico
             ps.setString(8, null); // città
             ps.setString(9, null); // cap
-            ps.setString(10, null);
+            ps.setString(10, u.getTipo().toString());
+            
+            //Parametri in più per genitore
+            if(u.getTipo().toString().equals("GENITORE")) {
+            	ps.setString(11, u.getNomeFiglio());
+            	ps.setString(12, u.getCognomeFiglio());
+            	ps.setString(13, u.getDataNascitaFiglio());
+            	
+            }
+            
             //ps.setDate(5, java.sql.Date.valueOf(u.getDataNascita()));
             //ps.setString(6, indirizzoParts[0]); // via
             //ps.setString(7, indirizzoParts[1]); // civico
@@ -268,7 +285,7 @@ public class GestioneUtenzaDAO {
         utente.setCognome(rs.getString("cognome"));
         utente.setEmail(rs.getString("email"));
         utente.setPassword(rs.getString("password"));
-        utente.setDataNascita(rs.getDate("dataNascita").toLocalDate());
+        utente.setDataNascita(rs.getString("dataNascita"));
         utente.setIndirizzo(indirizzo);
         
         return utente;

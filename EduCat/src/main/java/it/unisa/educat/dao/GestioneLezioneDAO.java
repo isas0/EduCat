@@ -365,7 +365,7 @@ public class GestioneLezioneDAO {
             	tutor.setCognome(rs1.getString("cognome"));
             	tutor.setEmail(rs1.getString("email"));
             	tutor.setPassword(rs1.getString("password"));
-            	tutor.setDataNascita(rs1.getDate("dataNascita").toLocalDate());
+            	tutor.setDataNascita(rs1.getString("dataNascita"));
             	tutor.setIndirizzo(indirizzo);
             	tutor.setTipo(UtenteDTO.TipoUtente.TUTOR);
             	return lezione;

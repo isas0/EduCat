@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%request.setAttribute("tipoUtente", "GENITORE"); %>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -19,7 +20,7 @@
                 <span class="step-dot" id="dot2"></span>
             </div>
 
-            <form action="<%= request.getContextPath() %>/RegistrazioneGenitoreServlet" method="POST" id="parentForm">
+            <form action="<%= request.getContextPath() %>/registrazione" method="POST" id="parentForm">
                 
                 <div class="step-content active" id="step1">
                     <h2 style="text-align: center; color: #E6B800; margin-bottom: 20px;">Dati Genitore</h2>
@@ -27,14 +28,14 @@
                         Il genitore deve essere maggiorenne.
                     </p>
 
-                    <div class="form-group"><label class="form-label">Nome Genitore</label><input type="text" name="nomeGenitore" class="form-input" required></div>
-                    <div class="form-group"><label class="form-label">Cognome Genitore</label><input type="text" name="cognomeGenitore" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label">Nome Genitore</label><input type="text" name="nome" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label">Cognome Genitore</label><input type="text" name="cognome" class="form-input" required></div>
                     <div class="form-group"><label class="form-label">Email Genitore</label><input type="email" name="email" class="form-input" required></div>
                     <div class="form-group"><label class="form-label">Password</label><input type="password" name="password" class="form-input" required></div>
                     
                     <div class="form-group">
                         <label class="form-label">Data di Nascita Genitore</label>
-                        <input type="date" name="dataNascitaGenitore" id="parentDate" class="form-input" required>
+                        <input type="date" name="dataNascita" id="parentDate" class="form-input" required>
                     </div>
 
                     <div class="form-group"><label class="form-label">Indirizzo di Fatturazione</label><input type="text" name="indirizzo" class="form-input" required></div>
@@ -48,12 +49,12 @@
                         Inserisci i dati del minorenne.
                     </p>
 
-                    <div class="form-group"><label class="form-label">Nome Studente</label><input type="text" name="nomeStudente" class="form-input" required></div>
-                    <div class="form-group"><label class="form-label">Cognome Studente</label><input type="text" name="cognomeStudente" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label">Nome Studente</label><input type="text" name="nomeFiglio" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label">Cognome Studente</label><input type="text" name="cognomeFiglio" class="form-input" required></div>
                     
                     <div class="form-group">
                         <label class="form-label">Data di Nascita Studente</label>
-                        <input type="date" name="dataNascitaStudente" id="childDate" class="form-input" required>
+                        <input type="date" name="dataNascitaFiglio" id="childDate" class="form-input" required>
                         <small style="color: #E6B800; font-weight: bold;">Deve essere minorenne.</small>
                     </div>
 
