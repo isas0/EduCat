@@ -11,7 +11,7 @@ public class UtenteDTO {
 	private LocalDate dataNascita;
 	private String indirizzo; // Composto da Via, Civico, Città, CAP
 	
-	private enum TipoUtente{STUDENTE, GENITORE, TUTOR, AMMINISTRATORE_UTENTI}
+	public enum TipoUtente{STUDENTE, GENITORE, TUTOR, AMMINISTRATORE_UTENTI}
 
 	private TipoUtente tipo;
 	

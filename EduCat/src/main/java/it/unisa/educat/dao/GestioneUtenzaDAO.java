@@ -91,7 +91,7 @@ public class GestioneUtenzaDAO {
             LOGGER.log(Level.SEVERE, "Errore durante il salvataggio dell'utente", e);
             throw e;
         } finally {
-            DatasourceManager.close(conn, ps, rs);
+            DatasourceManager.closeResources(conn, ps, rs);
         }
     }
     

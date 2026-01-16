@@ -19,6 +19,7 @@ public class PrenotazioneDTO {
 	}
 
 	// Costruttore
+	public PrenotazioneDTO() {}
 	public PrenotazioneDTO(int idPrenotazione, LocalDate dataPrenotazione, 
 			StatoPrenotazione stato, UtenteDTO studente, LezioneDTO lezione) {
 		this.idPrenotazione = idPrenotazione;

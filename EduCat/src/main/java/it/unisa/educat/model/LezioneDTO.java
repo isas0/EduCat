@@ -19,6 +19,7 @@ public class LezioneDTO {
 	}
 
 	// Costruttore
+	public LezioneDTO() {}
 	public LezioneDTO(int idLezione, String materia, LocalDateTime data, float durata, 
 			float prezzo, ModalitaLezione modalitaLezione, UtenteDTO tutor, String città) {
 		this.idLezione = idLezione;
