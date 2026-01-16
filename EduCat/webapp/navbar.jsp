@@ -1,9 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="it.unisa.educat.model.UtenteDTO" %>
 
-
-
-<!-- inserire codice di validazione di sessione per utente -->
-
+<%
+    // Recupero Utente
+    UtenteDTO utenteLoggato = (UtenteDTO) session.getAttribute("utente");
+    
+    // Link Home Default
+    String homeLink = request.getContextPath() + "/index.jsp"; 
+    
+    // Calcolo Home Specifica
+    if (utenteLoggato != null && utenteLoggato.getTipo() != null) {
+        switch(utenteLoggato.getTipo().toString()) {
+            case "STUDENTE": homeLink = request.getContextPath() + "/homeStudent.jsp"; break;
+            case "GENITORE": homeLink = request.getContextPath() + "/homeStudent.jsp"; break;
+            case "TUTOR":    homeLink = request.getContextPath() + "/homeTutor.jsp"; break;
+            case "AMMINISTRATORE_UTENTI": homeLink = request.getContextPath() + "/homeAdmin.jsp"; break;
+        }
+    }
+%>
 
 <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/styles/new/navbar.css">
 
@@ -12,33 +26,28 @@
         <div class="navbar">
             
             <div class="logo">
-                <a href="<%=request.getContextPath()%>/index.jsp">
+                <a href="<%= homeLink %>">
                     <img src="<%= request.getContextPath() %>/images/EduCatLogo.png" alt="EduCat" class="header-logo-img">
                 </a>
             </div>
 
-            <nav>
-                <ul>
-                    <li><a href="<%=request.getContextPath()%>/index.jsp">Home</a></li>
-                    <li><a href="<%=request.getContextPath()%>/listaLezioni.jsp">Prenotazioni</a></li>
-                    <li><a href="<%=request.getContextPath()%>/account.jsp">Account</a></li>
-                </ul>
-            </nav>
-
-            <div class="search-container">
-                </div>
-
-            <a href="<%=request.getContextPath()%>/carrello.jsp">
-                <img src="<%=request.getContextPath()%>/images/carrello-grande.png" alt="Carrello" class="cart-icon">
-            </a>
-            
-            <img src="<%= request.getContextPath() %>/images/menu.png" class="menu-icon" onclick="menutoggle()">
+            <% if (utenteLoggato != null) { %>
+                <nav>
+                    <ul id="MenuItems">
+                        <li><a href="<%= homeLink %>">Home</a></li>
+                        <li><a href="<%= request.getContextPath() %>/prenotazioni.jsp">Prenotazioni</a></li>
+                        <li><a href="<%= request.getContextPath() %>/profilo.jsp">Account</a></li>
+                    </ul>
+                </nav>
+                
+                <img src="<%= request.getContextPath() %>/images/menu.png" class="menu-icon" onclick="menutoggle()">
+            <% } %>
 
         </div>
     </div>
 </div>
 
-<!--serve a gestire il menu a tendina per i dispositivi mobili-->
+<% if (utenteLoggato != null) { %>
 <script>
     var menuItems = document.querySelector("nav ul");
     menuItems.style.maxHeight = "0px";
@@ -50,3 +59,4 @@
         }
     }
 </script>
+<% } %>

@@ -1,5 +1,5 @@
 /* =========================================
-   1. RESET E IMPOSTAZIONI DI BASE
+   1. RESET E IMPOSTAZIONI GLOBALI
    ========================================= */
 * {
     margin: 0;
@@ -11,10 +11,11 @@
 body {
     width: 100%;
     min-height: 100vh;
+    background-color: #f4f7f6; /* Sfondo chiaro di base per le pagine interne */
 }
 
 /* =========================================
-   2. HERO SECTION (HOME PAGE GENERICA)
+   2. HERO SECTION (HOME PAGE)
    ========================================= */
 .hero-container {
     height: 100vh;
@@ -39,194 +40,137 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(26, 92, 97, 0.75); /* Verde scuro #1A5C61 con trasparenza */
+    background: rgba(26, 92, 97, 0.85); /* Verde scuro #1A5C61 con molta opacità */
     z-index: 1;
 }
 
 .content {
     z-index: 2; /* Sta sopra l'overlay */
     padding: 20px;
-    max-width: 800px;
+    width: 100%;
+    max-width: 1100px; /* Abbastanza largo per i 3 bottoni */
 }
 
 h1 {
-    font-size: 4rem;
+    font-size: 4.5rem;
     margin-bottom: 15px;
     letter-spacing: 2px;
-    font-weight: 700;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    font-weight: 800;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.3);
     color: #FFFAFF;
 }
 
 p {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin-bottom: 50px;
     font-weight: 300;
-    opacity: 0.9;
+    opacity: 0.95;
 }
 
-/* --- BOTTONI HOME PAGE --- */
+/* =========================================
+   3. BOTTONI RUOLI (HOME PAGE)
+   ========================================= */
 .btn-container {
     display: flex;
     gap: 25px;
     justify-content: center;
-    flex-wrap: wrap;
-}
-
-.btn {
-    text-decoration: none;
-    padding: 18px 45px;
-    font-size: 1.2rem;
-    border-radius: 50px;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    min-width: 200px;
-    cursor: pointer;
-    border: none;
-    color: #FFFAFF;
-    display: inline-block;
-}
-
-/* Bottone Login (Verde Scuro Solido) */
-.btn-login {
-    background-color: #1A5C61;
-    border: 2px solid #1A5C61; /* Bordo per consistenza */
-}
-
-.btn-login:hover {
-    background-color: #14494d;
-    border-color: #14494d;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-}
-
-/* Bottone Registrazione (Turchese Brillante) */
-.btn-register {
-    background-color: #38B4BC;
-    border: 2px solid #38B4BC;
-}
-
-.btn-register:hover {
-    background-color: #2a9ea6;
-    border-color: #2a9ea6;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(56, 180, 188, 0.4);
-}
-
-/* =========================================
-   3. MODALE SCELTA RUOLO (POPUP)
-   ========================================= */
-.modal-overlay {
-    display: none; /* Nascosto finché non clicchi */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(26, 92, 97, 0.9); /* Sfondo molto scuro */
-    z-index: 2000; /* Altissimo per stare sopra a tutto */
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px); /* Sfoca lo sfondo dietro */
-}
-
-.modal-content {
-    background: #ffffff;
-    padding: 50px 40px;
-    border-radius: 20px;
-    text-align: center;
-    max-width: 450px;
-    width: 90%;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-    position: relative;
-    animation: slideUp 0.3s ease-out;
-}
-
-/* Animazione di entrata */
-@keyframes slideUp {
-    from { transform: translateY(50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.modal-title {
-    color: #1A5C61;
+    flex-wrap: wrap; /* Va a capo su schermi piccoli */
     margin-bottom: 30px;
-    font-size: 1.8rem;
-    font-weight: 700;
 }
 
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 2.5rem;
-    line-height: 2.5rem;
-    cursor: pointer;
-    color: #aaa;
-    transition: color 0.2s;
-}
-
-.close-modal:hover {
-    color: #333;
-}
-
-/* Bottoni Scelta Ruolo dentro il modale */
-.role-choice-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px; /* Spazio tra icona e testo */
-    width: 100%;
-    padding: 20px;
-    margin-bottom: 15px;
+/* Stile Base Bottone Ruolo */
+.btn-role {
     text-decoration: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    border: 2px solid transparent;
+    padding: 25px 30px;
+    font-size: 1.2rem;
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-weight: 700;
+    flex: 1; /* I bottoni si dividono lo spazio equamente */
+    min-width: 240px;
+    max-width: 300px;
+    text-align: center;
+    border: none;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
 }
 
-.role-student {
-    background-color: #e0f2f1; /* Verde acqua chiarissimo */
-    color: #00695c; /* Testo scuro */
+/* Icona dentro il bottone */
+.btn-role i {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
 }
 
-.role-student:hover {
-    background-color: #b2dfdb;
-    transform: scale(1.02);
+/* Hover effect generale */
+.btn-role:hover {
+    transform: translateY(-8px); /* Si alza */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
-.role-tutor {
-    background-color: #1A5C61; /* Verde scuro */
-    color: #ffffff;
+/* --- COLORI SPECIFICI PER RUOLO --- */
+
+/* 1. Genitore (Oro/Giallo) */
+.btn-parent {
+    background: linear-gradient(135deg, #FFC107, #FFB300);
+    color: #1A5C61; /* Testo scuro per contrasto */
 }
 
-.role-tutor:hover {
-    background-color: #14494d;
-    transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(26, 92, 97, 0.3);
+.btn-parent:hover {
+    background: linear-gradient(135deg, #FFD54F, #FFCA28);
 }
+
+/* 2. Studente Maggiorenne (Turchese) */
+.btn-student-adult {
+    background: linear-gradient(135deg, #38B4BC, #26A69A);
+}
+
+.btn-student-adult:hover {
+    background: linear-gradient(135deg, #4DD0E1, #26C6DA);
+}
+
+/* 3. Tutor (Verde Scuro Istituzionale) */
+.btn-tutor {
+    background: linear-gradient(135deg, #1A5C61, #004D40);
+}
+
+.btn-tutor:hover {
+    background: linear-gradient(135deg, #26a69a, #00695c);
+}
+
+/* Sottotitolo nel bottone */
+.btn-role span:last-child {
+    font-size: 0.85rem;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+
 
 /* =========================================
-   4. STILE PER I FORM (Registrazione / Lezione)
+   4. STILI GENERALI PER I FORM (Registrazione)
    ========================================= */
 .form-page-container {
-    background-color: #f4f7f6; /* Grigio chiarissimo */
+    background-color: #f4f7f6;
     min-height: 100vh;
     padding: 60px 20px;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Allinea in alto ma con padding */
+    align-items: flex-start;
 }
 
 .form-box {
     background: white;
-    padding: 40px;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    padding: 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.05);
     width: 100%;
-    max-width: 550px;
+    max-width: 600px;
 }
 
 .form-group {
@@ -245,36 +189,129 @@ p {
 .form-input {
     width: 100%;
     padding: 14px 18px;
-    border: 2px solid #eee; /* Bordo leggero */
-    border-radius: 10px;
+    border: 2px solid #eaeff2;
+    border-radius: 12px;
     font-size: 1rem;
     outline: none;
-    transition: border-color 0.3s;
-    background-color: #fafafa;
+    transition: all 0.3s;
+    background-color: #f9fbfb;
+    color: #333;
 }
 
 .form-input:focus {
-    border-color: #38B4BC; /* Diventa Turchese al focus */
+    border-color: #38B4BC;
     background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(56, 180, 188, 0.1);
 }
 
+/* Bottone Submit Standard */
 .submit-btn {
     width: 100%;
     padding: 18px;
-    background: #38B4BC;
+    background-color: #38B4BC;
     color: white;
     border: none;
     border-radius: 50px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 20px;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(56, 180, 188, 0.3);
+    box-shadow: 0 10px 20px rgba(56, 180, 188, 0.2);
 }
 
 .submit-btn:hover {
-    background: #2a9ea6;
+    background-color: #2a9ea6;
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(56, 180, 188, 0.4);
+    box-shadow: 0 15px 30px rgba(56, 180, 188, 0.3);
+}
+
+/* Link di testo (es. "Accedi") */
+.text-link {
+    color: #38B4BC;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+/* =========================================
+   5. STILI FORM A STEP (WIZARD GENITORE)
+   ========================================= */
+.step-content {
+    display: none; /* Tutti nascosti di default */
+    animation: fadeIn 0.5s ease;
+}
+
+.step-content.active {
+    display: block; /* Solo l'attivo è visibile */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Indicatori (pallini) */
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    gap: 15px;
+}
+
+.step-dot {
+    height: 12px;
+    width: 12px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.step-dot.active {
+    background-color: #38B4BC;
+    width: 40px; /* Si allunga per indicare lo step corrente */
+    border-radius: 10px;
+}
+
+/* Bottoni Navigazione Wizard */
+.btn-next {
+    background-color: #38B4BC; 
+    color: white; 
+    width: 100%; 
+    padding: 16px; 
+    border: none; 
+    border-radius: 50px; 
+    font-weight: bold; 
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.btn-next:hover {
+    background-color: #2a9ea6;
+}
+
+/* =========================================
+   6. RESPONSIVITÀ (MOBILE)
+   ========================================= */
+@media (max-width: 768px) {
+    h1 { font-size: 3rem; }
+    
+    .btn-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-role {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .form-box {
+        padding: 30px 20px;
+    }
 }

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduCat - Crea Nuova Lezione</title>
     <link rel="icon" href="<%=request.getContextPath()%>/images/mini-logo.png" type="image/png">
+    
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/styles/new/style.css">
 </head>
 <body>
@@ -14,16 +15,16 @@
 
     <div class="form-page-container">
         <div class="form-box">
-            <h2 style="text-align: center; color: #1A5C61;">Nuova Disponibilità</h2>
+            <h2 style="text-align: center; color: #1A5C61; margin-bottom: 10px;">Nuova Disponibilità</h2>
             <p style="text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9rem;">
-                Compila i dettagli per pubblicare una nuova lezione.
+                Benvenuto! Imposta subito la tua prima lezione per farti trovare dagli studenti.
             </p>
             
             <form action="<%= request.getContextPath() %>/CreaLezioneServlet" method="POST">
                 
                 <div class="form-group">
                     <label class="form-label">Materia</label>
-                    <select name="materia" class="form-input" required style="background-color: white;">
+                    <select name="materia" class="form-input" required>
                         <option value="" disabled selected>Seleziona materia...</option>
                         <option value="Matematica">Matematica</option>
                         <option value="Fisica">Fisica</option>
@@ -31,12 +32,13 @@
                         <option value="Informatica">Informatica</option>
                         <option value="Latino">Latino</option>
                         <option value="Storia">Storia</option>
+                        <option value="Chimica">Chimica</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Giorno della Lezione</label>
-                    <input type="date" name="data" class="form-input" required id="datePicker">
+                    <input type="date" name="data" class="form-input" required id="lessonDate">
                 </div>
 
                 <div style="display: flex; gap: 15px;">
@@ -63,14 +65,24 @@
                     </select>
                 </div>
 
-                <button type="submit" class="submit-btn">Pubblica Lezione</button>
+                <button type="submit" class="submit-btn" style="background-color: #1A5C61;">Pubblica Disponibilità</button>
             </form>
         </div>
     </div>
     
     <script>
-        var today = new Date().toISOString().split('T')[0];
-        document.getElementById("datePicker").setAttribute('min', today);
+        function formatDateLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
+
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1); // Imposta minimo a domani
+
+        document.getElementById("lessonDate").setAttribute('min', formatDateLocal(tomorrow));
     </script>
 
     <jsp:include page="footer.jsp" />
