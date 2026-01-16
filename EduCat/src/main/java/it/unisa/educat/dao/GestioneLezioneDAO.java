@@ -3,6 +3,7 @@ package it.unisa.educat.dao;
 import it.unisa.educat.model.LezioneDTO;
 import it.unisa.educat.model.PrenotazioneDTO;
 import it.unisa.educat.model.UtenteDTO;
+import it.unisa.educat.model.UtenteDTO.TipoUtente;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -319,6 +320,37 @@ public class GestioneLezioneDAO {
             DatasourceManager.closeResources(conn, ps, rs);
         }
     }
+    
+    public PrenotazioneDTO getPrenotazioneById(int idPrenotazione) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            String sql = 
+                "SELECT p.*, l.*, u.idUtente as tutor_id, u.nome as tutor_nome, " +
+                "u.cognome as tutor_cognome, s.idUtente as studente_id " +
+                "FROM Prenotazione p " +
+                "JOIN Lezione l ON p.idLezione = l.idLezione " +
+                "JOIN Utente u ON l.idTutor = u.idUtente " +
+                "JOIN Utente s ON p.idStudente = s.idUtente " +
+                "WHERE p.idPrenotazione = ?";
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idPrenotazione);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToPrenotazione(rs);
+            }
+            
+            return null;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
 
     
     /**
@@ -565,12 +597,18 @@ public class GestioneLezioneDAO {
     /**
      * Mappa un ResultSet a un oggetto Prenotazione
      */
-    /*
+    
     private PrenotazioneDTO mapResultSetToPrenotazione(ResultSet rs) throws SQLException {
-    	PrenotazioneDTO prenotazione = new PrenotazioneDTO();
+        PrenotazioneDTO prenotazione = new PrenotazioneDTO();
         
+        // Dati obbligatori
         prenotazione.setIdPrenotazione(rs.getInt("idPrenotazione"));
-        prenotazione.setDataPrenotazione(rs.getTimestamp("dataPrenotazione").toLocalDateTime().toLocalDate());
+        
+        // Data prenotazione
+        Timestamp dataPrenotazioneTs = rs.getTimestamp("dataPrenotazione");
+        if (dataPrenotazioneTs != null) {
+            prenotazione.setDataPrenotazione(dataPrenotazioneTs.toLocalDateTime().toLocalDate());
+        }
         
         // Stato
         String stato = rs.getString("stato");
@@ -582,19 +620,69 @@ public class GestioneLezioneDAO {
             prenotazione.setStato(PrenotazioneDTO.StatoPrenotazione.CONCLUSA);
         }
         
-        // Crea studente fittizio
-        it.unisa.educat.model.Studente studente = new it.unisa.educat.model.Studente();
-        studente.setId(rs.getInt("idStudente"));
+        // Studente (solo ID per ora)
+        UtenteDTO studente = new UtenteDTO();
+        studente.setUID(rs.getInt("idStudente"));
+        studente.setTipo(TipoUtente.STUDENTE);
         prenotazione.setStudente(studente);
         
-        // Crea lezione
-        LezioneDTO lezione = mapResultSetToLezione(rs);
+        // Crea lezione base
+        LezioneDTO lezione = new LezioneDTO();
+        lezione.setIdLezione(rs.getInt("idLezione"));
+        lezione.setMateria(rs.getString("materia"));
+        
+        Timestamp dataLezioneTs = rs.getTimestamp("dataLezione");
+        if (dataLezioneTs != null) {
+            lezione.setData(dataLezioneTs.toLocalDateTime());
+        }
+        
+        // Tutor (importante per la verifica)
+        UtenteDTO tutor = new UtenteDTO();
+        tutor.setUID(rs.getInt("idTutor")); // Assicurati che questa colonna esista nella query
+        tutor.setTipo(TipoUtente.TUTOR);
+        
+        lezione.setTutor(tutor);
         prenotazione.setLezione(lezione);
         
         return prenotazione;
     }
    
-    
+    public List<PrenotazioneDTO> getPrenotazioniByTutor(int idTutor) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<PrenotazioneDTO> prenotazioni = new ArrayList<>();
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            
+            String sql = 
+                "SELECT p.*, l.*, " +
+                "u.idUtente as tutor_id, u.nome as tutor_nome, u.cognome as tutor_cognome, " +
+                "s.idUtente as studente_id, s.nome as studente_nome, s.cognome as studente_cognome, " +
+                "s.email as studente_email " +
+                "FROM Prenotazione p " +
+                "JOIN Lezione l ON p.idLezione = l.idLezione " +
+                "JOIN Utente u ON l.idTutor = u.idUtente " +
+                "JOIN Utente s ON p.idStudente = s.idUtente " +
+                "WHERE l.idTutor = ? " +
+                "ORDER BY l.dataLezione DESC, p.dataPrenotazione DESC";
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idTutor);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                PrenotazioneDTO prenotazione = mapResultSetToPrenotazione(rs);
+                prenotazioni.add(prenotazione);
+            }
+            
+            return prenotazioni;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
     /**
      * Classe interna per i criteri di ricerca
      */
