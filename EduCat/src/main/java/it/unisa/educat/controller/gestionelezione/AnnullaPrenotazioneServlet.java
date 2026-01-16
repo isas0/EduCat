@@ -61,58 +61,63 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
                 return;
             }
             
-            // Recupera la prenotazione per verificare che appartenga allo studente
-            // Per fare questo, prima recuperiamo tutte le prenotazioni dello studente
-            // e verifichiamo che quella richiesta appartenga a lui
-         // Verifica autorizzazione e recupera la prenotazione
-            PrenotazioneDTO prenotazione = null;
-            boolean autorizzato = false;
-
-            if ("STUDENTE".equals(utente.getTipo())) {
-                // Per lo studente: recupera le sue prenotazioni
-                List<PrenotazioneDTO> prenotazioniStudente = lezioneDAO.getPrenotazioniByStudente(utente.getUID());
-                
-                for (PrenotazioneDTO p : prenotazioniStudente) {
-                    if (p.getIdPrenotazione() == idPrenotazione) {
-                        prenotazione = p;
-                        autorizzato = true;
-                        break;
-                    }
-                }
-            } else if ("TUTOR".equals(utente.getTipo())) {
-                // Per il tutor: recupera tutte le prenotazioni delle sue lezioni
-                prenotazione = lezioneDAO.getPrenotazioneById(idPrenotazione);
-                
-                if (prenotazione != null) {
-                    // Verifica che il tutor sia il tutor della lezione
-                    if (prenotazione.getLezione().getTutor().getUID() == utente.getUID()) {
-                        autorizzato = true;
-                    }
-                }
-            }
-
-            if (!autorizzato || prenotazione == null) {
-                session.setAttribute("errorMessage", "Prenotazione non trovata o non sei autorizzato");
+            // Recupera la prenotazione con lo slot associato
+            PrenotazioneDTO prenotazione = lezioneDAO.getPrenotazioneConSlotById(idPrenotazione);
+            
+            if (prenotazione == null) {
+                session.setAttribute("errorMessage", "Prenotazione non trovata");
                 response.sendRedirect("storicoPrenotazioni.jsp?error=prenotazione_non_trovata");
                 return;
             }
-
+            
+            // Verifica autorizzazione
+            boolean autorizzato = false;
+            
+            if ("STUDENTE".equals(utente.getTipo())) {
+                // Studente: deve essere il proprietario della prenotazione
+                if (prenotazione.getStudente().getUID() == utente.getUID()) {
+                    autorizzato = true;
+                }
+            } else if ("TUTOR".equals(utente.getTipo())) {
+                // Tutor: deve essere il tutor della lezione associata allo slot
+                // Per questo abbiamo bisogno dello slot
+                SlotDTO slot = lezioneDAO.getSlotByPrenotazioneId(idPrenotazione);
+                if (slot != null && slot.getTutor().getUID() == utente.getUID()) {
+                    autorizzato = true;
+                }
+            }
+            
+            if (!autorizzato) {
+                session.setAttribute("errorMessage", "Non sei autorizzato ad annullare questa prenotazione");
+                response.sendRedirect("accessoNegato.jsp");
+                return;
+            }
+            
             // Verifica che la prenotazione sia ancora attiva
             if (prenotazione.getStato() != PrenotazioneDTO.StatoPrenotazione.ATTIVA) {
                 session.setAttribute("errorMessage", "Impossibile annullare una prenotazione che non è attiva");
                 response.sendRedirect("storicoPrenotazioni.jsp?error=stato_non_valido");
                 return;
             }
-
-            // Verifica che lezione sia almeno un giorno prima
-            if (prenotazione.getLezione().getData().minusDays(1).isBefore(LocalDateTime.now())) {
+            
+            // Recupera lo slot associato per verificare la data
+            SlotDTO slot = lezioneDAO.getSlotByPrenotazioneId(idPrenotazione);
+            
+            if (slot == null) {
+                session.setAttribute("errorMessage", "Slot associato non trovato");
+                response.sendRedirect("storicoPrenotazioni.jsp?error=slot_non_trovato");
+                return;
+            }
+            
+            // Verifica che lo slot sia almeno un giorno prima
+            if (slot.getDataOraInizio().minusDays(1).isBefore(LocalDateTime.now())) {
                 session.setAttribute("errorMessage", "Impossibile annullare: manca meno di un giorno alla lezione");
                 response.sendRedirect("storicoPrenotazioni.jsp?error=troppo_tardi");
                 return;
             }
             
-            // Effettua l'annullamento
-            boolean success = lezioneDAO.doUpdateStatoPrenotazione(idPrenotazione, "ANNULLATA");
+            // Effettua l'annullamento (transazione: annulla prenotazione e libera slot)
+            boolean success = lezioneDAO.annullaPrenotazioneESlot(idPrenotazione);
             
             if (success) {
                 // Successo
@@ -160,9 +165,9 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             return;
         }
         
-        // Verifica che l'utente sia uno studente
-        if (!"STUDENTE".equals(utente.getTipo())) {
-            session.setAttribute("errorMessage", "Solo gli studenti possono annullare prenotazioni");
+        // Verifica che l'utente sia uno studente o un tutor
+        if (!"STUDENTE".equals(utente.getTipo()) && !"TUTOR".equals(utente.getTipo())) {
+            session.setAttribute("errorMessage", "Solo studenti o tutor possono annullare prenotazioni");
             request.getRequestDispatcher("/accessoNegato.jsp").forward(request, response);
             return;
         }
@@ -176,40 +181,61 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
         try {
             int idPrenotazione = Integer.parseInt(idPrenotazioneStr);
             
-            // Recupera tutte le prenotazioni dello studente
-            List<PrenotazioneDTO> prenotazioniStudente = lezioneDAO.getPrenotazioniByStudente(utente.getUID());
+            // Recupera la prenotazione con slot
+            PrenotazioneDTO prenotazione = lezioneDAO.getPrenotazioneConSlotById(idPrenotazione);
             
-            PrenotazioneDTO prenotazioneDaAnnullare = null;
-            
-            for (PrenotazioneDTO prenotazione : prenotazioniStudente) {
-                if (prenotazione.getIdPrenotazione() == idPrenotazione) {
-                    prenotazioneDaAnnullare = prenotazione;
-                    break;
-                }
-            }
-            
-            if (prenotazioneDaAnnullare == null) {
-                session.setAttribute("errorMessage", "Prenotazione non trovata o non appartiene all'utente");
+            if (prenotazione == null) {
+                session.setAttribute("errorMessage", "Prenotazione non trovata");
                 response.sendRedirect("storicoPrenotazioni.jsp?error=prenotazione_non_trovata");
                 return;
             }
             
+            // Verifica autorizzazione
+            boolean autorizzato = false;
+            
+            if ("STUDENTE".equals(utente.getTipo())) {
+                if (prenotazione.getStudente().getUID() == utente.getUID()) {
+                    autorizzato = true;
+                }
+            } else if ("TUTOR".equals(utente.getTipo())) {
+                SlotDTO slot = lezioneDAO.getSlotByPrenotazioneId(idPrenotazione);
+                if (slot != null && slot.getTutor().getUID() == utente.getUID()) {
+                    autorizzato = true;
+                }
+            }
+            
+            if (!autorizzato) {
+                session.setAttribute("errorMessage", "Non sei autorizzato ad annullare questa prenotazione");
+                response.sendRedirect("accessoNegato.jsp");
+                return;
+            }
+            
             // Verifica che la prenotazione sia ancora attiva
-            if (prenotazioneDaAnnullare.getStato() != PrenotazioneDTO.StatoPrenotazione.ATTIVA) {
+            if (prenotazione.getStato() != PrenotazioneDTO.StatoPrenotazione.ATTIVA) {
                 session.setAttribute("errorMessage", "Impossibile annullare una prenotazione che non è attiva");
                 response.sendRedirect("storicoPrenotazioni.jsp?error=stato_non_valido");
                 return;
             }
             
-            // Verifica che la lezione non sia già iniziata
-            if (prenotazioneDaAnnullare.getLezione().getData().isBefore(LocalDateTime.now())) {
-                session.setAttribute("errorMessage", "Impossibile annullare una lezione già iniziata");
-                response.sendRedirect("storicoPrenotazioni.jsp?error=lezione_già_iniziata");
+            // Recupera slot per verificare la data
+            SlotDTO slot = lezioneDAO.getSlotByPrenotazioneId(idPrenotazione);
+            
+            if (slot == null) {
+                session.setAttribute("errorMessage", "Slot associato non trovato");
+                response.sendRedirect("storicoPrenotazioni.jsp?error=slot_non_trovato");
+                return;
+            }
+            
+            // Verifica che lo slot sia almeno un giorno prima
+            if (slot.getDataOraInizio().minusDays(1).isBefore(LocalDateTime.now())) {
+                session.setAttribute("errorMessage", "Impossibile annullare: manca meno di un giorno alla lezione");
+                response.sendRedirect("storicoPrenotazioni.jsp?error=troppo_tardi");
                 return;
             }
             
             // Mostra pagina di conferma annullamento
-            request.setAttribute("prenotazione", prenotazioneDaAnnullare);
+            request.setAttribute("prenotazione", prenotazione);
+            request.setAttribute("slot", slot);
             request.getRequestDispatcher("/confermaAnnullamento.jsp").forward(request, response);
             
         } catch (NumberFormatException e) {

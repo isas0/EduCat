@@ -3,12 +3,14 @@ package it.unisa.educat.controller.gestionelezione;
 import it.unisa.educat.dao.GestioneLezioneDAO;
 import it.unisa.educat.dao.GestioneLezioneDAO.CriteriRicerca;
 import it.unisa.educat.model.LezioneDTO;
+import it.unisa.educat.model.SlotDTO;
 import it.unisa.educat.model.UtenteDTO;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.*;
 import jakarta.servlet.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -37,7 +39,7 @@ public class CercaLezioneServlet extends HttpServlet {
         
         try {
             // Crea criteri di ricerca dai parametri della richiesta
-            CriteriRicerca criteri = new CriteriRicerca();
+            GestioneLezioneDAO.CriteriRicerca criteri = new GestioneLezioneDAO.CriteriRicerca();
             
             // Filtri di base
             String materia = request.getParameter("materia");
@@ -62,19 +64,40 @@ public class CercaLezioneServlet extends HttpServlet {
             
             if (dataDaStr != null && !dataDaStr.trim().isEmpty()) {
                 try {
-                    LocalDateTime dataDa = LocalDateTime.parse(dataDaStr + "T00:00:00");
+                    // Se la stringa ha solo la data, aggiungi l'ora 00:00
+                    if (!dataDaStr.contains("T")) {
+                        dataDaStr += "T00:00:00";
+                    }
+                    LocalDateTime dataDa = LocalDateTime.parse(dataDaStr);
                     criteri.setDataDa(dataDa);
                 } catch (DateTimeParseException e) {
-                    // Ignora se formato non valido
+                    // Log errore ma continua
+                    System.err.println("Formato dataDa non valido: " + dataDaStr);
                 }
             }
             
             if (dataAStr != null && !dataAStr.trim().isEmpty()) {
                 try {
-                    LocalDateTime dataA = LocalDateTime.parse(dataAStr + "T23:59:59");
+                    // Se la stringa ha solo la data, aggiungi l'ora 23:59
+                    if (!dataAStr.contains("T")) {
+                        dataAStr += "T23:59:59";
+                    }
+                    LocalDateTime dataA = LocalDateTime.parse(dataAStr);
                     criteri.setDataA(dataA);
                 } catch (DateTimeParseException e) {
-                    // Ignora se formato non valido
+                    // Log errore ma continua
+                    System.err.println("Formato dataA non valido: " + dataAStr);
+                }
+            }
+            
+            // Filtro per tutor (se serve)
+            String idTutorStr = request.getParameter("idTutor");
+            if (idTutorStr != null && !idTutorStr.trim().isEmpty()) {
+                try {
+                    int idTutor = Integer.parseInt(idTutorStr);
+                    criteri.setIdTutor(idTutor);
+                } catch (NumberFormatException e) {
+                    // Ignora
                 }
             }
             
@@ -87,7 +110,7 @@ public class CercaLezioneServlet extends HttpServlet {
                         criteri.setPrezzoMax(prezzoMax);
                     }
                 } catch (NumberFormatException e) {
-                    // Ignora se non è un numero valido
+                    // Ignora
                 }
             }
             
@@ -107,22 +130,40 @@ public class CercaLezioneServlet extends HttpServlet {
             criteri.setLimit(lezioniPerPagina);
             criteri.setOffset(offset);
             
-            // Esegui ricerca
+            // Esegui ricerca usando il metodo esistente del DAO
             List<LezioneDTO> lezioni = lezioneDAO.doRetrieveByCriteria(criteri);
+            
+            // Per ogni lezione, carica gli slot disponibili
+            for (LezioneDTO lezione : lezioni) {
+                List<SlotDTO> slotDisponibili = lezioneDAO.getSlotDisponibiliPerLezione(lezione.getIdLezione());
+                lezione.setSlotDisponibili(slotDisponibili);
+            }
+            
+            // Calcola statistiche
+            int totaleLezioni = lezioni.size();
             
             // Prepara dati per la vista
             request.setAttribute("lezioni", lezioni);
-            request.setAttribute("materia", materia);
-            request.setAttribute("citta", citta);
-            request.setAttribute("modalita", modalita);
-            request.setAttribute("dataDa", dataDaStr);
-            request.setAttribute("dataA", dataAStr);
-            request.setAttribute("prezzoMax", prezzoMaxStr);
+            request.setAttribute("totaleLezioni", totaleLezioni);
+            request.setAttribute("criteri", criteri); // Utile per mostrare filtri attivi
             request.setAttribute("paginaCorrente", pagina);
+            request.setAttribute("lezioniPerPagina", lezioniPerPagina);
+            
+            // Mantieni i parametri per il form
+            request.setAttribute("materiaParam", materia);
+            request.setAttribute("cittaParam", citta);
+            request.setAttribute("modalitaParam", modalita);
+            request.setAttribute("dataDaParam", dataDaStr);
+            request.setAttribute("dataAParam", dataAStr);
+            request.setAttribute("prezzoMaxParam", prezzoMaxStr);
             
             // Forward al risultato
             request.getRequestDispatcher("/risultatiRicerca.jsp").forward(request, response);
             
+        } catch (SQLException e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Errore di database durante la ricerca: " + e.getMessage());
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Errore durante la ricerca: " + e.getMessage());
