@@ -1,6 +1,7 @@
 package it.unisa.educat.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class LezioneDTO {
 	private int idLezione;
@@ -12,6 +13,8 @@ public class LezioneDTO {
 	private UtenteDTO tutor; // Riferimento al tutor
 	private String città;
 
+	private List<SlotDTO> slotDisponibili;
+	
 	// Enum per modalità lezione
 	public enum ModalitaLezione {
 		ONLINE,
@@ -96,4 +99,19 @@ public class LezioneDTO {
 	public void setCitta(String città) {
 		this.città = città;
 	}
+	public String getCittà() {
+		return città;
+	}
+	public void setCittà(String città) {
+		this.città = città;
+	}
+	
+	public List<SlotDTO> getSlotDisponibili() {
+		return slotDisponibili;
+	}
+	public void setSlotDisponibili(List<SlotDTO> slotDisponibili) {
+		this.slotDisponibili = slotDisponibili;
+	}
+	
+	
 }

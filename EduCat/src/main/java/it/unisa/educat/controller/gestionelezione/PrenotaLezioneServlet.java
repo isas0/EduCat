@@ -33,7 +33,7 @@ public class PrenotaLezioneServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        HttpSession session = request.getSession(false);
+    	HttpSession session = request.getSession(false);
         if (session == null) {
             response.sendRedirect("../login.jsp");
             return;
@@ -47,101 +47,106 @@ public class PrenotaLezioneServlet extends HttpServlet {
         
         try {
             // Ottieni parametri dalla richiesta
-            String idLezioneStr = request.getParameter("idLezione");
-            if (idLezioneStr == null || idLezioneStr.trim().isEmpty()) {
-                throw new IllegalArgumentException("ID lezione non specificato");
+            String idSlotStr = request.getParameter("idSlot");
+            if (idSlotStr == null || idSlotStr.trim().isEmpty()) {
+                throw new IllegalArgumentException("ID slot non specificato");
             }
             
-            int idLezione = Integer.parseInt(idLezioneStr);
+            int idSlot = Integer.parseInt(idSlotStr);
             
             // Verifica che l'utente sia effettivamente uno studente
-            // (Assumendo che UtenteDTO abbia un campo 'tipo' con valori 'STUDENTE', 'TUTOR', ecc.)
             if (!"STUDENTE".equals(studente.getTipo())) {
                 session.setAttribute("errorMessage", "Solo gli studenti possono prenotare lezioni");
                 response.sendRedirect("accessoNegato.jsp");
                 return;
             }
             
-            // Recupera la lezione dal database per verificarne la disponibilità
-            LezioneDTO lezione = lezioneDAO.getLezioneById(idLezione);
+            // Recupera lo slot dal database
+            SlotDTO slot = lezioneDAO.getSlotById(idSlot);
             
-            if (lezione == null) {
-                session.setAttribute("errorMessage", "Lezione non trovata");
-                response.sendRedirect("cercaLezione.jsp?error=lezione_non_trovata");
+            if (slot == null) {
+                session.setAttribute("errorMessage", "Slot non trovato");
+                response.sendRedirect("cercaLezione.jsp?error=slot_non_trovato");
                 return;
             }
             
-            // Verifica se la lezione è già passata
-            if (lezione.getData().isBefore(LocalDateTime.now())) {
-                session.setAttribute("errorMessage", "Impossibile prenotare una lezione passata");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + idLezione + "&error=lezione_passata");
+            // Verifica che lo slot sia disponibile
+            if (slot.getStato() != SlotDTO.StatoSlot.DISPONIBILE) {
+                session.setAttribute("errorMessage", "Questo slot non è più disponibile");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&error=slot_non_disponibile");
                 return;
             }
             
-            // Verifica se lo studente ha già prenotato questa lezione
-            // (Implementa il metodo nel DAO)
-            boolean giaPrenotato = lezioneDAO.hasStudentePrenotatoLezione(studente.getUID(), idLezione);
+            // Verifica che lo slot non sia già passato
+            if (slot.getDataOraInizio().isBefore(LocalDateTime.now())) {
+                session.setAttribute("errorMessage", "Impossibile prenotare uno slot già passato");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&error=slot_passato");
+                return;
+            }
+            
+            // Verifica se lo studente ha già prenotato questo slot
+            boolean giaPrenotato = lezioneDAO.hasStudentePrenotatoSlot(studente.getUID(), idSlot);
             if (giaPrenotato) {
-                session.setAttribute("errorMessage", "Hai già prenotato questa lezione");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + idLezione + "&error=gia_prenotata");
+                session.setAttribute("errorMessage", "Hai già prenotato questo slot");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&error=gia_prenotato");
                 return;
             }
             
-            // Verifica posti disponibili (se applicabile)
-            /*int postiDisponibili = lezioneDAO.getPostiDisponibili(idLezione);
-            if (postiDisponibili <= 0) {
-                session.setAttribute("errorMessage", "Nessun posto disponibile per questa lezione");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + idLezione + "&error=posti_esauriti");
+            // Verifica se lo studente ha già prenotato un altro slot per la stessa lezione
+            boolean giaPrenotatoLezione = lezioneDAO.hasStudentePrenotatoLezione(studente.getUID(), slot.getLezione().getIdLezione());
+            if (giaPrenotatoLezione) {
+                session.setAttribute("errorMessage", "Hai già prenotato un altro slot per questa lezione");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&error=gia_prenotato_lezione");
                 return;
-            }*/
+            }
             
             // Crea l'oggetto PrenotazioneDTO
-            PrenotazioneDTO prenotazione = new PrenotazioneDTO(
-                0, // id verrà generato dal database
-                LocalDate.now(), // dataPrenotazione
-                PrenotazioneDTO.StatoPrenotazione.ATTIVA, // stato iniziale
-                studente, // studente
-                lezione // lezione
-            );
+            PrenotazioneDTO prenotazione = new PrenotazioneDTO();
+            prenotazione.setStudente(studente);
+            prenotazione.setLezione(slot.getLezione());
+            prenotazione.setDataPrenotazione(LocalDate.now());
+            prenotazione.setStato(PrenotazioneDTO.StatoPrenotazione.ATTIVA);
+            prenotazione.setImportoPagato(slot.getPrezzo() != null ? slot.getPrezzo() : slot.getLezione().getPrezzo());
             
-            // Effettua la prenotazione
-            boolean success = lezioneDAO.doSavePrenotazione(prenotazione);
+            // Effettua la prenotazione dello slot
+            boolean success = lezioneDAO.prenotaSlot(idSlot, prenotazione);
             
             if (success) {
                 // Successo: reindirizza con messaggio di successo
-                session.setAttribute("successMessage", "Lezione prenotata con successo!");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + idLezione + "&success=true");
+                session.setAttribute("successMessage", "Slot prenotato con successo!");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&success=true");
             } else {
                 // Fallimento
-                session.setAttribute("errorMessage", "Impossibile prenotare la lezione");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + idLezione + "&error=prenotazione_fallita");
+                session.setAttribute("errorMessage", "Impossibile prenotare lo slot");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&error=prenotazione_fallita");
             }
             
         } catch (NumberFormatException e) {
-            session.setAttribute("errorMessage", "ID lezione non valido");
-            //response.sendRedirect("cercaLezione.jsp?error=id_invalido");
+            session.setAttribute("errorMessage", "ID slot non valido");
+            response.sendRedirect("cercaLezione.jsp?error=id_invalido");
         } catch (IllegalArgumentException e) {
             session.setAttribute("errorMessage", e.getMessage());
-            //response.sendRedirect("cercaLezione.jsp?error=parametri_mancanti");
+            response.sendRedirect("cercaLezione.jsp?error=parametri_mancanti");
         } catch (SQLException e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore di database durante la prenotazione");
-            //response.sendRedirect("error.jsp");
+            response.sendRedirect("error.jsp");
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore durante la prenotazione: " + e.getMessage());
-            //response.sendRedirect("error.jsp");
-        }
+            response.sendRedirect("error.jsp");
+        }    
     }
     
     /**
      * GET per mostrare la pagina di conferma prenotazione
+     * FORSE NON NECESSARIO VALUTARE SE CANCELLARE
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        HttpSession session = request.getSession(false);
+    	HttpSession session = request.getSession(false);
         if (session == null) {
             response.sendRedirect("../login.jsp");
             return;
@@ -160,47 +165,59 @@ public class PrenotaLezioneServlet extends HttpServlet {
             return;
         }
         
-        String idLezioneStr = request.getParameter("idLezione");
-        if (idLezioneStr == null || idLezioneStr.trim().isEmpty()) {
+        String idSlotStr = request.getParameter("idSlot");
+        if (idSlotStr == null || idSlotStr.trim().isEmpty()) {
             response.sendRedirect("cercaLezione.jsp?error=id_mancante");
             return;
         }
         
         try {
-            int idLezione = Integer.parseInt(idLezioneStr);
+            int idSlot = Integer.parseInt(idSlotStr);
             
-            // Recupera i dettagli della lezione
-            LezioneDTO lezione = lezioneDAO.getLezioneById(idLezione);
-            if (lezione == null) {
-                session.setAttribute("errorMessage", "Lezione non trovata");
-                response.sendRedirect("cercaLezione.jsp?error=lezione_non_trovata");
+            // Recupera i dettagli dello slot
+            SlotDTO slot = lezioneDAO.getSlotById(idSlot);
+            if (slot == null) {
+                session.setAttribute("errorMessage", "Slot non trovato");
+                response.sendRedirect("cercaLezione.jsp?error=slot_non_trovato");
                 return;
             }
             
-            // Verifica se lo studente ha già prenotato
-            boolean giaPrenotato = lezioneDAO.hasStudentePrenotatoLezione(studente.getUID(), idLezione);
+            // Verifica che lo slot sia disponibile
+            if (slot.getStato() != SlotDTO.StatoSlot.DISPONIBILE) {
+                session.setAttribute("errorMessage", "Questo slot non è più disponibile");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&error=slot_non_disponibile");
+                return;
+            }
+            
+            // Verifica se lo studente ha già prenotato questo slot
+            boolean giaPrenotato = lezioneDAO.hasStudentePrenotatoSlot(studente.getUID(), idSlot);
             if (giaPrenotato) {
-                session.setAttribute("errorMessage", "Hai già prenotato questa lezione");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + idLezione + "&error=gia_prenotata");
+                session.setAttribute("errorMessage", "Hai già prenotato questo slot");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&error=gia_prenotato");
                 return;
             }
             
-            // Verifica posti disponibili
-            //int postiDisponibili = lezioneDAO.getPostiDisponibili(idLezione);
-            //request.setAttribute("postiDisponibili", postiDisponibili);
+            // Verifica se lo studente ha già prenotato un altro slot per la stessa lezione
+            boolean giaPrenotatoLezione = lezioneDAO.hasStudentePrenotatoLezione(studente.getUID(), slot.getLezione().getIdLezione());
+            if (giaPrenotatoLezione) {
+                session.setAttribute("errorMessage", "Hai già prenotato un altro slot per questa lezione");
+                response.sendRedirect("dettaglioLezione.jsp?id=" + slot.getLezione().getIdLezione() + "&error=gia_prenotato_lezione");
+                return;
+            }
             
-            // Mostra pagina di conferma prenotazione
-            request.setAttribute("lezione", lezione);
-            request.setAttribute("idLezione", idLezione);
-            request.getRequestDispatcher("/lezioni.jsp").forward(request, response);
+            // Mostra pagina di conferma prenotazione slot
+            request.setAttribute("slot", slot);
+            request.setAttribute("lezione", slot.getLezione());
+            request.getRequestDispatcher("/confermaPrenotazioneSlot.jsp").forward(request, response);
             
         } catch (NumberFormatException e) {
-            session.setAttribute("errorMessage", "ID lezione non valido");
-            //response.sendRedirect("cercaLezione.jsp?error=id_invalido");
+            session.setAttribute("errorMessage", "ID slot non valido");
+            response.sendRedirect("cercaLezione.jsp?error=id_invalido");
         } catch (SQLException e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore di database");
-            //response.sendRedirect("error.jsp");
+            response.sendRedirect("error.jsp");
         }
     }
+    
 }

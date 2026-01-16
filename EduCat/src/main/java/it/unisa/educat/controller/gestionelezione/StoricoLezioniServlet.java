@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import it.unisa.educat.dao.GestioneLezioneDAO;
@@ -48,22 +49,35 @@ public class StoricoLezioniServlet extends HttpServlet {
         
         try {
             String tipoUtente = utente.getTipo().toString();
-            List<PrenotazioneDTO> prenotazioni = new ArrayList<PrenotazioneDTO>();
+            List<PrenotazioneDTO> prenotazioni = new ArrayList<>();
             
             if ("STUDENTE".equals(tipoUtente)) {
-                // Per studente: tutte le sue prenotazioni
+                // Per studente: tutte le sue prenotazioni CON SLOT
                 prenotazioni = lezioneDAO.getPrenotazioniByStudente(utente.getUID());
             } else if ("TUTOR".equals(tipoUtente)) {
-                // Per tutor: tutte le prenotazioni delle sue lezioni
+                // Per tutor: tutte le prenotazioni delle sue lezioni CON SLOT
                 prenotazioni = lezioneDAO.getPrenotazioniByTutor(utente.getUID());
             } else {
-                // Altri tipi di utente
                 session.setAttribute("errorMessage", "Utente non autorizzato a visualizzare lo storico");
                 response.sendRedirect("accessoNegato.jsp");
                 return;
             }
             
-            // Separa le prenotazioni in passate e future
+            /*
+            // Per ogni prenotazione, recupera lo slot se non è già presente
+            for (PrenotazioneDTO prenotazione : prenotazioni) {
+                if (prenotazione.getSlot() == null) {
+                    SlotDTO slot = lezioneDAO.getSlotByPrenotazioneId(prenotazione.getIdPrenotazione());
+                    prenotazione.setSlot(slot);
+                    
+                    // Se c'è lo slot, aggiorna la data nella lezione per retrocompatibilità
+                    if (slot != null && prenotazione.getLezione() != null) {
+                        prenotazione.getLezione().setData(slot.getDataOraInizio());
+                    }
+                }
+            }*/
+            
+            // Separa le prenotazioni in passate, future e annullate
             List<PrenotazioneDTO> lezioniPassate = new ArrayList<>();
             List<PrenotazioneDTO> lezioniFuture = new ArrayList<>();
             List<PrenotazioneDTO> lezioniAnnullate = new ArrayList<>();
@@ -71,26 +85,53 @@ public class StoricoLezioniServlet extends HttpServlet {
             LocalDateTime now = LocalDateTime.now();
             
             for (PrenotazioneDTO prenotazione : prenotazioni) {
+                LocalDateTime dataLezione = null;
+                
+                // Prima cerca la data nello slot
+                if (prenotazione.getSlot() != null) {
+                    dataLezione = prenotazione.getSlot().getDataOraInizio();
+                } 
+                // Fallback: data nella lezione (per retrocompatibilità)
+                else if (prenotazione.getLezione() != null && prenotazione.getLezione().getData() != null) {
+                    dataLezione = prenotazione.getLezione().getData();
+                }
+                
                 if (prenotazione.getStato() == PrenotazioneDTO.StatoPrenotazione.ANNULLATA) {
                     lezioniAnnullate.add(prenotazione);
-                } else if (prenotazione.getLezione().getData().isBefore(now)) {
+                } else if (dataLezione != null && dataLezione.isBefore(now)) {
                     lezioniPassate.add(prenotazione);
-                } else {
+                } else if (dataLezione != null) {
                     lezioniFuture.add(prenotazione);
+                } else {
+                    // Se non c'è data, considerala passata (caso strano)
+                    lezioniPassate.add(prenotazione);
                 }
             }
             
-            // Ordina per data (più recenti prima per passate, più vicine prima per future)
-            lezioniPassate.sort((p1, p2) -> 
-                p2.getLezione().getData().compareTo(p1.getLezione().getData()));
+            // Ordina per data
+            Comparator<PrenotazioneDTO> dateComparator = (p1, p2) -> {
+                LocalDateTime data1 = p1.getSlot() != null ? p1.getSlot().getDataOraInizio() : 
+                                   (p1.getLezione() != null ? p1.getLezione().getData() : null);
+                LocalDateTime data2 = p2.getSlot() != null ? p2.getSlot().getDataOraInizio() : 
+                                   (p2.getLezione() != null ? p2.getLezione().getData() : null);
+                
+                if (data1 == null && data2 == null) return 0;
+                if (data1 == null) return 1;
+                if (data2 == null) return -1;
+                
+                return data1.compareTo(data2);
+            };
             
-            lezioniFuture.sort((p1, p2) -> 
-                p1.getLezione().getData().compareTo(p2.getLezione().getData()));
+            // Passate: più recenti prima
+            lezioniPassate.sort(dateComparator.reversed());
             
-            lezioniAnnullate.sort((p1, p2) -> 
-                p2.getLezione().getData().compareTo(p1.getLezione().getData()));
+            // Future: più vicine prima
+            lezioniFuture.sort(dateComparator);
             
-            // Imposta gli attributi per la JSP
+            // Annullate: più recenti prima
+            lezioniAnnullate.sort(dateComparator.reversed());
+            
+            // Imposta attributi per la JSP
             request.setAttribute("lezioniPassate", lezioniPassate);
             request.setAttribute("lezioniFuture", lezioniFuture);
             request.setAttribute("lezioniAnnullate", lezioniAnnullate);

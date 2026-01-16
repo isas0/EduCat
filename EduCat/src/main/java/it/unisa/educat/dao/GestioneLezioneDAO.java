@@ -2,6 +2,7 @@ package it.unisa.educat.dao;
 
 import it.unisa.educat.model.LezioneDTO;
 import it.unisa.educat.model.PrenotazioneDTO;
+import it.unisa.educat.model.SlotDTO;
 import it.unisa.educat.model.UtenteDTO;
 import it.unisa.educat.model.UtenteDTO.TipoUtente;
 
@@ -23,22 +24,11 @@ public class GestioneLezioneDAO {
         "idTutor, citta, statoLezione) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
-    private static final String INSERT_PRENOTAZIONE = 
-        "INSERT INTO Prenotazione (idStudente, idLezione, dataPrenotazione, stato, " +
-        "metodoPagamento, statoPagamento, importoPagato) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?)";
-    
-    private static final String UPDATE_STATO_PRENOTAZIONE = 
-        "UPDATE Prenotazione SET stato = ? WHERE idPrenotazione = ?";
-    
     private static final String SELECT_LEZIONI_BASE = 
         "SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome " +
         "FROM Lezione l " +
         "JOIN Utente u ON l.idTutor = u.idUtente " +
         "WHERE 1=1";
-    
-    private static final String SELECT_LEZIONI_FROM_ID = 
-            "SELECT * FROM lezione WHERE idLezione = ?";
     
     private static final String SELECT_LEZIONE_BY_ID = 
             "SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome, " +
@@ -199,70 +189,6 @@ public class GestioneLezioneDAO {
         }
     }
     
-    /**
-     * Salva una nuova prenotazione
-     */
-    public boolean doSavePrenotazione(PrenotazioneDTO prenotazione) throws SQLException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = DatasourceManager.getConnection();
-            ps = conn.prepareStatement(INSERT_PRENOTAZIONE, Statement.RETURN_GENERATED_KEYS);
-            
-            // Calcola importo in base a durata e prezzo della lezione
-            float importo = prenotazione.getLezione().getPrezzo() * 
-                          prenotazione.getLezione().getDurata();
-            
-            ps.setInt(1, prenotazione.getStudente().getUID());
-            ps.setInt(2, prenotazione.getLezione().getIdLezione());
-            ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-            ps.setString(4, "ATTIVA"); // Stato iniziale
-            ps.setString(5, null);
-            ps.setString(6, "COMPLETATO"); // Assumiamo pagamento completato
-            ps.setFloat(7, importo);
-            
-            int rowsAffected = ps.executeUpdate();
-            
-            if (rowsAffected > 0) {
-                // Recupera l'ID generato
-                rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    prenotazione.setIdPrenotazione(rs.getInt(1));
-                }
-                return true;
-            }
-            
-            return false;
-            
-        } finally {
-        	DatasourceManager.closeResources(conn, ps, rs);
-        }
-    }
-    
-    /**
-     * Aggiorna lo stato di una prenotazione
-     */
-    public boolean doUpdateStatoPrenotazione(int idPrenotazione, String nuovoStato) throws SQLException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        
-        try {
-            conn = DatasourceManager.getConnection();
-            ps = conn.prepareStatement(UPDATE_STATO_PRENOTAZIONE);
-            
-            ps.setString(1, nuovoStato);
-            ps.setInt(2, idPrenotazione);
-            
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
-            
-        } finally {
-        	DatasourceManager.closeResources(conn, ps, null);
-        }
-    }
-    
     public List<PrenotazioneDTO> getPrenotazioniByStudente(int idStudente) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
@@ -274,12 +200,15 @@ public class GestioneLezioneDAO {
             
             // Query semplificata
             String sql = 
-                "SELECT p.idPrenotazione, p.dataPrenotazione, p.stato, " +
-                "p.idStudente, p.idLezione, l.materia, l.dataLezione " +
-                "FROM Prenotazione p " +
-                "JOIN Lezione l ON p.idLezione = l.idLezione " +
-                "WHERE p.idStudente = ? " +
-                "ORDER BY p.dataPrenotazione DESC";
+            		"SELECT p.idPrenotazione, p.dataPrenotazione, p.stato, p.idSlot, " +
+            			    "p.idStudente, p.idLezione, l.materia, s.dataOraInizio, " +
+            			    "u.nome as tutor_nome, u.cognome as tutor_cognome " +
+            			    "FROM Prenotazione p " +
+            			    "JOIN Lezione l ON p.idLezione = l.idLezione " +
+            			    "LEFT JOIN Slot s ON p.idSlot = s.idSlot " +  // LEFT JOIN perché idSlot potrebbe essere NULL
+            			    "JOIN Utente u ON l.idTutor = u.idUtente " +  // Per avere nome tutor
+            			    "WHERE p.idStudente = ? " +
+            			    "ORDER BY COALESCE(s.dataOraInizio, p.dataPrenotazione) DESC";
             
             ps = conn.prepareStatement(sql);
             ps.setInt(1, idStudente);
@@ -329,13 +258,15 @@ public class GestioneLezioneDAO {
         try {
             conn = DatasourceManager.getConnection();
             String sql = 
-                "SELECT p.*, l.*, u.idUtente as tutor_id, u.nome as tutor_nome, " +
-                "u.cognome as tutor_cognome, s.idUtente as studente_id " +
-                "FROM Prenotazione p " +
-                "JOIN Lezione l ON p.idLezione = l.idLezione " +
-                "JOIN Utente u ON l.idTutor = u.idUtente " +
-                "JOIN Utente s ON p.idStudente = s.idUtente " +
-                "WHERE p.idPrenotazione = ?";
+            		"SELECT p.*, l.*, s.dataOraInizio, s.dataOraFine, " +
+            			    "u.idUtente as tutor_id, u.nome as tutor_nome, u.cognome as tutor_cognome, " +
+            			    "st.idUtente as studente_id, st.nome as studente_nome, st.cognome as studente_cognome " +
+            			    "FROM Prenotazione p " +
+            			    "JOIN Lezione l ON p.idLezione = l.idLezione " +
+            			    "LEFT JOIN Slot s ON p.idSlot = s.idSlot " +  // LEFT JOIN per slot
+            			    "JOIN Utente u ON l.idTutor = u.idUtente " +
+            			    "JOIN Utente st ON p.idStudente = st.idUtente " +
+            			    "WHERE p.idPrenotazione = ?";
             
             ps = conn.prepareStatement(sql);
             ps.setInt(1, idPrenotazione);
@@ -352,131 +283,6 @@ public class GestioneLezioneDAO {
         }
     }
 
-    
-    /**
-     * Metodi aggiuntivi utili
-     */
-    
-    /**
-     * Recupera lezioni di un tutor specifico
-     */
-    /*
-    public List<LezioneDTO> getLezioniByTutor(int idTutor) throws SQLException {
-        CriteriRicerca criteri = new CriteriRicerca();
-        criteri.setIdTutor(idTutor);
-        return doRetrieveByCriteria(criteri);
-    }
-    
-    /**
-     * Recupera prenotazioni di uno studente
-     */
-    /*
-    public List<PrenotazioneDTO> getPrenotazioniByStudente(int idStudente) throws SQLException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        List<PrenotazioneDTO> prenotazioni = new ArrayList<>();
-        
-        try {
-            conn = DatasourceManager.getConnection();
-            String sql = 
-                "SELECT p.*, l.*, u.nome as tutor_nome, u.cognome as tutor_cognome " +
-                "FROM Prenotazione p " +
-                "JOIN Lezione l ON p.idLezione = l.idLezione " +
-                "JOIN Utente u ON l.idTutor = u.idUtente " +
-                "WHERE p.idStudente = ? " +
-                "ORDER BY p.dataPrenotazione DESC";
-            
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, idStudente);
-            rs = ps.executeQuery();
-            
-            while (rs.next()) {
-            	PrenotazioneDTO prenotazione = mapResultSetToPrenotazione(rs);
-                prenotazioni.add(prenotazione);
-            }
-            
-            return prenotazioni;
-            
-        } finally {
-            closeResources(conn, ps, rs);
-        }
-    }
-    
-    /**
-     * Controlla se uno studente ha già prenotato una lezione
-     */
-    /*
-    public boolean hasStudentePrenotatoLezione(int idStudente, int idLezione) throws SQLException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = DatasourceManager.getConnection();
-            String sql = 
-                "SELECT COUNT(*) FROM Prenotazione " +
-                "WHERE idStudente = ? AND idLezione = ? AND stato = 'ATTIVA'";
-            
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, idStudente);
-            ps.setInt(2, idLezione);
-            rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-            
-            return false;
-            
-        } finally {
-            closeResources(conn, ps, rs);
-        }
-    }
-    
-    /**
-     * Conta posti disponibili per una lezione
-     */
-    /*
-    public int getPostiDisponibili(int idLezione) throws SQLException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        
-        try {
-            // Ottieni massimo partecipanti della lezione
-            conn = DatasourceManager.getConnection();
-            String sql = "SELECT maxPartecipanti FROM Lezione WHERE idLezione = ?";
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, idLezione);
-            rs = ps.executeQuery();
-            
-            if (!rs.next()) {
-                return 0;
-            }
-            
-            int maxPartecipanti = rs.getInt(1);
-            
-            // Conta prenotazioni attive
-            rs.close();
-            ps.close();
-            
-            sql = "SELECT COUNT(*) FROM Prenotazione WHERE idLezione = ? AND stato = 'ATTIVA'";
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, idLezione);
-            rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                int prenotazioniAttive = rs.getInt(1);
-                return Math.max(0, maxPartecipanti - prenotazioniAttive);
-            }
-            
-            return maxPartecipanti;
-            
-        } finally {
-            closeResources(conn, ps, rs);
-        }
-    }
     
     /**
      * Mappa un ResultSet a un oggetto Lezione
@@ -644,6 +450,38 @@ public class GestioneLezioneDAO {
         lezione.setTutor(tutor);
         prenotazione.setLezione(lezione);
         
+        try {
+            // Controlla se c'è l'idSlot
+            int idSlot = rs.getInt("idSlot");
+            if (idSlot > 0) {
+                // Se vuoi puoi creare un oggetto SlotDTO minimale
+                SlotDTO slot = new SlotDTO();
+                slot.setIdSlot(idSlot);
+                
+                // Recupera dataOraInizio se presente
+                Timestamp dataOraInizio = rs.getTimestamp("dataOraInizio");
+                if (dataOraInizio != null) {
+                    slot.setDataOraInizio(dataOraInizio.toLocalDateTime());
+                    
+                    // Aggiorna anche la data nella lezione per retrocompatibilità
+                    if (prenotazione.getLezione() != null) {
+                        prenotazione.getLezione().setData(dataOraInizio.toLocalDateTime());
+                    }
+                }
+                
+                // Recupera dataOraFine se presente
+                Timestamp dataOraFine = rs.getTimestamp("dataOraFine");
+                if (dataOraFine != null) {
+                    slot.setDataOraFine(dataOraFine.toLocalDateTime());
+                }
+                
+                prenotazione.setSlot(slot);
+            }
+        } catch (SQLException e) {
+            // Campo idSlot potrebbe non esistere (vecchie prenotazioni)
+            // Ignora l'errore
+        }
+        
         return prenotazione;
     }
    
@@ -657,16 +495,17 @@ public class GestioneLezioneDAO {
             conn = DatasourceManager.getConnection();
             
             String sql = 
-                "SELECT p.*, l.*, " +
-                "u.idUtente as tutor_id, u.nome as tutor_nome, u.cognome as tutor_cognome, " +
-                "s.idUtente as studente_id, s.nome as studente_nome, s.cognome as studente_cognome, " +
-                "s.email as studente_email " +
-                "FROM Prenotazione p " +
-                "JOIN Lezione l ON p.idLezione = l.idLezione " +
-                "JOIN Utente u ON l.idTutor = u.idUtente " +
-                "JOIN Utente s ON p.idStudente = s.idUtente " +
-                "WHERE l.idTutor = ? " +
-                "ORDER BY l.dataLezione DESC, p.dataPrenotazione DESC";
+            		"SELECT p.*, l.*, s.dataOraInizio, s.dataOraFine, " +
+            			    "u.idUtente as tutor_id, u.nome as tutor_nome, u.cognome as tutor_cognome, " +
+            			    "st.idUtente as studente_id, st.nome as studente_nome, st.cognome as studente_cognome, " +
+            			    "st.email as studente_email " +
+            			    "FROM Prenotazione p " +
+            			    "JOIN Lezione l ON p.idLezione = l.idLezione " +
+            			    "LEFT JOIN Slot s ON p.idSlot = s.idSlot " +  // LEFT JOIN per slot
+            			    "JOIN Utente u ON l.idTutor = u.idUtente " +
+            			    "JOIN Utente st ON p.idStudente = st.idUtente " +
+            			    "WHERE l.idTutor = ? " +
+            			    "ORDER BY COALESCE(s.dataOraInizio, l.dataLezione) DESC, p.dataPrenotazione DESC";
             
             ps = conn.prepareStatement(sql);
             ps.setInt(1, idTutor);
@@ -682,7 +521,428 @@ public class GestioneLezioneDAO {
         } finally {
             DatasourceManager.closeResources(conn, ps, rs);
         }
+        
     }
+    
+    //SLOT
+    public SlotDTO getSlotById(int idSlot) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            String sql = 
+                "SELECT s.*, l.*, u_tutor.nome as tutor_nome, u_tutor.cognome as tutor_cognome, " +
+                "u_tutor.email as tutor_email, u_studente.idUtente as studente_id " +
+                "FROM Slot s " +
+                "JOIN Lezione l ON s.idLezione = l.idLezione " +
+                "JOIN Utente u_tutor ON l.idTutor = u_tutor.idUtente " +
+                "LEFT JOIN Utente u_studente ON s.idStudente = u_studente.idUtente " +
+                "WHERE s.idSlot = ?";
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idSlot);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToSlot(rs);
+            }
+            
+            return null;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
+    /**
+     * Verifica se uno studente ha già prenotato uno specifico slot
+     */
+    public boolean hasStudentePrenotatoSlot(int idStudente, int idSlot) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            String sql = 
+                "SELECT COUNT(*) FROM Slot " +
+                "WHERE idSlot = ? AND idStudente = ? AND stato = 'PRENOTATO'";
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idSlot);
+            ps.setInt(2, idStudente);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+            
+            return false;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
+    /**
+     * Prenota uno slot (transazione)
+     */
+    public boolean prenotaSlot(int idSlot, PrenotazioneDTO prenotazione) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            conn.setAutoCommit(false); // Inizia transazione
+            
+            // 1. Inserisci la prenotazione
+            String sqlPrenotazione = 
+                "INSERT INTO Prenotazione (idStudente, dataPrenotazione, stato, importoPagato) " +
+                "VALUES (?, ?, ?, ?)";
+            
+            ps = conn.prepareStatement(sqlPrenotazione, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, prenotazione.getStudente().getUID());
+            ps.setDate(2, Date.valueOf(prenotazione.getDataPrenotazione()));
+            ps.setString(3, prenotazione.getStato().name());
+            ps.setFloat(4, prenotazione.getImportoPagato());
+            
+            int rows = ps.executeUpdate();
+            if (rows == 0) {
+                conn.rollback();
+                return false;
+            }
+            
+            // Ottieni l'ID generato
+            rs = ps.getGeneratedKeys();
+            int idPrenotazione = 0;
+            if (rs.next()) {
+                idPrenotazione = rs.getInt(1);
+                prenotazione.setIdPrenotazione(idPrenotazione);
+            }
+            
+            // 2. Aggiorna lo slot a "PRENOTATO"
+            String sqlSlot = 
+                "UPDATE Slot SET stato = 'PRENOTATO', idStudente = ?, idPrenotazione = ? " +
+                "WHERE idSlot = ? AND stato = 'DISPONIBILE'";
+            
+            ps = conn.prepareStatement(sqlSlot);
+            ps.setInt(1, prenotazione.getStudente().getUID());
+            ps.setInt(2, idPrenotazione);
+            ps.setInt(3, idSlot);
+            
+            rows = ps.executeUpdate();
+            if (rows == 0) {
+                conn.rollback();
+                return false;
+            }
+            
+            conn.commit(); // Conferma transazione
+            return true;
+            
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
+    /**
+     * Mappa ResultSet a SlotDTO
+     */
+    private SlotDTO mapResultSetToSlot(ResultSet rs) throws SQLException {
+        SlotDTO slot = new SlotDTO();
+        
+        slot.setIdSlot(rs.getInt("idSlot"));
+        
+        // Data e ora
+        Timestamp inizioTs = rs.getTimestamp("dataOraInizio");
+        Timestamp fineTs = rs.getTimestamp("dataOraFine");
+        if (inizioTs != null) {
+            slot.setDataOraInizio(inizioTs.toLocalDateTime());
+        }
+        if (fineTs != null) {
+            slot.setDataOraFine(fineTs.toLocalDateTime());
+        }
+        
+        // Stato
+        String stato = rs.getString("stato");
+        if (stato != null) {
+            slot.setStato(SlotDTO.StatoSlot.valueOf(stato));
+        }
+        
+        // Prezzo
+        slot.setPrezzo(rs.getFloat("prezzo"));
+        
+        // Lezione
+        LezioneDTO lezione = mapResultSetToLezione(rs);
+        slot.setLezione(lezione);
+        
+        // Tutor (già incluso nella lezione ma possiamo anche settarlo direttamente)
+        UtenteDTO tutor = new UtenteDTO();
+        tutor.setUID(rs.getInt("idTutor"));
+        tutor.setNome(rs.getString("tutor_nome"));
+        tutor.setCognome(rs.getString("tutor_cognome"));
+        tutor.setEmail(rs.getString("tutor_email"));
+        tutor.setTipo(TipoUtente.TUTOR);
+        slot.setTutor(tutor);
+        
+        // Studente (se presente)
+        int studenteId = rs.getInt("studente_id");
+        if (studenteId > 0) {
+            UtenteDTO studente = new UtenteDTO();
+            studente.setUID(studenteId);
+            studente.setTipo(TipoUtente.STUDENTE);
+            slot.setStudente(studente);
+        }
+        
+        return slot;
+    }
+    
+    /**
+     * Recupera tutti gli slot disponibili per una lezione
+     */
+    public List<SlotDTO> getSlotDisponibiliPerLezione(int idLezione) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<SlotDTO> slotList = new ArrayList<>();
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            String sql = 
+                "SELECT s.*, l.*, u.nome as tutor_nome, u.cognome as tutor_cognome, " +
+                "u.email as tutor_email " +
+                "FROM Slot s " +
+                "JOIN Lezione l ON s.idLezione = l.idLezione " +
+                "JOIN Utente u ON l.idTutor = u.idUtente " +
+                "WHERE s.idLezione = ? AND s.stato = 'DISPONIBILE' " +
+                "AND s.dataOraInizio > NOW() " +
+                "ORDER BY s.dataOraInizio ASC";
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idLezione);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                SlotDTO slot = mapResultSetToSlot(rs);
+                slotList.add(slot);
+            }
+            
+            return slotList;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
+    /**
+     * Recupera una prenotazione con i dettagli dello slot
+     */
+    public PrenotazioneDTO getPrenotazioneConSlotById(int idPrenotazione) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            String sql = 
+                "SELECT p.*, s.dataOraInizio, s.dataOraFine, l.*, " +
+                "u_studente.nome as studente_nome, u_studente.cognome as studente_cognome, " +
+                "u_tutor.idUtente as tutor_id, u_tutor.nome as tutor_nome, u_tutor.cognome as tutor_cognome " +
+                "FROM Prenotazione p " +
+                "LEFT JOIN Slot s ON p.idSlot = s.idSlot " +
+                "JOIN Lezione l ON s.idLezione = l.idLezione " +
+                "JOIN Utente u_studente ON p.idStudente = u_studente.idUtente " +
+                "JOIN Utente u_tutor ON l.idTutor = u_tutor.idUtente " +
+                "WHERE p.idPrenotazione = ?";
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idPrenotazione);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToPrenotazioneConSlot(rs);
+            }
+            
+            return null;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
+    /**
+     * Recupera lo slot associato a una prenotazione
+     */
+    public SlotDTO getSlotByPrenotazioneId(int idPrenotazione) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            String sql = 
+                "SELECT s.*, l.*, u.nome as tutor_nome, u.cognome as tutor_cognome " +
+                "FROM Slot s " +
+                "JOIN Lezione l ON s.idLezione = l.idLezione " +
+                "JOIN Utente u ON l.idTutor = u.idUtente " +
+                "WHERE s.idPrenotazione = ?";
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idPrenotazione);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToSlot(rs);
+            }
+            
+            return null;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
+    /**
+     * Annulla una prenotazione e libera lo slot (transazione)
+     */
+    public boolean annullaPrenotazioneESlot(int idPrenotazione) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = DatasourceManager.getConnection();
+            conn.setAutoCommit(false);
+            
+            // 1. Annulla la prenotazione
+            String sqlPrenotazione = 
+                "UPDATE Prenotazione SET stato = 'ANNULLATA' WHERE idPrenotazione = ? AND stato = 'ATTIVA'";
+            
+            ps = conn.prepareStatement(sqlPrenotazione);
+            ps.setInt(1, idPrenotazione);
+            int rowsPrenotazione = ps.executeUpdate();
+            
+            if (rowsPrenotazione == 0) {
+                conn.rollback();
+                return false;
+            }
+            
+            // 2. Libera lo slot (imposta a DISPONIBILE e rimuovi riferimenti)
+            String sqlSlot = 
+                "UPDATE Slot SET stato = 'DISPONIBILE', idStudente = NULL, idPrenotazione = NULL " +
+                "WHERE idPrenotazione = ?";
+            
+            ps = conn.prepareStatement(sqlSlot);
+            ps.setInt(1, idPrenotazione);
+            int rowsSlot = ps.executeUpdate();
+            
+            if (rowsSlot == 0) {
+                conn.rollback();
+                return false;
+            }
+            
+            conn.commit();
+            return true;
+            
+        } catch (SQLException e) {
+            if (conn != null) {
+                conn.rollback();
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                conn.setAutoCommit(true);
+            }
+            DatasourceManager.closeResources(conn, ps, null);
+        }
+    }
+    
+    /**
+     * Mappa ResultSet a PrenotazioneDTO con slot
+     */
+    private PrenotazioneDTO mapResultSetToPrenotazioneConSlot(ResultSet rs) throws SQLException {
+        PrenotazioneDTO prenotazione = new PrenotazioneDTO();
+        
+        prenotazione.setIdPrenotazione(rs.getInt("idPrenotazione"));
+        
+        // Data prenotazione
+        Date dataPrenotazioneSql = rs.getDate("dataPrenotazione");
+        if (dataPrenotazioneSql != null) {
+            prenotazione.setDataPrenotazione(dataPrenotazioneSql.toLocalDate());
+        }
+        
+        // Stato
+        String stato = rs.getString("stato");
+        if ("ATTIVA".equals(stato)) {
+            prenotazione.setStato(PrenotazioneDTO.StatoPrenotazione.ATTIVA);
+        } else if ("ANNULLATA".equals(stato)) {
+            prenotazione.setStato(PrenotazioneDTO.StatoPrenotazione.ANNULLATA);
+        } else if ("CONCLUSA".equals(stato)) {
+            prenotazione.setStato(PrenotazioneDTO.StatoPrenotazione.CONCLUSA);
+        }
+        
+        prenotazione.setImportoPagato(rs.getFloat("importoPagato"));
+        
+        // Studente
+        UtenteDTO studente = new UtenteDTO();
+        studente.setUID(rs.getInt("idStudente"));
+        studente.setNome(rs.getString("studente_nome"));
+        studente.setCognome(rs.getString("studente_cognome"));
+        studente.setTipo(TipoUtente.STUDENTE);
+        prenotazione.setStudente(studente);
+        
+        // Lezione
+        LezioneDTO lezione = new LezioneDTO();
+        lezione.setIdLezione(rs.getInt("idLezione"));
+        lezione.setMateria(rs.getString("materia"));
+        lezione.setDurata(rs.getFloat("durata"));
+        lezione.setPrezzo(rs.getFloat("prezzo"));
+        
+        // Modalità
+        String modalita = rs.getString("modalitaLezione");
+        if ("ONLINE".equals(modalita)) {
+            lezione.setModalitaLezione(LezioneDTO.ModalitaLezione.ONLINE);
+        } else {
+            lezione.setModalitaLezione(LezioneDTO.ModalitaLezione.PRESENZA);
+        }
+        
+        // Tutor della lezione
+        UtenteDTO tutor = new UtenteDTO();
+        tutor.setUID(rs.getInt("tutor_id"));
+        tutor.setNome(rs.getString("tutor_nome"));
+        tutor.setCognome(rs.getString("tutor_cognome"));
+        tutor.setTipo(TipoUtente.TUTOR);
+        lezione.setTutor(tutor);
+        
+        // Data della lezione (ora è nello slot)
+        Timestamp dataSlot = rs.getTimestamp("dataOraInizio");
+        if (dataSlot != null) {
+            lezione.setData(dataSlot.toLocalDateTime());
+        }
+        
+        lezione.setCitta(rs.getString("citta"));
+        prenotazione.setLezione(lezione);
+        
+        return prenotazione;
+    }
+    
     /**
      * Classe interna per i criteri di ricerca
      */
