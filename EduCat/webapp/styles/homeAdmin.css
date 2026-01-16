@@ -1,0 +1,163 @@
+/* styles/homeAdmin.css */
+
+body {
+    background-color: #f4f7f6; /* Grigio chiarissimo per lo sfondo admin */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    margin: 0;
+}
+
+/* CONTAINER PRINCIPALE */
+.admin-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: 80vh;
+}
+
+/* TITOLI SEZIONI */
+.section-title {
+    color: #1A5C61; /* Verde Scuro */
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    border-left: 5px solid #38B4BC; /* Accento Turchese */
+    padding-left: 15px;
+    font-weight: 700;
+}
+
+/* --- STAT CARDS (Riepilogo in alto) --- */
+.stats-grid {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 250px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 4px solid #38B4BC;
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.stat-info p {
+    margin: 5px 0 0 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1A5C61;
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    color: #38B4BC;
+    opacity: 0.2;
+}
+
+/* --- TABELLE DATI --- */
+.table-responsive {
+    overflow-x: auto; /* Per mobile */
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin-bottom: 50px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Evita che si schiacci troppo */
+}
+
+.admin-table thead tr {
+    background-color: #1A5C61;
+    color: #ffffff;
+    text-align: left;
+}
+
+.admin-table th, .admin-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #f9fbfb; /* Hover leggerissimo */
+}
+
+.admin-table tbody tr:last-of-type td {
+    border-bottom: none;
+}
+
+/* ETICHETTE RUOLI */
+.role-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.role-student {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.role-tutor {
+    background-color: #e0f2f1;
+    color: #00695c;
+}
+
+/* BOTTONI AZIONI */
+.action-btn {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-delete {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.btn-delete:hover {
+    background-color: #c62828;
+    color: white;
+}
+
+.btn-view {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    margin-right: 5px;
+}
+
+.btn-view:hover {
+    background-color: #7b1fa2;
+    color: white;
+}
