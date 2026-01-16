@@ -6,13 +6,13 @@
     UtenteDTO utenteLoggato = (UtenteDTO) session.getAttribute("utente");
     
     // Link Home Default
-    String homeLink = request.getContextPath() + "/index.jsp"; 
+    String homeLink = request.getContextPath() + "/homePageGenerica.jsp"; 
     
     // Calcolo Home Specifica
     if (utenteLoggato != null && utenteLoggato.getTipo() != null) {
         switch(utenteLoggato.getTipo().toString()) {
-            case "STUDENTE": homeLink = request.getContextPath() + "/homeStudent.jsp"; break;
-            case "GENITORE": homeLink = request.getContextPath() + "/homeStudent.jsp"; break;
+            case "STUDENTE": homeLink = request.getContextPath() + "/homePageStudenteGenitore.jsp"; break;
+            case "GENITORE": homeLink = request.getContextPath() + "/homePageStudenteGenitore.jsp"; break;
             case "TUTOR":    homeLink = request.getContextPath() + "/homeTutor.jsp"; break;
             case "AMMINISTRATORE_UTENTI": homeLink = request.getContextPath() + "/homeAdmin.jsp"; break;
         }
@@ -36,7 +36,7 @@
                     <ul id="MenuItems">
                         <li><a href="<%= homeLink %>">Home</a></li>
                         <li><a href="<%= request.getContextPath() %>/prenotazioni.jsp">Prenotazioni</a></li>
-                        <li><a href="<%= request.getContextPath() %>/profilo.jsp">Account</a></li>
+                        <li><a href="<%= request.getContextPath() %>/account.jsp">Account</a></li>
                     </ul>
                 </nav>
                 

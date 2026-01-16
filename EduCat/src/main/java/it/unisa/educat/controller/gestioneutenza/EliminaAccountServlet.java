@@ -12,7 +12,7 @@ import java.io.IOException;
 import it.unisa.educat.dao.GestioneUtenzaDAO;
 import it.unisa.educat.model.UtenteDTO;
 
-@WebServlet("/eliminaAccount")
+@WebServlet("/elimina-account")
 public class EliminaAccountServlet extends HttpServlet {
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -38,12 +38,8 @@ public class EliminaAccountServlet extends HttpServlet {
             return;
         }
         
-        
-        // Verifica password per conferma
-        String password = request.getParameter("password");
+    
         try {
-        	
-            if (hashPassword(password).equals(utente.getPassword())) {
                 // Elimina l'account
                 boolean eliminato = utenzaDAO.doDelete(utente.getUID());
                 
@@ -57,17 +53,14 @@ public class EliminaAccountServlet extends HttpServlet {
                     System.out.println("Account eliminato");
                 } else {
                     request.setAttribute("errorMessage", "Errore durante l'eliminazione dell'account");
-                    request.getRequestDispatcher("/confermaEliminazione.jsp").forward(request, response);
+                    request.getRequestDispatcher("/account.jsp").forward(request, response);
                 }
-            } else {
-                request.setAttribute("errorMessage", "Password errata");
-                request.getRequestDispatcher("/confermaEliminazione.jsp").forward(request, response);
-            }
+            
             
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Errore: " + e.getMessage());
-            request.getRequestDispatcher("/confermaEliminazione.jsp").forward(request, response);
+            request.getRequestDispatcher("/account.jsp").forward(request, response);
         }
     }
     

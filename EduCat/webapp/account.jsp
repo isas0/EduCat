@@ -50,11 +50,11 @@
                 </a>
                 <% } %>
 
-                <a href="<%= request.getContextPath() %>/LogoutServlet" class="action-btn btn-logout">
+                <a href="<%= request.getContextPath() %>/logout" class="action-btn btn-logout">
                     <i class="fa-solid fa-right-from-bracket"></i> Esci
                 </a>
 
-                <form action="<%= request.getContextPath() %>/EliminaAccountServlet" method="POST" id="deleteForm">
+                <form action="<%= request.getContextPath() %>/elimina-account" method="POST" id="deleteForm">
                     <input type="hidden" name="idUtente" value="<%= utente.getUID() %>">
                     <button type="button" class="action-btn btn-delete" onclick="confermaEliminazione()">
                         <i class="fa-solid fa-trash-can"></i> Elimina Account

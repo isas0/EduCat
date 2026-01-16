@@ -19,7 +19,11 @@ import java.util.List;
 @WebServlet("/cerca-lezione")
 public class CercaLezioneServlet extends HttpServlet {
     
-    private GestioneLezioneDAO lezioneDAO;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private GestioneLezioneDAO lezioneDAO;
     
     @Override
     public void init() throws ServletException {
@@ -158,16 +162,16 @@ public class CercaLezioneServlet extends HttpServlet {
             request.setAttribute("prezzoMaxParam", prezzoMaxStr);
             
             // Forward al risultato
-            request.getRequestDispatcher("/risultatiRicerca.jsp").forward(request, response);
+            request.getRequestDispatcher("/listaLezioni.jsp").forward(request, response);
             
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Errore di database durante la ricerca: " + e.getMessage());
-            request.getRequestDispatcher("/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/listaLezioni.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Errore durante la ricerca: " + e.getMessage());
-            request.getRequestDispatcher("/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/listaLezioni.jsp").forward(request, response);
         }
     }
 }
