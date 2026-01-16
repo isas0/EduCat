@@ -1,0 +1,148 @@
+/* css/dettaglio.css - VERSIONE COMPATTA */
+
+body {
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #555;
+    margin: 0;
+    padding: 0;
+    display: block !important; 
+    min-height: 100vh;
+}
+
+/* Container principale */
+.container-dettaglio {
+    width: 100%;
+    max-width: 750px; /* Ridotto per non essere enorme */
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    overflow: hidden;
+    border: none;
+}
+
+/* HEADER CARD */
+.card-header {
+    background-color: #1A5C61;
+    padding: 30px 40px;
+    color: #ffffff;
+}
+
+.materia-titolo {
+    margin: 0;
+    font-size: 2.2rem; /* Font ridotto */
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.tutor-row {
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255,255,255,0.1);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+}
+
+.tutor-label { margin-right: 6px; font-weight: 300; }
+.tutor-nome { font-weight: 700; color: #38B4BC; }
+
+/* BODY CARD */
+.card-body {
+    padding: 35px 40px;
+}
+
+/* Griglia Info */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+.info-item {
+    border-left: 3px solid #f0f0f0;
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #1A5C61;
+    font-weight: 700;
+    margin-bottom: 5px;
+    opacity: 0.8;
+}
+
+.value {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 600;
+}
+
+/* FOOTER */
+.card-footer {
+    border-top: 1px solid #eaeff2;
+    padding-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prezzo-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.prezzo-totale {
+    font-size: 2.5rem; /* Prezzo meno gigante */
+    color: #1A5C61;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.prezzo-dettaglio {
+    font-size: 0.9rem;
+    color: #999;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* BOTTONE PRENOTA */
+.btn-prenota {
+    background-color: #38B4BC;
+    color: #ffffff;
+    border: none;
+    padding: 14px 35px; /* Bottone più compatto */
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 5px 15px rgba(56, 180, 188, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-prenota:hover {
+    background-color: #2a9ea6;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(56, 180, 188, 0.3);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .card-footer { flex-direction: column; gap: 20px; text-align: center; }
+    .info-grid { grid-template-columns: 1fr; }
+    .prezzo-box { align-items: center; }
+}

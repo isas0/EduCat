@@ -1,0 +1,230 @@
+/* styles/new/listaLezioni.css */
+
+body {
+    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* --- SEZIONE FILTRI --- */
+.filter-section {
+    background-color: #1A5C61;
+    padding: 30px 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.filter-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.filter-form {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end; /* Allinea tutto sul fondo */
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 180px; 
+}
+
+.filter-label {
+    color: #FFFAFF;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    margin-left: 5px;
+}
+
+/* INPUT SELECT E TEXT */
+.filter-input {
+    height: 52px; /* ALTEZZA FISSA: Identica al bottone */
+    padding: 0 15px; /* Padding solo laterale, l'altezza la gestisce height */
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+    background-color: #ffffff;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    cursor: pointer;
+    box-sizing: border-box; /* Assicura che bordi/padding non sballino l'altezza */
+    display: flex;
+    align-items: center;
+}
+
+.filter-input:focus {
+    box-shadow: 0 0 0 3px rgba(56, 180, 188, 0.5);
+}
+
+.filter-input:disabled {
+    background-color: #cfd8dc; 
+    color: #78909c;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* BOTTONE CERCA AGGIUSTATO */
+.btn-search {
+    height: 52px; /* ALTEZZA FISSA: Identica agli input */
+    background-color: #38B4BC;
+    color: white;
+    border: none;
+    padding: 0 30px; /* Padding laterale */
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 140px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    
+    /* Flexbox per centrare perfettamente il testo e l'icona */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+.btn-search:hover {
+    background-color: #2a9ea6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn-search:active {
+    transform: translateY(0);
+}
+
+/* --- GRIGLIA RISULTATI --- */
+.results-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.results-title {
+    font-size: 1.8rem;
+    color: #1A5C61;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.lessons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+/* --- CARD LEZIONE --- */
+.lesson-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column; 
+    height: 100%; 
+    border: 1px solid #eee;
+}
+
+.lesson-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.card-top {
+    background-color: #f8fbfb;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subject-badge {
+    background-color: #e0f2f1;
+    color: #00695c;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.price-tag {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #1A5C61;
+}
+
+.card-content {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.tutor-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.lesson-info {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-actions {
+    padding: 20px;
+    margin-top: auto;
+    border-top: 1px solid #f9f9f9;
+}
+
+.btn-details {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    border: 2px solid #38B4BC;
+    color: #38B4BC;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 10px;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.btn-details:hover {
+    background-color: #38B4BC;
+    color: white;
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .btn-search {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
