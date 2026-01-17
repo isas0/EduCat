@@ -133,6 +133,7 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
     <link rel="icon" href="<%= request.getContextPath() %>/images/mini-logo.png" type="image/png">
     
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/homeTutor.css">
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/modalSegnalazione.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -191,6 +192,7 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
                             <th>Materia</th>
                             <th>Importo</th>
                             <th>Stato</th>
+                            <th style="text-align: right;">Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -223,13 +225,19 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
                             </td>
                         </tr>
                         <% } %>
+                        <td style="text-align: right;">
+    						<button class="btn-report" onclick="apriSegnalazione(<%= p.studente.id %>, '<%= p.getStudente.nome %> <%= p.studente.cognome %>')">
+       						 	<i class="fa-solid fa-circle-exclamation"></i> Segnala
+    						</button>
+						</td>
                     </tbody>
                 </table>
             </div>
         </div>
 
     </div>
-
+    
+	<jsp:include page="modalSegnalazione.jsp" />
     <jsp:include page="footer.jsp" />
 
 </body>
