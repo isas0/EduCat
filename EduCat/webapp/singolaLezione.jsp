@@ -26,7 +26,7 @@ if (lezione == null) {
 }
 
 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy, HH:mm", Locale.ITALIAN);
-String dataFormattata = lezione.getData().format(formatter);
+String dataFormattata = lezione.getDataInizio().format(formatter);
 float prezzoTotale = lezione.getPrezzo() * lezione.getDurata();
 
 UtenteDTO tutor = lezione.getTutor();

@@ -12,7 +12,6 @@ public class PrenotazioneDTO {
 	// Riferimenti (non specificati ma necessari)
 	private UtenteDTO studente;
 	private LezioneDTO lezione;
-	private SlotDTO slot;
 	
 	// Enum per stato prenotazione
 	public enum StatoPrenotazione {
@@ -26,7 +25,7 @@ public class PrenotazioneDTO {
 	
 
 	public PrenotazioneDTO(int idPrenotazione, LocalDate dataPrenotazione, StatoPrenotazione stato, float importoPagato,
-			UtenteDTO studente, LezioneDTO lezione, SlotDTO slot) {
+			UtenteDTO studente, LezioneDTO lezione) {
 		super();
 		this.idPrenotazione = idPrenotazione;
 		this.dataPrenotazione = dataPrenotazione;
@@ -34,18 +33,8 @@ public class PrenotazioneDTO {
 		this.importoPagato = importoPagato;
 		this.studente = studente;
 		this.lezione = lezione;
-		this.slot = slot;
 	}
 
-
-	public SlotDTO getSlot() {
-		return slot;
-	}
-
-
-	public void setSlot(SlotDTO slot) {
-		this.slot = slot;
-	}
 
 
 	// Getters e Setters

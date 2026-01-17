@@ -62,7 +62,8 @@ public class RegistrazioneServlet extends HttpServlet {
 			} else if(tipoUtente.equals("TUTOR")) {
 				
 					nuovoUtente.setTipo(TipoUtente.TUTOR);
-					
+					request.setAttribute("successMessage", "Registrazione completata!.");
+					request.getRequestDispatcher("/nuovaLezione.jsp").forward(request, response);
 			}
 			
 			//nuovoUtente.setDataNascita(LocalDate.parse(request.getParameter("dataNascita")));

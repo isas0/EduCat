@@ -87,14 +87,10 @@ public class StoricoLezioniServlet extends HttpServlet {
             for (PrenotazioneDTO prenotazione : prenotazioni) {
                 LocalDateTime dataLezione = null;
                 
-                // Prima cerca la data nello slot
-                if (prenotazione.getSlot() != null) {
-                    dataLezione = prenotazione.getSlot().getDataOraInizio();
+                // Prima cerca la data
+                if (prenotazione.getLezione().getDataInizio() != null) {
+                    dataLezione = prenotazione.getLezione().getDataInizio();
                 } 
-                // Fallback: data nella lezione (per retrocompatibilità)
-                else if (prenotazione.getLezione() != null && prenotazione.getLezione().getData() != null) {
-                    dataLezione = prenotazione.getLezione().getData();
-                }
                 
                 if (prenotazione.getStato() == PrenotazioneDTO.StatoPrenotazione.ANNULLATA) {
                     lezioniAnnullate.add(prenotazione);
@@ -109,7 +105,7 @@ public class StoricoLezioniServlet extends HttpServlet {
             }
             
             // Ordina per data
-            Comparator<PrenotazioneDTO> dateComparator = (p1, p2) -> {
+            /*Comparator<PrenotazioneDTO> dateComparator = (p1, p2) -> {
                 LocalDateTime data1 = p1.getSlot() != null ? p1.getSlot().getDataOraInizio() : 
                                    (p1.getLezione() != null ? p1.getLezione().getData() : null);
                 LocalDateTime data2 = p2.getSlot() != null ? p2.getSlot().getDataOraInizio() : 
@@ -130,6 +126,7 @@ public class StoricoLezioniServlet extends HttpServlet {
             
             // Annullate: più recenti prima
             lezioniAnnullate.sort(dateComparator.reversed());
+            */
             
             // Imposta attributi per la JSP
             request.setAttribute("lezioniPassate", lezioniPassate);
@@ -144,11 +141,11 @@ public class StoricoLezioniServlet extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore di database nel recupero dello storico");
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("homePageStudenteGenitore.jsp");
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore nel recupero dello storico: " + e.getMessage());
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("homePageStudenteGenitore.jsp");
         }
     }
 }

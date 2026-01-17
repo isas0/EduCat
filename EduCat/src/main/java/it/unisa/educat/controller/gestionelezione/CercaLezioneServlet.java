@@ -3,8 +3,8 @@ package it.unisa.educat.controller.gestionelezione;
 import it.unisa.educat.dao.GestioneLezioneDAO;
 import it.unisa.educat.dao.GestioneLezioneDAO.CriteriRicerca;
 import it.unisa.educat.model.LezioneDTO;
-import it.unisa.educat.model.SlotDTO;
 import it.unisa.educat.model.UtenteDTO;
+import it.unisa.educat.model.LezioneDTO.StatoLezione;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.*;
@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/cerca-lezione")
@@ -63,7 +64,7 @@ public class CercaLezioneServlet extends HttpServlet {
             }
             
             // Filtri per data
-            String dataDaStr = request.getParameter("dataDa");
+            /*String dataDaStr = request.getParameter("dataDa");
             String dataAStr = request.getParameter("dataA");
             
             if (dataDaStr != null && !dataDaStr.trim().isEmpty()) {
@@ -103,7 +104,7 @@ public class CercaLezioneServlet extends HttpServlet {
                 } catch (NumberFormatException e) {
                     // Ignora
                 }
-            }
+            }*/
             
             // Filtro per prezzo massimo
             String prezzoMaxStr = request.getParameter("prezzoMax");
@@ -136,18 +137,20 @@ public class CercaLezioneServlet extends HttpServlet {
             
             // Esegui ricerca usando il metodo esistente del DAO
             List<LezioneDTO> lezioni = lezioneDAO.doRetrieveByCriteria(criteri);
+            List<LezioneDTO> lezioniPianificate = new ArrayList<LezioneDTO>();
             
-            // Per ogni lezione, carica gli slot disponibili
+            // Per ogni lezione, carica quelle disponibili
             for (LezioneDTO lezione : lezioni) {
-                List<SlotDTO> slotDisponibili = lezioneDAO.getSlotDisponibiliPerLezione(lezione.getIdLezione());
-                lezione.setSlotDisponibili(slotDisponibili);
+            	if(lezione.getStato().equals(StatoLezione.PIANIFICATA)) {
+            		lezioniPianificate.add(lezione);
+            	}
             }
             
             // Calcola statistiche
-            int totaleLezioni = lezioni.size();
+            int totaleLezioni = lezioniPianificate.size();
             
             // Prepara dati per la vista
-            request.setAttribute("lezioni", lezioni);
+            request.setAttribute("lezioni", lezioniPianificate);
             request.setAttribute("totaleLezioni", totaleLezioni);
             request.setAttribute("criteri", criteri); // Utile per mostrare filtri attivi
             request.setAttribute("paginaCorrente", pagina);
@@ -157,8 +160,8 @@ public class CercaLezioneServlet extends HttpServlet {
             request.setAttribute("materiaParam", materia);
             request.setAttribute("cittaParam", citta);
             request.setAttribute("modalitaParam", modalita);
-            request.setAttribute("dataDaParam", dataDaStr);
-            request.setAttribute("dataAParam", dataAStr);
+            //request.setAttribute("dataDaParam", dataDaStr);
+            //request.setAttribute("dataAParam", dataAStr);
             request.setAttribute("prezzoMaxParam", prezzoMaxStr);
             
             // Forward al risultato

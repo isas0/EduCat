@@ -28,7 +28,7 @@ public class InfoLezioneServlet extends HttpServlet {
 		
 		try {
 			request.setAttribute("Lezione", lezioneDao.getLezioneById(idLezione));
-			request.setAttribute("Slots", lezioneDao.getSlotDisponibiliPerLezione(idLezione));
+			//request.setAttribute("Slots", lezioneDao.getSlotDisponibiliPerLezione(idLezione));
 		} catch (SQLException e) {
 			 e.printStackTrace();
 	         request.setAttribute("errorMessage", "Errore di database durante la ricerca: " + e.getMessage());

@@ -126,7 +126,7 @@ listaSegnalazioni.add(new SegnalazioneMock(102, "Anna Bianchi", "Luigi Verdi", "
                             </span>
                         </td>
                         <td style="text-align: right;">
-                            <form action="<%= request.getContextPath() %>/EliminaUtenteServlet" method="POST" style="display:inline;">
+                            <form action="<%= request.getContextPath() %>/elimina-account" method="POST" style="display:inline;">
                                 <input type="hidden" name="idUtente" value="<%= u.id %>">
                                 <button type="submit" class="action-btn btn-delete" onclick="return confirm('Sei sicuro di voler eliminare questo utente? Questa azione è irreversibile.');">
                                     <i class="fa-solid fa-trash"></i> Elimina

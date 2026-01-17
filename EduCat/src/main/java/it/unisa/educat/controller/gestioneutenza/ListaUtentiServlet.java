@@ -70,7 +70,7 @@ public class ListaUtentiServlet extends HttpServlet {
         for (UtenteDTO u : tuttiUtenti) {
             boolean match = true;
             
-            if (tipo != null && !tipo.isEmpty() && !tipo.equals(u.getTipo())) {
+            if (tipo != null && !tipo.isEmpty() && !tipo.equals(u.getTipo().toString())) {
                 match = false;
             }
             if (email != null && !email.isEmpty() && !u.getEmail().contains(email)) {
