@@ -57,7 +57,7 @@ String nomeCompletoTutor = tutor.getNome() + " " + tutor.getCognome();
                 
                 <div class="tutor-row">
                     <span class="tutor-label">Insegnante:</span>
-                    <span class="tutor-nome"><%= nomeCompletoTutor %></span>
+                    <span class="tutor-nome"><%= lezione.getTutor().getNome() %> <%=lezione.getTutor().getCognome() %></span>
                 </div>
             </div>
 

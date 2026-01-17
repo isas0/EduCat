@@ -32,8 +32,7 @@ public class GestioneLezioneDAO {
 			"SELECT l.* FROM Lezione l WHERE 1=1";
 
 	private static final String SELECT_LEZIONE_BY_ID = 
-			"SELECT l. "+
-					// "u.nome as tutor_nome, u.cognome as tutor_cognome, " +
+			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome " +
 					//	"u.email as tutor_email, s.nome as studente_nome, s.cognome as studente_cognome " +
 					"FROM Lezione l " +
 					"JOIN Utente u ON l.idTutor = u.idUtente " +
@@ -410,7 +409,10 @@ public class GestioneLezioneDAO {
         // Crea tutor con solo ID (i dati completi saranno caricati separatamente se necessario)
         UtenteDTO tutor = new UtenteDTO();
         tutor.setUID(rs.getInt("idTutor"));
+        tutor.setNome(rs.getString("tutor_nome"));
+        tutor.setCognome(rs.getString("tutor_cognome"));
         lezione.setTutor(tutor);
+        
         
         lezione.setCitta(rs.getString("citta"));
         
@@ -601,9 +603,9 @@ public class GestioneLezioneDAO {
         // Tutor della lezione
         UtenteDTO tutor = new UtenteDTO();
         tutor.setUID(rs.getInt("idTutor"));
-        /*tutor.setNome(rs.getString("tutor_nome"));
+        tutor.setNome(rs.getString("tutor_nome"));
         tutor.setCognome(rs.getString("tutor_cognome"));
-        tutor.setEmail(rs.getString("tutor_email"));*/
+        tutor.setEmail(rs.getString("tutor_email"));
         tutor.setTipo(TipoUtente.TUTOR);
         lezione.setTutor(tutor);
         

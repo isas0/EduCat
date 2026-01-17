@@ -27,12 +27,12 @@ public class InfoLezioneServlet extends HttpServlet {
 		int idLezione = Integer.parseInt(request.getParameter("idLezione"));
 		
 		try {
-			request.setAttribute("Lezione", lezioneDao.getLezioneById(idLezione));
-			//request.setAttribute("Slots", lezioneDao.getSlotDisponibiliPerLezione(idLezione));
+			request.setAttribute("lezione", lezioneDao.getLezioneById(idLezione));
+			request.getRequestDispatcher("/singolaLezione.jsp").forward(request, response);
 		} catch (SQLException e) {
 			 e.printStackTrace();
 	         request.setAttribute("errorMessage", "Errore di database durante la ricerca: " + e.getMessage());
-	         request.getRequestDispatcher("/listaLezioni.jsp").forward(request, response);
+	         
 		}
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
