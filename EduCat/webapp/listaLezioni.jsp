@@ -1,18 +1,36 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %>
 <%@ page import="it.unisa.educat.model.LezioneDTO" %>
-
+<%@ page import="it.unisa.educat.model.UtenteDTO" %>
 <%
-    // Recupero parametri per mantenere la selezione dopo la ricerca
-    String searchMateria = request.getParameter("materia");
-    String searchCitta = request.getParameter("citta");
-    String searchModalita = request.getParameter("modalita");
-    String searchPrezzo = request.getParameter("prezzoMax");
-    
-    if(searchMateria == null) searchMateria = "";
-    if(searchCitta == null) searchCitta = "";
-    if(searchModalita == null) searchModalita = "";
-    if(searchPrezzo == null) searchPrezzo = "";
+UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
+if (utente == null) {
+	response.sendRedirect("../login.jsp");
+	return;
+}
+
+// Verifica che l'utente abbia permessi
+if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente.getTipo().toString())) {
+	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come studente o genitore.");
+	session.invalidate();
+	request.getRequestDispatcher("/login.jsp").forward(request, response);
+	return;
+}
+
+// Recupero parametri per mantenere la selezione dopo la ricerca
+String searchMateria = request.getParameter("materia");
+String searchCitta = request.getParameter("citta");
+String searchModalita = request.getParameter("modalita");
+String searchPrezzo = request.getParameter("prezzoMax");
+
+if (searchMateria == null)
+	searchMateria = "";
+if (searchCitta == null)
+	searchCitta = "";
+if (searchModalita == null)
+	searchModalita = "";
+if (searchPrezzo == null)
+	searchPrezzo = "";
 %>
 
 <!DOCTYPE html>
@@ -30,7 +48,7 @@
 
     <section class="filter-section">
         <div class="filter-container">
-            <form action="<%= request.getContextPath() %>/RicercaLezioniServlet" method="GET" class="filter-form">
+            <form action="<%= request.getContextPath() %>/cerca-lezione" method="GET" class="filter-form">
                 
                 <div class="filter-group">
                     <label class="filter-label"><i class="fa-solid fa-book"></i> Materia</label>

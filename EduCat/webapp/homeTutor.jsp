@@ -4,8 +4,25 @@
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="it.unisa.educat.model.PrenotazioneDTO.StatoPrenotazione" %>
-
+<%@ page import="it.unisa.educat.model.UtenteDTO" %>
 <%
+
+UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
+if (utente == null) {
+	response.sendRedirect("../login.jsp");
+	return;
+}
+
+// Verifica che l'utente abbia permessi
+if (!"TUTOR".equals(utente.getTipo().toString())) {
+	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come tutor.");
+	session.invalidate();
+	request.getRequestDispatcher("/login.jsp").forward(request, response);
+	return;
+}
+
+	
+
     // --- MOCK DATA (CLASSI FINTE PER VISUALIZZAZIONE) ---
     
     // 1. Utente Finto

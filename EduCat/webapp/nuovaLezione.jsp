@@ -1,4 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="it.unisa.educat.model.UtenteDTO" %>
+<%
+UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
+if (utente == null) {
+	response.sendRedirect("../login.jsp");
+	return;
+}
+
+// Verifica che l'utente abbia permessi
+if (!"TUTOR".equals(utente.getTipo().toString())) {
+	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come tutor.");
+	session.invalidate();
+	request.getRequestDispatcher("/login.jsp").forward(request, response);
+	return;
+}
+%>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>

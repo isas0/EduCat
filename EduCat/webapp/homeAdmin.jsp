@@ -1,32 +1,59 @@
+<%@page import="it.unisa.educat.model.UtenteDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.List" %>
-
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.List"%>
 <%
-    // --- MOCK DATA (DA RIMUOVERE QUANDO HAI IL DATABASE) ---
-    
-    class UtenteMock {
-        public int id;
-        public String nome, cognome, email, ruolo;
-        public UtenteMock(int i, String n, String c, String e, String r) { id=i; nome=n; cognome=c; email=e; ruolo=r; }
-    }
-    
-    class SegnalazioneMock {
-        public int id;
-        public String mittente, segnalato, motivo;
-        public SegnalazioneMock(int i, String m, String s, String mot) { id=i; mittente=m; segnalato=s; motivo=mot; }
-    }
+UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
+if (utente == null) {
+	response.sendRedirect("../login.jsp");
+	return;
+}
 
-    List<UtenteMock> listaUtenti = new ArrayList<>();
-    listaUtenti.add(new UtenteMock(1, "Mario", "Rossi", "mario@student.it", "Studente"));
-    listaUtenti.add(new UtenteMock(2, "Luigi", "Verdi", "luigi@tutor.it", "Tutor"));
-    listaUtenti.add(new UtenteMock(3, "Anna", "Bianchi", "anna@student.it", "Studente"));
+// Verifica che l'utente sia admin o abbia permessi
+if (!"ADMIN".equals(utente.getTipo().toString())) {
+	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come amministratore.");
+	session.invalidate();
+	request.getRequestDispatcher("/login.jsp").forward(request, response);
+	return;
+}
 
-    List<SegnalazioneMock> listaSegnalazioni = new ArrayList<>();
-    listaSegnalazioni.add(new SegnalazioneMock(101, "Mario Rossi", "Luigi Verdi", "Comportamento scorretto in lezione"));
-    listaSegnalazioni.add(new SegnalazioneMock(102, "Anna Bianchi", "Luigi Verdi", "Non si è presentato"));
-    
-    // -----------------------------------------------------------------------------
+// --- MOCK DATA (DA RIMUOVERE QUANDO HAI IL DATABASE) ---
+
+class UtenteMock {
+	public int id;
+	public String nome, cognome, email, ruolo;
+
+	public UtenteMock(int i, String n, String c, String e, String r) {
+		id = i;
+		nome = n;
+		cognome = c;
+		email = e;
+		ruolo = r;
+	}
+}
+
+class SegnalazioneMock {
+	public int id;
+	public String mittente, segnalato, motivo;
+
+	public SegnalazioneMock(int i, String m, String s, String mot) {
+		id = i;
+		mittente = m;
+		segnalato = s;
+		motivo = mot;
+	}
+}
+
+List<UtenteMock> listaUtenti = new ArrayList<>();
+listaUtenti.add(new UtenteMock(1, "Mario", "Rossi", "mario@student.it", "Studente"));
+listaUtenti.add(new UtenteMock(2, "Luigi", "Verdi", "luigi@tutor.it", "Tutor"));
+listaUtenti.add(new UtenteMock(3, "Anna", "Bianchi", "anna@student.it", "Studente"));
+
+List<SegnalazioneMock> listaSegnalazioni = new ArrayList<>();
+listaSegnalazioni.add(new SegnalazioneMock(101, "Mario Rossi", "Luigi Verdi", "Comportamento scorretto in lezione"));
+listaSegnalazioni.add(new SegnalazioneMock(102, "Anna Bianchi", "Luigi Verdi", "Non si è presentato"));
+
+// -----------------------------------------------------------------------------
 %>
 
 <!DOCTYPE html>

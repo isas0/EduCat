@@ -2,21 +2,35 @@
 <%@ page import="it.unisa.educat.model.LezioneDTO" %>
 <%@ page import="it.unisa.educat.model.UtenteDTO" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
-<%@ page import="java.util.Locale" %>
+<%@ page import="java.util.Locale"%>
 
 <%
-    LezioneDTO lezione = (LezioneDTO) request.getAttribute("lezione");
-    if (lezione == null) {
-        response.sendRedirect("error.jsp");
-        return;
-    }
+UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
+if (utente == null) {
+	response.sendRedirect("../login.jsp");
+	return;
+}
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy, HH:mm", Locale.ITALIAN);
-    String dataFormattata = lezione.getData().format(formatter);
-    float prezzoTotale = lezione.getPrezzo() * lezione.getDurata();
-    
-    UtenteDTO tutor = lezione.getTutor();
-    String nomeCompletoTutor = tutor.getNome() + " " + tutor.getCognome();
+// Verifica che l'utente abbia permessi
+if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente.getTipo().toString())) {
+	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come studente o genitore.");
+	session.invalidate();
+	request.getRequestDispatcher("/login.jsp").forward(request, response);
+	return;
+}
+
+LezioneDTO lezione = (LezioneDTO) request.getAttribute("lezione");
+if (lezione == null) {
+	response.sendRedirect("error.jsp");
+	return;
+}
+
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy, HH:mm", Locale.ITALIAN);
+String dataFormattata = lezione.getData().format(formatter);
+float prezzoTotale = lezione.getPrezzo() * lezione.getDurata();
+
+UtenteDTO tutor = lezione.getTutor();
+String nomeCompletoTutor = tutor.getNome() + " " + tutor.getCognome();
 %>
 
 <!DOCTYPE html>

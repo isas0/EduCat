@@ -46,7 +46,7 @@ public class RisolviSegnalazioneServlet extends HttpServlet {
         // Verifica che l'utente sia admin o abbia permessi
          if (!"ADMIN".equals(utente.getTipo().toString())) {
              session.setAttribute("errorMessage", "Accesso negato: solo gli amministratori possono risolvere segnalazioni");
-             response.sendRedirect("accessoNegato.jsp");
+             response.sendRedirect("login.jsp");
              return;
          }
         

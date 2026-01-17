@@ -75,7 +75,7 @@
 
 			<p style="text-align: center; margin-top: 30px; font-size: 0.95rem;">
 				Non hai ancora un account? <br> <a
-					href="<%=request.getContextPath()%>/index.jsp" class="text-link">Registrati
+					href="<%=request.getContextPath()%>/homePageGenerica.jsp" class="text-link">Registrati
 					qui</a>
 			</p>
 
