@@ -1,36 +1,29 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="it.unisa.educat.model.*" %>
-<%@ page import="java.util.List" %>
+
 <%
 UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
 if (utente == null) {
-	response.sendRedirect("../login.jsp");
+	response.sendRedirect("login.jsp");
 	return;
 }
 
-
-// Verifica che l'utente abbia permessi
+// Verifica Permessi
 if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente.getTipo().toString())) {
-	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come studente o genitore.");
 	session.invalidate();
-	request.getRequestDispatcher("/login.jsp").forward(request, response);
+	response.sendRedirect("login.jsp");
 	return;
 }
-
-
-
 %>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduCat - Home Studente</title>
-
     <link rel="icon" href="<%= request.getContextPath() %>/images/mini-logo.png" type="image/png">
-
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/homeStudenteGenitore.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -44,16 +37,16 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
             <h1 class="hero-title">Trova i migliori insegnanti<br>per lezioni private</h1>
             <p class="hero-subtitle">Prenota la tua lezione online o in presenza in pochi click.</p>
 
-            <form action="<%= request.getContextPath() %>/cerca-lezione" method="GET" class="search-form">
+            <form action="<%= request.getContextPath() %>/RicercaLezioniServlet" method="GET" class="search-form">
                 
                 <div class="search-bar-container">
                     
                     <div class="input-group">
-                        <i class="fa-solid fa-graduation-cap input-icon"></i>
+                        <i class="fa-solid fa-magnifying-glass input-icon"></i>
                         <div class="select-wrapper">
                             <label class="field-label">Materia</label>
                             <select name="materia" class="modern-select">
-                                <option value="" disabled selected>Seleziona materia...</option>
+                                <option value="" selected>Tutte le materie</option>
                                 <option value="Matematica">Matematica</option>
                                 <option value="Fisica">Fisica</option>
                                 <option value="Inglese">Inglese</option>
@@ -69,15 +62,15 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
                         <div class="select-wrapper">
                             <label class="field-label">Luogo</label>
                             <select name="modalita" class="modern-select">
-                                <option value="Tutti" selected>Online o Presenza</option>
-                                <option value="Online">Solo Online</option>
-                                <option value="InPresenza">Solo in Presenza</option>
+                                <option value="" selected>Tutti (Online o Presenza)</option>
+                                <option value="ONLINE">Solo Online</option>
+                                <option value="PRESENZA">Solo in Presenza</option>
                             </select>
                         </div>
                     </div>
                     
-                    <!-- TODO -->
-
+                    <input type="hidden" name="citta" value="">
+                    <input type="hidden" name="prezzoMax" value="">
                     <button type="submit" class="btn-search">
                         Cerca <i class="fa-solid fa-arrow-right" style="margin-left: 10px; font-size: 0.9em;"></i>
                     </button>
