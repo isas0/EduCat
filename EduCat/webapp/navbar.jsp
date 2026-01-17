@@ -2,19 +2,32 @@
 <%@ page import="it.unisa.educat.model.UtenteDTO" %>
 
 <%
-    // Recupero Utente
+    // 1. Recupero Utente dalla sessione
     UtenteDTO utenteLoggato = (UtenteDTO) session.getAttribute("utente");
+    boolean isLogged = (utenteLoggato != null);
+
+    // 2. Default: Se non sei loggato, la Home è la pagina generica di benvenuto
+    String linkHome = request.getContextPath() + "/homePageGenerica.jsp";
+    String linkPrenotazioni = "#"; // Default vuoto
     
-    // Link Home Default
-    String homeLink = request.getContextPath() + "/homePageGenerica.jsp"; 
-    
-    // Calcolo Home Specifica
-    if (utenteLoggato != null && utenteLoggato.getTipo() != null) {
-        switch(utenteLoggato.getTipo().toString()) {
-            case "STUDENTE": homeLink = request.getContextPath() + "/homePageStudenteGenitore.jsp"; break;
-            case "GENITORE": homeLink = request.getContextPath() + "/homePageStudenteGenitore.jsp"; break;
-            case "TUTOR":    homeLink = request.getContextPath() + "/homeTutor.jsp"; break;
-            case "AMMINISTRATORE_UTENTI": homeLink = request.getContextPath() + "/homeAdmin.jsp"; break;
+    // 3. Se sei loggato, calcoliamo i percorsi in base al Ruolo
+    if (isLogged) {
+        String ruolo = utenteLoggato.getTipo().toString();
+
+        if (ruolo.equals("STUDENTE") || ruolo.equals("GENITORE")) {
+            // Studente/Genitore: Home Ricerca e Pagina Prenotazioni dedicata
+            linkHome = request.getContextPath() + "/homePageStudenteGenitore.jsp";
+            linkPrenotazioni = request.getContextPath() + "/prenotazioni.jsp";
+        } 
+        else if (ruolo.equals("TUTOR")) {
+            // Tutor: Dashboard completa (Home e Prenotazioni sono la stessa pagina)
+            linkHome = request.getContextPath() + "/homeTutor.jsp";
+            linkPrenotazioni = request.getContextPath() + "/homeTutor.jsp";
+        } 
+        else if (ruolo.equals("AMMINISTRATORE_UTENTI")) {
+            // Admin
+            linkHome = request.getContextPath() + "/homeAdmin.jsp";
+            linkPrenotazioni = "#"; // Admin non ha prenotazioni personali
         }
     }
 %>
@@ -26,16 +39,20 @@
         <div class="navbar">
             
             <div class="logo">
-                <a href="<%= homeLink %>">
+                <a href="<%= linkHome %>">
                     <img src="<%= request.getContextPath() %>/images/EduCatLogo.png" alt="EduCat" class="header-logo-img">
                 </a>
             </div>
 
-            <% if (utenteLoggato != null) { %>
+            <% if (isLogged) { %>
                 <nav>
                     <ul id="MenuItems">
-                        <li><a href="<%= homeLink %>">Home</a></li>
-                        <li><a href="<%= request.getContextPath() %>/prenotazioni.jsp">Prenotazioni</a></li>
+                        <li><a href="<%= linkHome %>">Home</a></li>
+                        
+                        <% if (!"AMMINISTRATORE_UTENTI".equals(utenteLoggato.getTipo().toString())) { %>
+                            <li><a href="<%= linkPrenotazioni %>">Prenotazioni</a></li>
+                        <% } %>
+                        
                         <li><a href="<%= request.getContextPath() %>/account.jsp">Account</a></li>
                     </ul>
                 </nav>
@@ -47,10 +64,13 @@
     </div>
 </div>
 
-<% if (utenteLoggato != null) { %>
+<% if (isLogged) { %>
 <script>
-    var menuItems = document.querySelector("nav ul");
-    menuItems.style.maxHeight = "0px";
+    var menuItems = document.getElementById("MenuItems");
+    if(menuItems) {
+        menuItems.style.maxHeight = "0px";
+    }
+
     function menutoggle() {
         if (menuItems.style.maxHeight == "0px") {
             menuItems.style.maxHeight = "200px";
