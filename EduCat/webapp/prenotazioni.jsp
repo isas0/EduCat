@@ -7,12 +7,16 @@
     UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
     if (utente == null) { response.sendRedirect("login.jsp"); return; }
 
+ 	// Verifica Permessi
+    if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente.getTipo().toString())) {
+    	session.invalidate();
+    	response.sendRedirect("login.jsp");
+    	return;
+    }
+    
     // Recupero Dati
-    GestioneLezioneDAO lezioneDAO = new GestioneLezioneDAO();
-    List<PrenotazioneDTO> miePrenotazioni = new ArrayList<>();
-    try {
-        miePrenotazioni = lezioneDAO.getPrenotazioniByStudente(utente.getUID());
-    } catch (Exception e) { e.printStackTrace(); }
+    List<PrenotazioneDTO> miePrenotazioni = (List<PrenotazioneDTO>) request.getAttribute("prenotazioni");
+    
 %>
 
 <!DOCTYPE html>
@@ -20,6 +24,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Le mie Prenotazioni</title>
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/modalSegnalazioni.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/styles/new/navbar.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/styles/new/prenotazioni.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -32,7 +37,7 @@
         <h1 class="page-title">Le mie Prenotazioni</h1>
         
         <div class="table-wrapper">
-            <% if (miePrenotazioni.isEmpty()) { %>
+            <% if (miePrenotazioni == null) { %>
                 <div class="empty-state">
                     <p>Non hai ancora effettuato prenotazioni.</p>
                 </div>

@@ -17,7 +17,7 @@
         if (ruolo.equals("STUDENTE") || ruolo.equals("GENITORE")) {
             // Studente/Genitore: Home Ricerca e Pagina Prenotazioni dedicata
             linkHome = request.getContextPath() + "/homePageStudenteGenitore.jsp";
-            linkPrenotazioni = request.getContextPath() + "/prenotazioni.jsp";
+            linkPrenotazioni = request.getContextPath() + "/storico-lezioni";
         } 
         else if (ruolo.equals("TUTOR")) {
             // Tutor: Dashboard completa (Home e Prenotazioni sono la stessa pagina)

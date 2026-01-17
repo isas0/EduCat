@@ -499,6 +499,9 @@ public class GestioneLezioneDAO {
     }
 
     public List<PrenotazioneDTO> getPrenotazioniByStudente(int idStudente) throws SQLException {
+    	System.out.println("DEBUG: Cerca prenotazioni per studente ID: " + idStudente);
+        System.out.println("DEBUG: Query: " + SELECT_PRENOTAZIONI_BY_STUDENTE);
+    	
     	Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -510,10 +513,14 @@ public class GestioneLezioneDAO {
             ps.setInt(1, idStudente);
             rs = ps.executeQuery();
             
+            if(rs==null) System.out.println("Null");
+            
             while (rs.next()) {
+            	System.out.println("Non null");
                 PrenotazioneDTO prenotazione = mapResultSetToPrenotazione(rs);
                 prenotazioni.add(prenotazione);
             }
+            
             
             return prenotazioni;
             
@@ -576,10 +583,10 @@ public class GestioneLezioneDAO {
         
         // Studente
         UtenteDTO studente = new UtenteDTO();
-        studente.setUID(rs.getInt("studente_id"));
-        studente.setNome(rs.getString("studente_nome"));
-        studente.setCognome(rs.getString("studente_cognome"));
-        studente.setEmail(rs.getString("studente_email"));
+        studente.setUID(rs.getInt("idStudente"));
+        //studente.setNome(rs.getString("studente_nome"));
+        //studente.setCognome(rs.getString("studente_cognome"));
+        //studente.setEmail(rs.getString("studente_email"));
         studente.setTipo(TipoUtente.STUDENTE);
         prenotazione.setStudente(studente);
         

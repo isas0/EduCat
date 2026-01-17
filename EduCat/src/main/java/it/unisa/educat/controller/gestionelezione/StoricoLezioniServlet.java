@@ -51,7 +51,7 @@ public class StoricoLezioniServlet extends HttpServlet {
             String tipoUtente = utente.getTipo().toString();
             List<PrenotazioneDTO> prenotazioni = new ArrayList<>();
             
-            if ("STUDENTE".equals(tipoUtente)) {
+            if ("STUDENTE".equals(tipoUtente) || "GENITORE".equals(tipoUtente)) {
                 // Per studente: tutte le sue prenotazioni CON SLOT
                 prenotazioni = lezioneDAO.getPrenotazioniByStudente(utente.getUID());
             } else if ("TUTOR".equals(tipoUtente)) {
@@ -63,68 +63,6 @@ public class StoricoLezioniServlet extends HttpServlet {
                 return;
             }
             
-            /*
-            // Per ogni prenotazione, recupera lo slot se non è già presente
-            for (PrenotazioneDTO prenotazione : prenotazioni) {
-                if (prenotazione.getSlot() == null) {
-                    SlotDTO slot = lezioneDAO.getSlotByPrenotazioneId(prenotazione.getIdPrenotazione());
-                    prenotazione.setSlot(slot);
-                    
-                    // Se c'è lo slot, aggiorna la data nella lezione per retrocompatibilità
-                    if (slot != null && prenotazione.getLezione() != null) {
-                        prenotazione.getLezione().setData(slot.getDataOraInizio());
-                    }
-                }
-            }*/
-            
-            // Separa le prenotazioni in passate, future e annullate
-            List<PrenotazioneDTO> prenotazioniList = new ArrayList<>();
-            
-            LocalDateTime now = LocalDateTime.now();
-            
-            /*for (PrenotazioneDTO prenotazione : prenotazioni) {
-                LocalDateTime dataLezione = null;
-                
-                // Prima cerca la data
-                if (prenotazione.getLezione().getDataInizio() != null) {
-                    dataLezione = prenotazione.getLezione().getDataInizio();
-                } 
-                
-                if (prenotazione.getStato() == PrenotazioneDTO.StatoPrenotazione.ANNULLATA) {
-                    lezioniAnnullate.add(prenotazione);
-                } else if (dataLezione != null && dataLezione.isBefore(now)) {
-                    lezioniPassate.add(prenotazione);
-                } else if (dataLezione != null) {
-                    lezioniFuture.add(prenotazione);
-                } else {
-                    // Se non c'è data, considerala passata (caso strano)
-                    lezioniPassate.add(prenotazione);
-                }
-            }*/
-            
-            // Ordina per data
-            /*Comparator<PrenotazioneDTO> dateComparator = (p1, p2) -> {
-                LocalDateTime data1 = p1.getSlot() != null ? p1.getSlot().getDataOraInizio() : 
-                                   (p1.getLezione() != null ? p1.getLezione().getData() : null);
-                LocalDateTime data2 = p2.getSlot() != null ? p2.getSlot().getDataOraInizio() : 
-                                   (p2.getLezione() != null ? p2.getLezione().getData() : null);
-                
-                if (data1 == null && data2 == null) return 0;
-                if (data1 == null) return 1;
-                if (data2 == null) return -1;
-                
-                return data1.compareTo(data2);
-            };
-            
-            // Passate: più recenti prima
-            lezioniPassate.sort(dateComparator.reversed());
-            
-            // Future: più vicine prima
-            lezioniFuture.sort(dateComparator);
-            
-            // Annullate: più recenti prima
-            lezioniAnnullate.sort(dateComparator.reversed());
-            */
             
             // Imposta attributi per la JSP
             request.setAttribute("prenotazioni", prenotazioni);
@@ -137,7 +75,7 @@ public class StoricoLezioniServlet extends HttpServlet {
             
             
             if ("STUDENTE".equals(tipoUtente)) {
-            	request.getRequestDispatcher("/storicoLezioni.jsp").forward(request, response);
+            	request.getRequestDispatcher("/prenotazioni.jsp").forward(request, response);
             } else if ("TUTOR".equals(tipoUtente)) {
             	request.getRequestDispatcher("/homeTutor.jsp").forward(request, response);
             }
