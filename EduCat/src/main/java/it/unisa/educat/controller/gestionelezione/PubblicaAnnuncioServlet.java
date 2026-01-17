@@ -185,10 +185,10 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
                 );
                 
                 // Reindirizza alla pagina delle lezioni del tutor
-                response.sendRedirect("lezione/gestioneLezioni.jsp?success=true");
+                response.sendRedirect("/storico-lezioni");
             } else {
                 session.setAttribute("errorMessage", "Errore durante il salvataggio della lezione");
-                response.sendRedirect("creaLezione.jsp?error=salvataggio_fallito");
+                response.sendRedirect("nuovaLezione.jsp?error=salvataggio_fallito");
             }
             
         } catch (SQLException e) {

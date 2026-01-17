@@ -4,7 +4,7 @@
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="it.unisa.educat.model.PrenotazioneDTO.StatoPrenotazione" %>
-<%@ page import="it.unisa.educat.model.UtenteDTO" %>
+<%@ page import="it.unisa.educat.model.*" %>
 <%
 
 UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
@@ -12,6 +12,8 @@ if (utente == null) {
 	response.sendRedirect("../login.jsp");
 	return;
 }
+
+List<PrenotazioneDTO> prenotazioni = (List<PrenotazioneDTO>) request.getAttribute("prenotazioni");
 
 // Verifica che l'utente abbia permessi
 if (!"TUTOR".equals(utente.getTipo().toString())) {
@@ -33,45 +35,13 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
         public String getCognome() { return cognome; }
     }
 
-    // 2. Lezione Finta
-    class LezioneMock {
-        private String materia;
-        public LezioneMock(String m) { this.materia = m; }
-        public String getMateria() { return materia; }
-    }
-
+   
     // 3. Recensione Finta
     class RecensioneMock {
         public String autore;
         public String testo;
         public int stelle;
         public RecensioneMock(String a, String t, int s) { autore=a; testo=t; stelle=s; }
-    }
-
-    // 4. PRENOTAZIONE FINTA
-    class PrenotazioneMock {
-        private int idPrenotazione;
-        private LocalDate dataPrenotazione;
-        private StatoPrenotazione stato;
-        private float importoPagato;
-        private UtenteMock studente;
-        private LezioneMock lezione;
-
-        public void setIdPrenotazione(int id) { this.idPrenotazione = id; }
-        public void setDataPrenotazione(LocalDate d) { this.dataPrenotazione = d; }
-        public LocalDate getDataPrenotazione() { return dataPrenotazione; }
-        
-        public void setStato(StatoPrenotazione s) { this.stato = s; }
-        public StatoPrenotazione getStato() { return stato; }
-        
-        public void setImportoPagato(float i) { this.importoPagato = i; }
-        public float getImportoPagato() { return importoPagato; }
-        
-        public void setStudente(UtenteMock s) { this.studente = s; }
-        public UtenteMock getStudente() { return studente; }
-        
-        public void setLezione(LezioneMock l) { this.lezione = l; }
-        public LezioneMock getLezione() { return lezione; }
     }
 
     // --- POPOLAZIONE DATI ---
@@ -82,45 +52,10 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
     listaRecensioni.add(new RecensioneMock("Giulia B.", "Molto paziente e preparato.", 4));
     listaRecensioni.add(new RecensioneMock("Luca S.", "Tutto ok, lezione utile.", 4));
 
-    // Lista Prenotazioni (Usiamo la classe Mock definita sopra)
-    List<PrenotazioneMock> listaPrenotazioni = new ArrayList<>();
-    
     // Helpers
     UtenteMock studente1 = new UtenteMock("Giovanni", "Muciaccia");
     UtenteMock studente2 = new UtenteMock("Neil", "Armstrong");
-    LezioneMock lezione1 = new LezioneMock("Matematica");
-    LezioneMock lezione2 = new LezioneMock("Fisica");
     
-    // Prenotazione 1 (ATTIVA)
-    PrenotazioneMock p1 = new PrenotazioneMock();
-    p1.setIdPrenotazione(10);
-    p1.setDataPrenotazione(LocalDate.now().plusDays(2)); 
-    p1.setStato(StatoPrenotazione.ATTIVA);
-    p1.setImportoPagato(25.0f);
-    p1.setStudente(studente1);
-    p1.setLezione(lezione1);
-    
-    // Prenotazione 2 (CONCLUSA)
-    PrenotazioneMock p2 = new PrenotazioneMock();
-    p2.setIdPrenotazione(11);
-    p2.setDataPrenotazione(LocalDate.now().minusDays(5));
-    p2.setStato(StatoPrenotazione.CONCLUSA);
-    p2.setImportoPagato(30.0f);
-    p2.setStudente(studente2);
-    p2.setLezione(lezione2);
-
-    // Prenotazione 3 (ANNULLATA)
-    PrenotazioneMock p3 = new PrenotazioneMock();
-    p3.setIdPrenotazione(12);
-    p3.setDataPrenotazione(LocalDate.now().plusDays(10));
-    p3.setStato(StatoPrenotazione.ANNULLATA);
-    p3.setImportoPagato(25.0f);
-    p3.setStudente(studente1);
-    p3.setLezione(lezione1);
-
-    listaPrenotazioni.add(p1);
-    listaPrenotazioni.add(p3);
-    listaPrenotazioni.add(p2);
 %>
 
 <!DOCTYPE html>
@@ -196,7 +131,7 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
                     <tbody>
                         <% 
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                        for (PrenotazioneMock p : listaPrenotazioni) { 
+                        for (PrenotazioneDTO p : prenotazioni) { 
                             String badgeClass = "";
                             // Uso l'enum importato per fare il check
                             if(p.getStato() == StatoPrenotazione.ATTIVA) badgeClass = "status-attiva";

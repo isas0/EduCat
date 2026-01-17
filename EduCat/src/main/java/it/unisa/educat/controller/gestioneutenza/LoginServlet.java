@@ -45,9 +45,9 @@ public class LoginServlet extends HttpServlet {
                 // Redirect alla dashboard in base al ruolo
                 
                 if(utente.getTipo().toString().equals("STUDENTE") || utente.getTipo().toString().equals("GENITORE")) {
-                	response.sendRedirect("homePageStudenteGenitore.jsp");
+                	response.sendRedirect("storico-lezioni");
                 } else if(utente.getTipo().toString().equals("TUTOR")) {
-                	response.sendRedirect("homeTutor.jsp");
+                	response.sendRedirect("storico-lezioni");
                 } else if(utente.getTipo().toString().equals("AMMINISTRATORE_UTENTI")) {
                 	response.sendRedirect("homeAdmin.jsp");
                 }

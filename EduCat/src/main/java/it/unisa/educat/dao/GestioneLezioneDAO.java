@@ -603,10 +603,10 @@ public class GestioneLezioneDAO {
         
         // Tutor della lezione
         UtenteDTO tutor = new UtenteDTO();
-        tutor.setUID(rs.getInt("tutor_id"));
-        tutor.setNome(rs.getString("tutor_nome"));
+        tutor.setUID(rs.getInt("idTutor"));
+        /*tutor.setNome(rs.getString("tutor_nome"));
         tutor.setCognome(rs.getString("tutor_cognome"));
-        tutor.setEmail(rs.getString("tutor_email"));
+        tutor.setEmail(rs.getString("tutor_email"));*/
         tutor.setTipo(TipoUtente.TUTOR);
         lezione.setTutor(tutor);
         
@@ -625,7 +625,7 @@ public class GestioneLezioneDAO {
         }
         
         // Riferimenti incrociati (se presenti)
-        lezione.setIdStudentePrenotato(rs.getInt("idStudentePrenotato"));
+        lezione.setIdStudentePrenotato(rs.getInt("idStudente"));
         lezione.setIdPrenotazione(rs.getInt("idPrenotazione"));
         
         prenotazione.setLezione(lezione);

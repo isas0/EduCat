@@ -37,7 +37,7 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
                 Benvenuto! Imposta subito la tua prima lezione per farti trovare dagli studenti.
             </p>
             
-            <form action="<%= request.getContextPath() %>/CreaLezioneServlet" method="POST">
+            <form action="<%= request.getContextPath() %>/pubblica-annuncio" method="POST">
                 
                 <div class="form-group">
                     <label class="form-label">Materia</label>

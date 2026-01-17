@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="it.unisa.educat.model.UtenteDTO" %>
+<%@ page import="it.unisa.educat.model.*" %>
+<%@ page import="java.util.List" %>
 <%
 UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
 if (utente == null) {
@@ -14,6 +15,9 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
 	request.getRequestDispatcher("/login.jsp").forward(request, response);
 	return;
 }
+
+List<PrenotazioneDTO> prenotazioni = (List<PrenotazioneDTO>) request.getAttribute("prenotazioni");
+
 %>
 <!DOCTYPE html>
 <html lang="it">

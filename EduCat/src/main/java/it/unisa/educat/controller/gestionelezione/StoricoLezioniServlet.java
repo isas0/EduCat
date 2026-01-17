@@ -78,13 +78,11 @@ public class StoricoLezioniServlet extends HttpServlet {
             }*/
             
             // Separa le prenotazioni in passate, future e annullate
-            List<PrenotazioneDTO> lezioniPassate = new ArrayList<>();
-            List<PrenotazioneDTO> lezioniFuture = new ArrayList<>();
-            List<PrenotazioneDTO> lezioniAnnullate = new ArrayList<>();
+            List<PrenotazioneDTO> prenotazioniList = new ArrayList<>();
             
             LocalDateTime now = LocalDateTime.now();
             
-            for (PrenotazioneDTO prenotazione : prenotazioni) {
+            /*for (PrenotazioneDTO prenotazione : prenotazioni) {
                 LocalDateTime dataLezione = null;
                 
                 // Prima cerca la data
@@ -102,7 +100,7 @@ public class StoricoLezioniServlet extends HttpServlet {
                     // Se non c'è data, considerala passata (caso strano)
                     lezioniPassate.add(prenotazione);
                 }
-            }
+            }*/
             
             // Ordina per data
             /*Comparator<PrenotazioneDTO> dateComparator = (p1, p2) -> {
@@ -129,14 +127,21 @@ public class StoricoLezioniServlet extends HttpServlet {
             */
             
             // Imposta attributi per la JSP
-            request.setAttribute("lezioniPassate", lezioniPassate);
-            request.setAttribute("lezioniFuture", lezioniFuture);
-            request.setAttribute("lezioniAnnullate", lezioniAnnullate);
+            request.setAttribute("prenotazioni", prenotazioni);
+            //request.setAttribute("lezioniFuture", lezioniFuture);
+            //request.setAttribute("lezioniAnnullate", lezioniAnnullate);
             request.setAttribute("tipoUtente", tipoUtente);
             request.setAttribute("utente", utente);
             
             // Inoltra alla pagina JSP
-            request.getRequestDispatcher("/storicoLezioni.jsp").forward(request, response);
+            
+            
+            if ("STUDENTE".equals(tipoUtente)) {
+            	request.getRequestDispatcher("/storicoLezioni.jsp").forward(request, response);
+            } else if ("TUTOR".equals(tipoUtente)) {
+            	request.getRequestDispatcher("/homeTutor.jsp").forward(request, response);
+            }
+            
             
         } catch (SQLException e) {
             e.printStackTrace();
