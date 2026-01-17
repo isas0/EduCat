@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
                 } else if(utente.getTipo().toString().equals("TUTOR")) {
                 	response.sendRedirect("homeTutor.jsp");
                 } else if(utente.getTipo().toString().equals("AMMINISTRATORE_UTENTI")) {
-                	response.sendRedirect("homePageAdmin.jsp");
+                	response.sendRedirect("homeAdmin.jsp");
                 }
                 
             } else {

@@ -27,7 +27,7 @@ public class ListaUtentiServlet extends HttpServlet {
         
         // Verifica che l'utente sia amministratore
         UtenteDTO admin = (UtenteDTO) session.getAttribute("utente");
-        if (admin == null || !"AMMINISTRATORE".equals(admin.getTipo())) {
+        if (admin == null || !"AMMINISTRATORE_UTENTI".equals(admin.getTipo())) {
             request.setAttribute("errorMessage", "Accesso negato. Solo amministratori possono visualizzare la lista utenti.");
             request.getRequestDispatcher("/accessoNegato.jsp").forward(request, response);
             return;

@@ -10,7 +10,7 @@ if (utente == null) {
 }
 
 // Verifica che l'utente sia admin o abbia permessi
-if (!"ADMIN".equals(utente.getTipo().toString())) {
+if (!"AMMINISTRATORE_UTENTI".equals(utente.getTipo().toString())) {
 	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come amministratore.");
 	session.invalidate();
 	request.getRequestDispatcher("/login.jsp").forward(request, response);

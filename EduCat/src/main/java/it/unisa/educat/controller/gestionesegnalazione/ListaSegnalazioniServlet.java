@@ -46,7 +46,7 @@ public class ListaSegnalazioniServlet extends HttpServlet {
         }
         
         // Verifica che l'utente sia admin o abbia permessi per vedere le segnalazioni
-        if (!"ADMIN".equals(utente.getTipo().toString())) {
+        if (!"AMMINISTRATORE_UTENTI".equals(utente.getTipo().toString())) {
              session.setAttribute("errorMessage", "Accesso negato: solo gli amministratori possono visualizzare le segnalazioni");
              response.sendRedirect("accessoNegato.jsp");
              return;
