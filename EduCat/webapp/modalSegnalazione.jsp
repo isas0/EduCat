@@ -64,7 +64,10 @@
         params.append('idSegnalato', document.getElementById('idSegnalato').value);
         params.append('descrizione', document.getElementById('descrizione').value);
 
-        fetch('<%= request.getContextPath() %>/invia-segnalazione', {
+        const contextPath = '<%= request.getContextPath() %>';
+        const url = contextPath + '/invia-segnalazione';
+        
+        fetch(url, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: params

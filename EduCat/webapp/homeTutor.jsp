@@ -68,7 +68,7 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
     <link rel="icon" href="<%= request.getContextPath() %>/images/mini-logo.png" type="image/png">
     
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/homeTutor.css">
-    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/modalSegnalazione.css">
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/modalSegnalazioni.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -130,8 +130,8 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
                             <th style="text-align: right;">Azioni</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% 
+					<tbody>
+						<% 
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                         for (PrenotazioneDTO p : prenotazioni) { 
                             String badgeClass = "";
@@ -140,33 +140,26 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
                             else if(p.getStato() == StatoPrenotazione.ANNULLATA) badgeClass = "status-annullata";
                             else badgeClass = "status-conclusa";
                         %>
-                        <tr>
-                            <td>
-                                <span class="td-bold"><%= p.getDataPrenotazione().format(formatter) %></span>
-                            </td>
-                            <td>
-                                <%= p.getStudente().getNome() %> <%= p.getStudente().getCognome() %>
-                            </td>
-                            <td>
-                                <%= p.getLezione().getMateria() %>
-                            </td>
-                            <td style="font-family: monospace; font-size: 1rem;">
-                                € <%= String.format("%.2f", p.getImportoPagato()) %>
-                            </td>
-                            <td>
-                                <span class="status-badge <%= badgeClass %>">
-                                    <%= p.getStato().toString() %>
-                                </span>
-                            </td>
-                        </tr>
-                        <% } %>
-                        <td style="text-align: right;">
-    						<button class="btn-report" onclick="apriSegnalazione(<%= p.studente.id %>, '<%= p.getStudente.nome %> <%= p.studente.cognome %>')">
-       						 	<i class="fa-solid fa-circle-exclamation"></i> Segnala
-    						</button>
-						</td>
-                    </tbody>
-                </table>
+						<tr>
+							<td><span class="td-bold"><%= p.getDataPrenotazione().format(formatter) %></span>
+							</td>
+							<td><%= p.getStudente().getNome() %> <%= p.getStudente().getCognome() %>
+							</td>
+							<td><%= p.getLezione().getMateria() %></td>
+							<td style="font-family: monospace; font-size: 1rem;">€ <%= String.format("%.2f", p.getImportoPagato()) %>
+							</td>
+							<td><span class="status-badge <%= badgeClass %>"> <%= p.getStato().toString() %>
+							</span></td>
+
+
+							<td style="text-align: right;">
+								<button class="btn-report"
+									onclick="apriSegnalazione(<%= p.getStudente().getUID()%>, '<%= p.getStudente().getNome()%> <%= p.getStudente().getCognome()%>')">									<i class="fa-solid fa-circle-exclamation"></i> Segnala
+								</button> <% } %>
+							</td>
+						</tr>
+					</tbody>
+				</table>
             </div>
         </div>
 

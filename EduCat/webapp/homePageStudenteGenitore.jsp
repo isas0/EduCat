@@ -16,7 +16,6 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
 	return;
 }
 
-List<PrenotazioneDTO> prenotazioni = (List<PrenotazioneDTO>) request.getAttribute("prenotazioni");
 
 %>
 <!DOCTYPE html>

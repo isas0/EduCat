@@ -37,37 +37,39 @@ public class GestioneSegnalazioneDAO {
      * Salva una nuova segnalazione nel database
      */
     public boolean doSave(SegnalazioneDTO segnalazione) throws SQLException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = DatasourceManager.getConnection();
-            ps = conn.prepareStatement(INSERT_SEGNALAZIONE, Statement.RETURN_GENERATED_KEYS);
-            
-            // Imposta i parametri
-            ps.setString(1, segnalazione.getDescrizione());
-            ps.setInt(2, segnalazione.getIdSegnalante());
-            ps.setInt(3, segnalazione.getIdSegnalato());
-            
-            int rowsAffected = ps.executeUpdate();
-            
-            if (rowsAffected > 0) {
-                // Recupera l'ID generato
-                rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    segnalazione.setIdSegnalazione(rs.getInt(1));
-                }
-                return true;
-            }
-            
-            return false;
-            
-        } finally {
-            DatasourceManager.closeResources(conn, ps, rs);
-        }
+    	Connection conn = null;
+    	PreparedStatement ps = null;
+    	ResultSet rs = null;
+
+    	try {
+    		conn = DatasourceManager.getConnection();
+    		ps = conn.prepareStatement(INSERT_SEGNALAZIONE, Statement.RETURN_GENERATED_KEYS);
+
+    		// Imposta i parametri
+    		ps.setString(1, segnalazione.getDescrizione());
+    		ps.setInt(2, segnalazione.getIdSegnalante());
+    		ps.setInt(3, segnalazione.getIdSegnalato());
+
+    		int rowsAffected = ps.executeUpdate();
+
+    		if (rowsAffected > 0) {
+    			// Recupera l'ID generato
+    			rs = ps.getGeneratedKeys();
+    			if (rs.next()) {
+    				segnalazione.setIdSegnalazione(rs.getInt(1));
+    			}
+    			return true;
+    		}
+    		return false;
+    	}catch(Exception e) {e.printStackTrace();
+    	return false;}
+
+
+    	finally {
+    		DatasourceManager.closeResources(conn, ps, rs);
+    	}
     }
-    
+
     /**
      * Recupera tutte le segnalazioni
      */
