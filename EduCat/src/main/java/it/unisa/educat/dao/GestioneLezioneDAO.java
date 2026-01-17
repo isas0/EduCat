@@ -25,25 +25,27 @@ public class GestioneLezioneDAO {
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private static final String UPDATE_STATO_LEZIONE = 
-			"UPDATE Lezione SET statoLezione = ?, idStudentePrenotato = ?, idPrenotazione = ? " +
+			"UPDATE Lezione SET statoLezione = ?, idStudente = ?, idPrenotazione = ? " +
 					"WHERE idLezione = ?";
 
 	private static final String SELECT_LEZIONI_BASE = 
-			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome, " +
-					"u.email as tutor_email, s.nome as studente_nome, s.cognome as studente_cognome " +
-					"FROM Lezione l " +
-					"JOIN Utente u ON l.idTutor = u.idUtente " +
-					"LEFT JOIN Utente s ON l.idStudentePrenotato = s.idUtente " +
-					"WHERE 1=1";
+			"SELECT l.* FROM Lezione l WHERE 1=1";
 
 	private static final String SELECT_LEZIONE_BY_ID = 
-			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome, " +
-					"u.email as tutor_email, s.nome as studente_nome, s.cognome as studente_cognome " +
+			"SELECT l. "+
+					// "u.nome as tutor_nome, u.cognome as tutor_cognome, " +
+					//	"u.email as tutor_email, s.nome as studente_nome, s.cognome as studente_cognome " +
 					"FROM Lezione l " +
 					"JOIN Utente u ON l.idTutor = u.idUtente " +
-					"LEFT JOIN Utente s ON l.idStudentePrenotato = s.idUtente " +
+					//"LEFT JOIN Utente s ON l.idStudente = s.idUtente " +
 					"WHERE l.idLezione = ?";
-   
+
+	private static final String SELECT_STORICO_LEZIONI = 
+			"SELECT * FROM Lezione " +
+					"WHERE (idTutor = ? OR idStudente = ?) " +
+					"AND dataInizio < NOW() " +
+					"ORDER BY dataInizio DESC";
+
 	//Prenotazione
 	private static final String INSERT_PRENOTAZIONE = 
 	        "INSERT INTO Prenotazione (idStudente, idLezione, dataPrenotazione, stato, importoPagato) " +
@@ -315,7 +317,7 @@ public class GestioneLezioneDAO {
             // 2. Aggiorna la lezione associata a PIANIFICATA
             String sqlLezione = 
                 "UPDATE Lezione SET statoLezione = 'PIANIFICATA', " +
-                "idStudentePrenotato = NULL, idPrenotazione = NULL " +
+                "idStudente = NULL, idPrenotazione = NULL " +
                 "WHERE idPrenotazione = ?";
             
             psLezione = conn.prepareStatement(sqlLezione);
@@ -353,19 +355,7 @@ public class GestioneLezioneDAO {
         try {
             conn = DatasourceManager.getConnection();
             
-            // Lezioni dove l'utente è tutor O studente
-            String sql = 
-                "SELECT l.*, " +
-                "u_tutor.nome as tutor_nome, u_tutor.cognome as tutor_cognome, " +
-                "u_studente.nome as studente_nome, u_studente.cognome as studente_cognome " +
-                "FROM Lezione l " +
-                "JOIN Utente u_tutor ON l.idTutor = u_tutor.idUtente " +
-                "LEFT JOIN Utente u_studente ON l.idStudentePrenotato = u_studente.idUtente " +
-                "WHERE (l.idTutor = ? OR l.idStudentePrenotato = ?) " +
-                "AND l.dataInizio < NOW() " + // Solo lezioni passate
-                "ORDER BY l.dataInizio DESC";
-            
-            ps = conn.prepareStatement(sql);
+            ps = conn.prepareStatement(SELECT_STORICO_LEZIONI);
             ps.setInt(1, idUtente);
             ps.setInt(2, idUtente);
             
@@ -391,59 +381,66 @@ public class GestioneLezioneDAO {
         
         lezione.setIdLezione(rs.getInt("idLezione"));
         lezione.setMateria(rs.getString("materia"));
-        lezione.setDataInizio(rs.getTimestamp("dataInizio").toLocalDateTime());
-        lezione.setDataFine(rs.getTimestamp("dataFine").toLocalDateTime());
+        
+        // Date
+        Timestamp dataInizio = rs.getTimestamp("dataInizio");
+        Timestamp dataFine = rs.getTimestamp("dataFine");
+        
+        if (dataInizio != null) {
+            lezione.setDataInizio(dataInizio.toLocalDateTime());
+        }
+        
+        if (dataFine != null) {
+            lezione.setDataFine(dataFine.toLocalDateTime());
+        }
+        
         lezione.setDurata(rs.getFloat("durata"));
         lezione.setPrezzo(rs.getFloat("prezzo"));
         
         // Modalità
         String modalita = rs.getString("modalitaLezione");
-        if ("ONLINE".equals(modalita)) {
-            lezione.setModalitaLezione(LezioneDTO.ModalitaLezione.ONLINE);
-        } else {
-            lezione.setModalitaLezione(LezioneDTO.ModalitaLezione.PRESENZA);
+        if (modalita != null) {
+            if ("ONLINE".equalsIgnoreCase(modalita)) {
+                lezione.setModalitaLezione(LezioneDTO.ModalitaLezione.ONLINE);
+            } else {
+                lezione.setModalitaLezione(LezioneDTO.ModalitaLezione.PRESENZA);
+            }
         }
         
-        // Tutor
+        // Crea tutor con solo ID (i dati completi saranno caricati separatamente se necessario)
         UtenteDTO tutor = new UtenteDTO();
         tutor.setUID(rs.getInt("idTutor"));
-        tutor.setNome(rs.getString("tutor_nome"));
-        tutor.setCognome(rs.getString("tutor_cognome"));
-        tutor.setEmail(rs.getString("tutor_email"));
         lezione.setTutor(tutor);
         
         lezione.setCitta(rs.getString("citta"));
         
         // Stato
         String stato = rs.getString("statoLezione");
-        if ("PIANIFICATA".equals(stato)) {
-            lezione.setStato(LezioneDTO.StatoLezione.PIANIFICATA);
-        } else if ("PRENOTATA".equals(stato)) {
-            lezione.setStato(LezioneDTO.StatoLezione.PRENOTATA);
-        } else if ("CONCLUSA".equals(stato)) {
-            lezione.setStato(LezioneDTO.StatoLezione.CONCLUSA);
-        } else if ("ANNULLATA".equals(stato)) {
-            lezione.setStato(LezioneDTO.StatoLezione.ANNULLATA);
-        }
-        
-        // Studente prenotato (se presente)
-        int idStudente = rs.getInt("idStudentePrenotato");
-        if (idStudente > 0) {
-            lezione.setIdStudentePrenotato(idStudente);
-            
-            // Aggiungi info studente se disponibili
-            String studenteNome = rs.getString("studente_nome");
-            String studenteCognome = rs.getString("studente_cognome");
-            if (studenteNome != null && studenteCognome != null) {
-                // Puoi creare un UtenteDTO parziale per lo studente se necessario
+        if (stato != null) {
+            if ("PIANIFICATA".equalsIgnoreCase(stato)) {
+                lezione.setStato(LezioneDTO.StatoLezione.PIANIFICATA);
+            } else if ("PRENOTATA".equalsIgnoreCase(stato)) {
+                lezione.setStato(LezioneDTO.StatoLezione.PRENOTATA);
+            } else if ("CONCLUSA".equalsIgnoreCase(stato)) {
+                lezione.setStato(LezioneDTO.StatoLezione.CONCLUSA);
+            } else if ("ANNULLATA".equalsIgnoreCase(stato)) {
+                lezione.setStato(LezioneDTO.StatoLezione.ANNULLATA);
             }
         }
         
-        lezione.setIdPrenotazione(rs.getInt("idPrenotazione"));
+        // Studente e prenotazione
+        /*int idStudente = rs.getInt("idStudente");
+        if (idStudente > 0) {
+            lezione.setIdStudentePrenotato(idStudente);
+        }
+        
+        int idPrenotazione = rs.getInt("idPrenotazione");
+        if (idPrenotazione > 0) {
+            lezione.setIdPrenotazione(idPrenotazione);
+        }*/
         
         return lezione;
-    }
-    
+    }    
     /**
      * Ottieni lezione by ID
      */

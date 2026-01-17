@@ -23,6 +23,8 @@ String searchCitta = request.getParameter("citta");
 String searchModalita = request.getParameter("modalita");
 String searchPrezzo = request.getParameter("prezzoMax");
 
+List<LezioneDTO> lezioni =(List<LezioneDTO>) request.getAttribute("lezioni");
+
 if (searchMateria == null)
 	searchMateria = "";
 if (searchCitta == null)
@@ -114,8 +116,21 @@ if (searchPrezzo == null)
         }
     </script>
 
+	<!-- TODO -->
     <div class="results-container">
-        </div>
+        <%for(LezioneDTO l : lezioni){ %>
+    <%=l.getMateria() %>
+    <%=l.getPrezzo() %>
+    <%=l.getDurata() %>
+    <%=l.getDataInizio() %>
+    
+   
+   
+    <%} %>
+    
+    
+    
+    </div>
 
     <jsp:include page="footer.jsp" />
 

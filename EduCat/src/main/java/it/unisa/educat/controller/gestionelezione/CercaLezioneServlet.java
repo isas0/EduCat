@@ -34,13 +34,6 @@ public class CercaLezioneServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        // Mostra form di ricerca
-        request.getRequestDispatcher("/cercaLezione.jsp").forward(request, response);
-    }
-    
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
         
         try {
             // Crea criteri di ricerca dai parametri della richiesta
@@ -62,49 +55,6 @@ public class CercaLezioneServlet extends HttpServlet {
             if (modalita != null && !modalita.trim().isEmpty()) {
                 criteri.setModalita(modalita.trim());
             }
-            
-            // Filtri per data
-            /*String dataDaStr = request.getParameter("dataDa");
-            String dataAStr = request.getParameter("dataA");
-            
-            if (dataDaStr != null && !dataDaStr.trim().isEmpty()) {
-                try {
-                    // Se la stringa ha solo la data, aggiungi l'ora 00:00
-                    if (!dataDaStr.contains("T")) {
-                        dataDaStr += "T00:00:00";
-                    }
-                    LocalDateTime dataDa = LocalDateTime.parse(dataDaStr);
-                    criteri.setDataDa(dataDa);
-                } catch (DateTimeParseException e) {
-                    // Log errore ma continua
-                    System.err.println("Formato dataDa non valido: " + dataDaStr);
-                }
-            }
-            
-            if (dataAStr != null && !dataAStr.trim().isEmpty()) {
-                try {
-                    // Se la stringa ha solo la data, aggiungi l'ora 23:59
-                    if (!dataAStr.contains("T")) {
-                        dataAStr += "T23:59:59";
-                    }
-                    LocalDateTime dataA = LocalDateTime.parse(dataAStr);
-                    criteri.setDataA(dataA);
-                } catch (DateTimeParseException e) {
-                    // Log errore ma continua
-                    System.err.println("Formato dataA non valido: " + dataAStr);
-                }
-            }
-            
-            // Filtro per tutor (se serve)
-            String idTutorStr = request.getParameter("idTutor");
-            if (idTutorStr != null && !idTutorStr.trim().isEmpty()) {
-                try {
-                    int idTutor = Integer.parseInt(idTutorStr);
-                    criteri.setIdTutor(idTutor);
-                } catch (NumberFormatException e) {
-                    // Ignora
-                }
-            }*/
             
             // Filtro per prezzo massimo
             String prezzoMaxStr = request.getParameter("prezzoMax");
@@ -160,8 +110,6 @@ public class CercaLezioneServlet extends HttpServlet {
             request.setAttribute("materiaParam", materia);
             request.setAttribute("cittaParam", citta);
             request.setAttribute("modalitaParam", modalita);
-            //request.setAttribute("dataDaParam", dataDaStr);
-            //request.setAttribute("dataAParam", dataAStr);
             request.setAttribute("prezzoMaxParam", prezzoMaxStr);
             
             // Forward al risultato

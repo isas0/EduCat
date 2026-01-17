@@ -8,6 +8,7 @@ if (utente == null) {
 	return;
 }
 
+
 // Verifica che l'utente abbia permessi
 if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente.getTipo().toString())) {
 	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come studente o genitore.");
@@ -15,6 +16,7 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
 	request.getRequestDispatcher("/login.jsp").forward(request, response);
 	return;
 }
+
 
 
 %>
@@ -42,7 +44,7 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
             <h1 class="hero-title">Trova i migliori insegnanti<br>per lezioni private</h1>
             <p class="hero-subtitle">Prenota la tua lezione online o in presenza in pochi click.</p>
 
-            <form action="<%= request.getContextPath() %>/RicercaLezioniServlet" method="GET" class="search-form">
+            <form action="<%= request.getContextPath() %>/cerca-lezione" method="GET" class="search-form">
                 
                 <div class="search-bar-container">
                     
@@ -73,6 +75,8 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
                             </select>
                         </div>
                     </div>
+                    
+                    <!-- TODO -->
 
                     <button type="submit" class="btn-search">
                         Cerca <i class="fa-solid fa-arrow-right" style="margin-left: 10px; font-size: 0.9em;"></i>
