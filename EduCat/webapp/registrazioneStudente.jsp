@@ -44,7 +44,10 @@
                     <small style="color: #666; font-size: 0.8rem;">Devi avere almeno 18 anni.</small>
                 </div>
 
-                <div class="form-group"><label class="form-label">Indirizzo</label><input type="text" name="indirizzo" class="form-input" required></div>
+                <div class="form-group"><label class="form-label">Città</label><input type="text" name="indirizzo" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">CAP</label><input type="text" name="CAP" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">Via</label><input type="text" name="Via" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">Civico</label><input type="text" name="Civico" class="form-input" required></div>
                 
                 <input type="hidden" name="tipoUtente" value="STUDENTE">
                 <button type="submit" class="submit-btn" style="background-color: #38B4BC;">Registrati</button>

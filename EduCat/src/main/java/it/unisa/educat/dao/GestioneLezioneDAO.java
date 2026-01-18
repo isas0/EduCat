@@ -29,13 +29,13 @@ public class GestioneLezioneDAO {
 					"WHERE idLezione = ?";
 
 	private static final String SELECT_LEZIONI_BASE = 
-			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome"
+			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome, u.citta as tutor_citta "
 			+ " FROM Lezione l "
 			+ "JOIN Utente u ON l.idTutor = u.idUtente "
 			+ "WHERE 1=1";
 
 	private static final String SELECT_LEZIONE_BY_ID = 
-			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome " +
+			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome, u.citta as tutor_citta " +
 					//	"u.email as tutor_email, s.nome as studente_nome, s.cognome as studente_cognome " +
 					"FROM Lezione l " +
 					"JOIN Utente u ON l.idTutor = u.idUtente " +
@@ -416,8 +416,7 @@ public class GestioneLezioneDAO {
         tutor.setCognome(rs.getString("tutor_cognome"));
         lezione.setTutor(tutor);
         
-        
-        lezione.setCitta(rs.getString("citta"));
+        lezione.setCitta(rs.getString("tutor_citta"));
         
         // Stato
         String stato = rs.getString("statoLezione");

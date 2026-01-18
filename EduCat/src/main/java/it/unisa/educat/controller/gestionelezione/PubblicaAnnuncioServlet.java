@@ -64,37 +64,37 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             // Validazioni base
             if (materia == null || materia.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "La materia è obbligatoria");
-                response.sendRedirect("creaLezione.jsp?error=materia_obbligatoria");
+                response.sendRedirect("nuovaLezione.jsp?error=materia_obbligatoria");
                 return;
             }
             
             if (dataStr == null || dataStr.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "La data è obbligatoria");
-                response.sendRedirect("creaLezione.jsp?error=data_obbligatoria");
+                response.sendRedirect("nuovaLezione.jsp?error=data_obbligatoria");
                 return;
             }
             
             if (oraInizioStr == null || oraInizioStr.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "L'ora di inizio è obbligatoria");
-                response.sendRedirect("creaLezione.jsp?error=ora_inizio_obbligatoria");
+                response.sendRedirect("nuovaLezione.jsp?error=ora_inizio_obbligatoria");
                 return;
             }
             
             if (oraFineStr == null || oraFineStr.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "L'ora di fine è obbligatoria");
-                response.sendRedirect("creaLezione.jsp?error=ora_fine_obbligatoria");
+                response.sendRedirect("nuovaLezione.jsp?error=ora_fine_obbligatoria");
                 return;
             }
             
             if (prezzoStr == null || prezzoStr.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "Il prezzo è obbligatorio");
-                response.sendRedirect("creaLezione.jsp?error=prezzo_obbligatorio");
+                response.sendRedirect("nuovaLezione.jsp?error=prezzo_obbligatorio");
                 return;
             }
             
             if (modalitaStr == null || (!"ONLINE".equals(modalitaStr) && !"PRESENZA".equals(modalitaStr))) {
                 session.setAttribute("errorMessage", "Modalità non valida");
-                response.sendRedirect("creaLezione.jsp?error=modalita_non_valida");
+                response.sendRedirect("nuovaLezione.jsp?error=modalita_non_valida");
                 return;
             }
             
@@ -112,14 +112,14 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             // Verifica che l'ora fine sia dopo l'ora inizio
             if (!dataFine.isAfter(dataInizio)) {
                 session.setAttribute("errorMessage", "L'ora di fine deve essere successiva all'ora di inizio");
-                response.sendRedirect("creaLezione.jsp?error=orario_non_valido");
+                response.sendRedirect("nuovaLezione.jsp?error=orario_non_valido");
                 return;
             }
             
             // Verifica che la lezione non sia nel passato
             if (dataInizio.isBefore(LocalDateTime.now())) {
                 session.setAttribute("errorMessage", "Non puoi creare lezioni nel passato");
-                response.sendRedirect("creaLezione.jsp?error=lezione_passato");
+                response.sendRedirect("nuovaLezione.jsp?error=lezione_passato");
                 return;
             }
             
@@ -129,12 +129,12 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
                 prezzo = Float.parseFloat(prezzoStr);
                 if (prezzo <= 0) {
                     session.setAttribute("errorMessage", "Il prezzo deve essere maggiore di 0");
-                    response.sendRedirect("creaLezione.jsp?error=prezzo_non_valido");
+                    response.sendRedirect("nuovaLezione.jsp?error=prezzo_non_valido");
                     return;
                 }
             } catch (NumberFormatException e) {
                 session.setAttribute("errorMessage", "Formato prezzo non valido");
-                response.sendRedirect("creaLezione.jsp?error=formato_prezzo_non_valido");
+                response.sendRedirect("nuovaLezione.jsp?error=formato_prezzo_non_valido");
                 return;
             }
             
@@ -145,7 +145,7 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             // Verifica durata minima (es. almeno 30 minuti)
             if (minuti < 30) {
                 session.setAttribute("errorMessage", "La lezione deve durare almeno 30 minuti");
-                response.sendRedirect("creaLezione.jsp?error=durata_minima");
+                response.sendRedirect("nuovaLezione.jsp?error=durata_minima");
                 return;
             }
             
@@ -156,6 +156,7 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             lezione.setDataFine(dataFine);
             lezione.setDurata(durataOre);
             lezione.setPrezzo(prezzo);
+            lezione.setCitta(tutor.getCittà());
             
             // Modalità
             if ("ONLINE".equals(modalitaStr)) {
@@ -185,7 +186,7 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
                 );
                 
                 // Reindirizza alla pagina delle lezioni del tutor
-                response.sendRedirect("/storico-lezioni");
+                response.sendRedirect("storico-lezioni");
             } else {
                 session.setAttribute("errorMessage", "Errore durante il salvataggio della lezione");
                 response.sendRedirect("nuovaLezione.jsp?error=salvataggio_fallito");
@@ -194,11 +195,11 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
         } catch (SQLException e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore di database: " + e.getMessage());
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("nuovaLezione.jsp");
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore durante la creazione della lezione: " + e.getMessage());
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("nuovaLezione.jsp");
         }
     }
 }

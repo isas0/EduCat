@@ -73,10 +73,10 @@ public class GestioneUtenzaDAO {
             ps.setString(3, u.getEmail());
             ps.setString(4, u.getPassword()); // Password già hashed
             ps.setString(5, u.getDataNascita().toString());
-            ps.setString(6, null); // via
-            ps.setString(7, null); // civico
-            ps.setString(8, null); // città
-            ps.setString(9, null); // cap
+            ps.setString(6, u.getVia()); // via
+            ps.setString(7, u.getCivico()); // civico
+            ps.setString(8, u.getCittà()); // città
+            ps.setString(9, u.getCAP()); // cap
             ps.setString(10, u.getTipo().toString());
             
             //Parametri in più per genitore
@@ -86,16 +86,6 @@ public class GestioneUtenzaDAO {
             	ps.setString(13, u.getDataNascitaFiglio());
             	
             }
-            
-            //ps.setDate(5, java.sql.Date.valueOf(u.getDataNascita()));
-            //ps.setString(6, indirizzoParts[0]); // via
-            //ps.setString(7, indirizzoParts[1]); // civico
-            //ps.setString(8, indirizzoParts[2]); // città
-            //ps.setString(9, indirizzoParts[3]); // cap
-            
-            // Determina tipoUtente in base alla classe concreta
-            //String tipoUtente = determineTipoUtente(u);
-            //ps.setString(10, tipoUtente);
             
             int rowsAffected = ps.executeUpdate();
             
@@ -248,8 +238,6 @@ public class GestioneUtenzaDAO {
         	conn = DatasourceManager.getConnection();
             ps = conn.prepareStatement(UPDATE_UTENTE);
             
-            // Estrai i componenti dell'indirizzo
-            String[] indirizzoParts = parseIndirizzo(u.getIndirizzo());
             
             // Imposta i parametri
             ps.setString(1, u.getNome());
@@ -257,10 +245,10 @@ public class GestioneUtenzaDAO {
             ps.setString(3, u.getEmail());
             ps.setString(4, u.getPassword());
             ps.setDate(5, java.sql.Date.valueOf(u.getDataNascita()));
-            ps.setString(6, indirizzoParts[0]); // via
-            ps.setString(7, indirizzoParts[1]); // civico
-            ps.setString(8, indirizzoParts[2]); // città
-            ps.setString(9, indirizzoParts[3]); // cap
+            ps.setString(6, u.getVia()); // via
+            ps.setString(7, u.getCivico()); // civico
+            ps.setString(8, u.getCittà()); // città
+            ps.setString(9, u.getCAP()); // cap
             
             // Determina tipoUtente
             //String tipoUtente = determineTipoUtente(u);
@@ -288,12 +276,6 @@ public class GestioneUtenzaDAO {
         // Determina il tipo di utente in base al campo tipoUtente
         String tipoUtente = rs.getString("tipoUtente");
         
-        // Ricostruisce l'indirizzo completo
-        String indirizzo = rs.getString("via") + ", " + 
-                          rs.getString("civico") + ", " + 
-                          rs.getString("citta") + ", " + 
-                          rs.getString("cap");
-        
         // Crea l'utente in base al tipo
         switch (tipoUtente) {
             case "STUDENTE":
@@ -317,42 +299,13 @@ public class GestioneUtenzaDAO {
         utente.setEmail(rs.getString("email"));
         utente.setPassword(rs.getString("password"));
         utente.setDataNascita(rs.getString("dataNascita"));
-        utente.setIndirizzo(indirizzo);
+        utente.setCittà(rs.getString("citta"));
+        utente.setCAP(rs.getString("cap"));
+        utente.setVia(rs.getString("via"));
+        utente.setCivico(rs.getString("civico"));
         
         return utente;
     }
-    
-    /**
-     * Parsa l'indirizzo in formato "Via, Civico, Città, CAP"
-     */
-    private String[] parseIndirizzo(String indirizzo) {
-        // Formato atteso: "Via Roma, 10, Salerno, 84100"
-        String[] parts = indirizzo.split(", ");
-        
-        if (parts.length == 4) {
-            return parts;
-        } else {
-            // Fallback: metti tutto in via
-            return new String[]{indirizzo, "", "", ""};
-        }
-    }
-    
-    /**
-     * Determina il tipo di utente in base alla classe concreta
-     */
-    /*private String determineTipoUtente(UtenteDTO u) {
-        if (u instanceof Studente) {
-            return "STUDENTE";
-        } else if (u instanceof Tutor) {
-            return "TUTOR";
-        } else if (u instanceof Amministratore) {
-            return "AMMINISTRATORE";
-        } else if (u instanceof Genitore) {
-            return "GENITORE";
-        } else {
-            return "UTENTE";
-        }
-    }*/
     
     /**
      * Chiude le risorse JDBC

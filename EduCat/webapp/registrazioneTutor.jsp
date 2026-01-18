@@ -42,7 +42,10 @@
                     <input type="date" name="dataNascita" id="tutorDate" class="form-input" required>
                 </div>
 
-                <div class="form-group"><label class="form-label">Indirizzo</label><input type="text" name="indirizzo" class="form-input" required></div>
+               <div class="form-group"><label class="form-label">Città</label><input type="text" name="città" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">CAP</label><input type="text" name="CAP" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">Via</label><input type="text" name="via" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">Civico</label><input type="text" name="civico" class="form-input" required></div>
                 
                 <input type="hidden" name="tipoUtente" value="TUTOR">
                 <button type="submit" class="submit-btn" style="background-color: #1A5C61;">Crea Account Tutor</button>

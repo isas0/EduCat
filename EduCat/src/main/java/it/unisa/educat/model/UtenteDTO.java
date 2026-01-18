@@ -9,7 +9,12 @@ public class UtenteDTO {
 	private String email;
 	private String password; // Hashed
 	private String dataNascita;
-	private String indirizzo; // Composto da Via, Civico, Città, CAP
+	
+	private String via;
+	private String città;
+	private String CAP;
+	private String civico;
+	
 	
 	private String nomeFiglio;
 	private String cognomeFiglio;
@@ -22,16 +27,22 @@ public class UtenteDTO {
 	// Costruttore
 	public UtenteDTO() {}
 	
-	public UtenteDTO(String nome, String cognome, String email, String password, 
-			String dataNascita, String indirizzo, TipoUtente tipo) {
+	public UtenteDTO(int uID, String nome, String cognome, String email, String password, String dataNascita,
+			String via, String città, String CAP, String civico, TipoUtente tipo) {
+		super();
+		UID = uID;
 		this.nome = nome;
 		this.cognome = cognome;
 		this.email = email;
 		this.password = password;
 		this.dataNascita = dataNascita;
-		this.indirizzo = indirizzo;
+		this.via = via;
+		this.città = città;
+		this.CAP = CAP;
+		this.civico = civico;
 		this.tipo = tipo;
 	}
+
 
 	//Getters e Setters
 	public String getNome() {
@@ -82,12 +93,38 @@ public class UtenteDTO {
 		this.dataNascita = dataNascita;
 	}
 
-	public String getIndirizzo() {
-		return indirizzo;
+	
+
+	public String getVia() {
+		return via;
 	}
 
-	public void setIndirizzo(String indirizzo) {
-		this.indirizzo = indirizzo;
+	public void setVia(String via) {
+		this.via = via;
+	}
+
+	public String getCittà() {
+		return città;
+	}
+
+	public void setCittà(String città) {
+		this.città = città;
+	}
+
+	public String getCAP() {
+		return CAP;
+	}
+
+	public void setCAP(String cAP) {
+		CAP = cAP;
+	}
+
+	public String getCivico() {
+		return civico;
+	}
+
+	public void setCivico(String civico) {
+		this.civico = civico;
 	}
 
 	public TipoUtente getTipo() {

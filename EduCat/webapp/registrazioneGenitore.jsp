@@ -48,7 +48,10 @@
                         <input type="date" name="dataNascita" id="parentDate" class="form-input" required>
                     </div>
 
-                    <div class="form-group"><label class="form-label">Indirizzo di Fatturazione</label><input type="text" name="indirizzo" class="form-input" required></div>
+                    <div class="form-group"><label class="form-label">Città</label><input type="text" name="indirizzo" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">CAP</label><input type="text" name="CAP" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">Via</label><input type="text" name="Via" class="form-input" required></div>
+					<div class="form-group"><label class="form-label">Civico</label><input type="text" name="Civico" class="form-input" required></div>
 
                     <button type="button" class="btn-next" onclick="goToStep2()">Avanti &rarr;</button>
                 </div>

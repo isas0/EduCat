@@ -5,9 +5,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 
 import it.unisa.educat.dao.GestioneUtenzaDAO;
 import it.unisa.educat.model.UtenteDTO;
@@ -60,41 +61,51 @@ public class RegistrazioneServlet extends HttpServlet {
 			nuovoUtente.setEmail(email);
 			nuovoUtente.setPassword(toHash(request.getParameter("password")));
 			nuovoUtente.setDataNascita(request.getParameter("dataNascita").toString());
+			nuovoUtente.setCittà(request.getParameter("città"));
+			nuovoUtente.setCivico(request.getParameter("civico"));
+			nuovoUtente.setCAP(request.getParameter("CAP"));
+			nuovoUtente.setVia(request.getParameter("via"));
 			
-			
-			if(tipoUtente.equals("STUDENTE")) {
+			HttpSession session = request.getSession();
+            session.setAttribute("userId", nuovoUtente.getUID());
+            
+            if(tipoUtente.equals("STUDENTE")) {
 				
 				nuovoUtente.setTipo(TipoUtente.STUDENTE);
-				
+	            
 			} else if(tipoUtente.equals("GENITORE")) {
 				
 				nuovoUtente.setTipo(TipoUtente.GENITORE);
 				nuovoUtente.setNomeFiglio(request.getParameter("nomeFiglio"));
 				nuovoUtente.setCognomeFiglio(request.getParameter("cognomeFiglio"));
 				nuovoUtente.setDataNascitaFiglio(request.getParameter("dataNascitaFiglio"));
-				
+	            
 			} else if(tipoUtente.equals("TUTOR")) {
 				
 					nuovoUtente.setTipo(TipoUtente.TUTOR);
-					request.setAttribute("successMessage", "Registrazione completata!.");
-					request.getRequestDispatcher("/nuovaLezione.jsp").forward(request, response);
 			}
-			
-			//nuovoUtente.setDataNascita(LocalDate.parse(request.getParameter("dataNascita")));
-			//nuovoUtente.setIndirizzo(request.getParameter("indirizzo"));
-
-			// Contratto OCL post: self.utenti → includes(nuovoUtente) and nuovoUtente.stato = CONFIRMED
-			boolean success = utenzaDAO.doSave(nuovoUtente);
-
-			if (success) {
-				// Redirect al login con messaggio di successo
-				request.setAttribute("successMessage", "Registrazione completata! Effettua il login.");
-				request.getRequestDispatcher("/login.jsp").forward(request, response);
-			} else {
+            
+            session.setAttribute("utente", nuovoUtente);
+            
+            boolean success = utenzaDAO.doSave(nuovoUtente);
+            
+            if (!success) {
 				request.setAttribute("errorMessage", "Errore durante la registrazione");
 				request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
 			}
-
+            
+			if(tipoUtente.equals("STUDENTE")) {
+	            request.getRequestDispatcher("/homePageGenitoreStudente.jsp").forward(request, response);
+	            
+			} else if(tipoUtente.equals("GENITORE")) {
+				
+	            request.getRequestDispatcher("/homePageGenitoreStudente.jsp").forward(request, response);
+	            
+			} else if(tipoUtente.equals("TUTOR")) {
+					request.getRequestDispatcher("/nuovaLezione.jsp").forward(request, response);
+			}
+			// Contratto OCL post: self.utenti → includes(nuovoUtente) and nuovoUtente.stato = CONFIRMED
+			
 		} catch (Exception e) {
 			request.setAttribute("errorMessage", "Errore durante la registrazione");
 			e.printStackTrace()	;		//request.getRequestDispatcher("/error.jsp").forward(request, response);
