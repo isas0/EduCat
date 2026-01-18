@@ -53,7 +53,7 @@
 
     <section class="filter-section">
         <div class="filter-container">
-            <form action="<%= request.getContextPath() %>/RicercaLezioniServlet" method="GET" class="filter-form">
+            <form action="<%= request.getContextPath() %>/cerca-lezione" method="GET" class="filter-form">
                 
                 <div class="filter-group">
                     <label class="filter-label"><i class="fa-solid fa-book"></i> Materia</label>

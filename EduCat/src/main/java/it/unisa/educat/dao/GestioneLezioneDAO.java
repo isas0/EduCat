@@ -29,7 +29,10 @@ public class GestioneLezioneDAO {
 					"WHERE idLezione = ?";
 
 	private static final String SELECT_LEZIONI_BASE = 
-			"SELECT l.* FROM Lezione l WHERE 1=1";
+			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome"
+			+ " FROM Lezione l "
+			+ "JOIN Utente u ON l.idTutor = u.idUtente "
+			+ "WHERE 1=1";
 
 	private static final String SELECT_LEZIONE_BY_ID = 
 			"SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome " +

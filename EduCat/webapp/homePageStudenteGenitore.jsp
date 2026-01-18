@@ -37,7 +37,7 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
             <h1 class="hero-title">Trova i migliori insegnanti<br>per lezioni private</h1>
             <p class="hero-subtitle">Prenota la tua lezione online o in presenza in pochi click.</p>
 
-            <form action="<%= request.getContextPath() %>/RicercaLezioniServlet" method="GET" class="search-form">
+            <form action="<%= request.getContextPath() %>/cerca-lezione" method="GET" class="search-form">
                 
                 <div class="search-bar-container">
                     
