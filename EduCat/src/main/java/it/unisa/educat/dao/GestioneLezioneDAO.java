@@ -70,12 +70,14 @@ public class GestioneLezioneDAO {
 	        "WHERE p.idPrenotazione = ?";
 	    
 	    private static final String SELECT_PRENOTAZIONI_BY_STUDENTE = 
-	        "SELECT p.*, l.*, " +
-	        "u_tutor.idUtente as tutor_id, u_tutor.nome as tutor_nome, " +
-	        "u_tutor.cognome as tutor_cognome, u_tutor.email as tutor_email " +
+	    	"SELECT p.*, l.*, " +
+	    	"u_studente.idUtente as studente_id, u_studente.nome as studente_nome, " +
+	        "u_tutor.nome as tutor_nome, u_tutor.cognome as tutor_cognome, u_tutor.email as tutor_email, " + 
+	        "u_studente.cognome as studente_cognome, u_studente.email as studente_email " +
 	        "FROM Prenotazione p " +
 	        "JOIN Lezione l ON p.idLezione = l.idLezione " +
-	        "JOIN Utente u_tutor ON l.idTutor = u_tutor.idUtente " +
+	        "Join Utente u_tutor ON p.idTutor = u_tutor.idUtente " +
+	        "JOIN Utente u_studente ON p.idStudente = u_studente.idUtente " +
 	        "WHERE p.idStudente = ? " +
 	        "ORDER BY p.dataPrenotazione DESC";
 	    
@@ -596,9 +598,9 @@ public class GestioneLezioneDAO {
         // Studente
         UtenteDTO studente = new UtenteDTO();
         studente.setUID(rs.getInt("idStudente"));
-        //studente.setNome(rs.getString("studente_nome"));
-        //studente.setCognome(rs.getString("studente_cognome"));
-        //studente.setEmail(rs.getString("studente_email"));
+        studente.setNome(rs.getString("studente_nome"));
+        studente.setCognome(rs.getString("studente_cognome"));
+        studente.setEmail(rs.getString("studente_email"));
         studente.setTipo(TipoUtente.STUDENTE);
         prenotazione.setStudente(studente);
         
@@ -647,6 +649,8 @@ public class GestioneLezioneDAO {
         lezione.setIdPrenotazione(rs.getInt("idPrenotazione"));
         
         prenotazione.setLezione(lezione);
+        
+       
         
         return prenotazione;
     }
