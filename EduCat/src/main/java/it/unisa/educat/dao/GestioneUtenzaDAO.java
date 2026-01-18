@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +34,9 @@ public class GestioneUtenzaDAO {
     
     private static final String SELECT_BY_EMAIL = 
         "SELECT * FROM Utente WHERE email = ?";
+    
+    private static final String SELECT_ALL = 
+            "SELECT * FROM Utente";
     
     private static final String SELECT_BY_ID = 
         "SELECT * FROM Utente WHERE idUtente = ?";
@@ -132,6 +137,32 @@ public class GestioneUtenzaDAO {
             
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Errore durante il recupero dell'utente per email: " + email, e);
+            throw e;
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+    }
+    
+    public List<UtenteDTO> doRetrieveAll() throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<UtenteDTO> utenti = new ArrayList<>();
+        
+        try {
+        	conn = DatasourceManager.getConnection();
+            ps = conn.prepareStatement(SELECT_ALL);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                utenti.add(mapResultSetToUtente(rs));
+            }
+            
+            return utenti;
+            
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Errore durante il recupero degli utenti: ", e);
             throw e;
         } finally {
             closeResources(conn, ps, rs);

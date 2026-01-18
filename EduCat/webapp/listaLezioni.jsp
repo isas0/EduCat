@@ -137,7 +137,7 @@
                     String nomeTutor = (l.getTutor() != null) ? l.getTutor().getNome() + " " + l.getTutor().getCognome() : "Tutor";
                     String modalita = (l.getModalitaLezione() != null) ? l.getModalitaLezione().toString() : "N/D";
                     String citta = (l.getCitta() != null) ? l.getCitta() : "";
-                    String dataLezione = (l.getData() != null) ? l.getData().format(formatter) : "Data da concordare";
+                    String dataLezione = (l.getDataInizio() != null) ? l.getDataInizio().format(formatter) : "Data da concordare";
                     
                     // Colori badge
                     String badgeColor = "#e0f2f1"; 

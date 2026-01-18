@@ -1,4 +1,4 @@
-<%@page import="it.unisa.educat.model.UtenteDTO"%>
+<%@page import="it.unisa.educat.model.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.List"%>
@@ -17,43 +17,10 @@ if (!"AMMINISTRATORE_UTENTI".equals(utente.getTipo().toString())) {
 	return;
 }
 
-// --- MOCK DATA (DA RIMUOVERE QUANDO HAI IL DATABASE) ---
+List<UtenteDTO> listaUtenti = (List<UtenteDTO>) request.getAttribute("utenti");
 
-class UtenteMock {
-	public int id;
-	public String nome, cognome, email, ruolo;
+List<SegnalazioneDTO> listaSegnalazioni = (List<SegnalazioneDTO>) request.getAttribute("segnalazioni");
 
-	public UtenteMock(int i, String n, String c, String e, String r) {
-		id = i;
-		nome = n;
-		cognome = c;
-		email = e;
-		ruolo = r;
-	}
-}
-
-class SegnalazioneMock {
-	public int id;
-	public String mittente, segnalato, motivo;
-
-	public SegnalazioneMock(int i, String m, String s, String mot) {
-		id = i;
-		mittente = m;
-		segnalato = s;
-		motivo = mot;
-	}
-}
-
-List<UtenteMock> listaUtenti = new ArrayList<>();
-listaUtenti.add(new UtenteMock(1, "Mario", "Rossi", "mario@student.it", "Studente"));
-listaUtenti.add(new UtenteMock(2, "Luigi", "Verdi", "luigi@tutor.it", "Tutor"));
-listaUtenti.add(new UtenteMock(3, "Anna", "Bianchi", "anna@student.it", "Studente"));
-
-List<SegnalazioneMock> listaSegnalazioni = new ArrayList<>();
-listaSegnalazioni.add(new SegnalazioneMock(101, "Mario Rossi", "Luigi Verdi", "Comportamento scorretto in lezione"));
-listaSegnalazioni.add(new SegnalazioneMock(102, "Anna Bianchi", "Luigi Verdi", "Non si è presentato"));
-
-// -----------------------------------------------------------------------------
 %>
 
 <!DOCTYPE html>
@@ -113,21 +80,21 @@ listaSegnalazioni.add(new SegnalazioneMock(102, "Anna Bianchi", "Luigi Verdi", "
                     </tr>
                 </thead>
                 <tbody>
-                    <% for(UtenteMock u : listaUtenti) { %>
+                    <% for(UtenteDTO u : listaUtenti) { %>
                     <tr>
-                        <td>#<%= u.id %></td>
+                        <td>#<%= u.getUID() %></td>
                         <td>
-                            <strong><%= u.cognome %></strong> <%= u.nome %>
+                            <strong><%= u.getCognome() %></strong> <%= u.getNome() %>
                         </td>
-                        <td><%= u.email %></td>
+                        <td><%= u.getEmail() %></td>
                         <td>
-                            <span class="role-badge <%= u.ruolo.equals("Tutor") ? "role-tutor" : "role-student" %>">
-                                <%= u.ruolo %>
+                            <span class="role-badge <%= u.getTipo().toString().equals("TUTOR") ? "role-tutor" : "role-student" %>">
+                                <%= u.getTipo().toString() %>
                             </span>
                         </td>
                         <td style="text-align: right;">
                             <form action="<%= request.getContextPath() %>/elimina-account" method="POST" style="display:inline;">
-                                <input type="hidden" name="idUtente" value="<%= u.id %>">
+                                <input type="hidden" name="idUtente" value="<%= u.getUID() %>">
                                 <button type="submit" class="action-btn btn-delete" onclick="return confirm('Sei sicuro di voler eliminare questo utente? Questa azione è irreversibile.');">
                                     <i class="fa-solid fa-trash"></i> Elimina
                                 </button>
@@ -157,24 +124,39 @@ listaSegnalazioni.add(new SegnalazioneMock(102, "Anna Bianchi", "Luigi Verdi", "
                     <% if (listaSegnalazioni.isEmpty()) { %>
                         <tr><td colspan="5" style="text-align:center; padding: 20px;">Nessuna segnalazione presente.</td></tr>
                     <% } else { 
-                        for(SegnalazioneMock s : listaSegnalazioni) { %>
+                        for(SegnalazioneDTO s : listaSegnalazioni) { %>
                         <tr>
-                            <td>#<%= s.id %></td>
-                            <td><%= s.mittente %></td>
-                            <td style="color: #c62828; font-weight: bold;"><%= s.segnalato %></td>
-                            <td><%= s.motivo %></td>
+                            <td><%= s.getIdSegnalazione()%></td>
+                            <td><%= s.getSegnalante().getNome()%> <%= s.getSegnalante().getCognome()%></td>
+                            <td style="color: #c62828; font-weight: bold;"><%= s.getSegnalato().getNome() %> <%= s.getSegnalato().getCognome()%></td>
+                            <td><%= s.getDescrizione() %></td>
                             <td style="text-align: right;">
-                                <a href="#" class="action-btn btn-view">
-                                    <i class="fa-solid fa-check"></i> Risolvi
-                                </a>
-                                
-                                <button class="action-btn btn-delete" onclick="return confirm('Vuoi bannare l\'utente segnalato?');">
-                                    <i class="fa-solid fa-ban"></i> Ban Utente
-                                </button>
-                            </td>
+
+							<form action="<%=request.getContextPath()%>/risolvi-segnalazione"
+								method="POST" style="display: inline;">
+								<input type="hidden" name="idSegnalazione"
+									value="<%=s.getIdSegnalazione()%>"> 
+								
+								<button type="submit" class="action-btn btn-view"
+								onclick="return confirm('Vuoi segnare la segnalazione come risolta?');">
+								<i class="fa-solid fa-check"></i> Risolvi
+							</button>
+							</form>
+							
+							<form action="<%=request.getContextPath()%>/elimina-account" method="POST" style="display: inline;">
+							<input type="hidden" name="idUtente" value="<%=s.getSegnalato().getUID() %>"> 
+							<button type="submit" class="action-btn btn-delete"
+								onclick="return confirm('Vuoi bannare l\'utente segnalato?');">
+								
+								<i class="fa-solid fa-ban"></i> Ban Utente
+							</button>
+							</form>
+						</td>
                         </tr>
-                    <%  } 
-                       } %>
+                    <%
+                    }
+                    }
+                    %>
                 </tbody>
             </table>
         </div>

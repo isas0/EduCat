@@ -101,8 +101,8 @@ public class RisolviSegnalazioneServlet extends HttpServlet {
      * Risolve la segnalazione eliminandola
      */
     private boolean risolviSegnalazioneElimina(int idSegnalazione) throws SQLException {
-        // Utilizza il metodo doDelete del DAO
-        return segnalazioneDAO.doDelete(idSegnalazione);
+
+        return segnalazioneDAO.setAsSolved(idSegnalazione);
     }
     
     /*

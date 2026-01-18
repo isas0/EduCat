@@ -9,10 +9,13 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import it.unisa.educat.dao.GestioneSegnalazioneDAO;
+import it.unisa.educat.dao.GestioneUtenzaDAO;
 import it.unisa.educat.model.SegnalazioneDTO;
+import it.unisa.educat.model.SegnalazioneDTO.StatoSegnalazione;
 import it.unisa.educat.model.UtenteDTO;
 
 /**
@@ -23,10 +26,18 @@ public class ListaSegnalazioniServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     private GestioneSegnalazioneDAO segnalazioneDAO;
+    private GestioneUtenzaDAO utenzaDAO;
     
     @Override
     public void init() throws ServletException {
         segnalazioneDAO = new GestioneSegnalazioneDAO();
+        utenzaDAO = new GestioneUtenzaDAO();
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+    	doGet(request,response);
     }
     
     @Override
@@ -55,13 +66,24 @@ public class ListaSegnalazioniServlet extends HttpServlet {
         try {
             // Recupera tutte le segnalazioni
             List<SegnalazioneDTO> segnalazioni = segnalazioneDAO.doRetrieveAll();
+            List<UtenteDTO> utenti = utenzaDAO.doRetrieveAll();
+            
+            List<SegnalazioneDTO> segnalazioniAttive = new ArrayList<>();
+            for(SegnalazioneDTO s : segnalazioni) {
+            	if(s.getStato().equals(StatoSegnalazione.ATTIVA)) {
+            		segnalazioniAttive.add(s);
+            	}
+            }
             
             // Imposta attributi per la JSP
-            request.setAttribute("segnalazioni", segnalazioni);
+            request.setAttribute("segnalazioni", segnalazioniAttive);
             request.setAttribute("totaleSegnalazioni", segnalazioni.size());
             
+            request.setAttribute("utenti", utenti);
+            request.setAttribute("totaleUtenti", utenti.size());
+            
             // Forward alla pagina JSP
-            request.getRequestDispatcher("/listaSegnalazioni.jsp").forward(request, response);
+            request.getRequestDispatcher("/homeAdmin.jsp").forward(request, response);
             
         } catch (SQLException e) {
             e.printStackTrace();

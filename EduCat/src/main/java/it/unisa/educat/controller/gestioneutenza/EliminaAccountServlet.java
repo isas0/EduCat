@@ -18,8 +18,7 @@ public class EliminaAccountServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-		// Mostra pagina di conferma eliminazione
-		request.getRequestDispatcher("/confermaEliminazione.jsp").forward(request, response);
+		doPost(request,response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
@@ -45,11 +44,11 @@ public class EliminaAccountServlet extends HttpServlet {
 			try {
 				utenzaDAO.doDelete(id);
 				request.setAttribute("successMessage", "Account eliminato con successo");
-				request.getRequestDispatcher("/homeAdmin.jsp").forward(request, response);
+				request.getRequestDispatcher("/lista-segnalazioni").forward(request, response);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", "Errore durante l'eliminazione dell'account");
-				request.getRequestDispatcher("/homeAdmin.jsp").forward(request, response);
+				request.getRequestDispatcher("/lista-segnalazioni").forward(request, response);
 			}
 
 		}
