@@ -74,14 +74,14 @@ public class PrenotaLezioneServlet extends HttpServlet {
             // Verifica che la lezione sia disponibile
             if (lezione.getStato() != StatoLezione.PIANIFICATA) {
                 session.setAttribute("errorMessage", "Questo slot non è più disponibile");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + lezione.getIdLezione() + "&error=slot_non_disponibile");
+                response.sendRedirect("prenotazioni.jsp?id=" + lezione.getIdLezione() + "&error=slot_non_disponibile");
                 return;
             }
             
             // Verifica che lo slot non sia già passato
             if (lezione.getDataInizio().isBefore(LocalDateTime.now())) {
                 session.setAttribute("errorMessage", "Impossibile prenotare uno slot già passato");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + lezione.getIdLezione() + "&error=slot_passato");
+                response.sendRedirect("prenotazioni.jsp?id=" + lezione.getIdLezione() + "&error=slot_passato");
                 return;
             }
             
@@ -122,19 +122,19 @@ public class PrenotaLezioneServlet extends HttpServlet {
             if (success) {
                 // Successo: reindirizza con messaggio di successo
                 session.setAttribute("successMessage", "Slot prenotato con successo!");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + lezione.getIdLezione() + "&success=true");
+                response.sendRedirect("prenotazioni.jsp?id=" + lezione.getIdLezione() + "&success=true");
             } else {
                 // Fallimento
                 session.setAttribute("errorMessage", "Impossibile prenotare lo slot");
-                response.sendRedirect("dettaglioLezione.jsp?id=" + lezione.getIdLezione() + "&error=prenotazione_fallita");
+                response.sendRedirect("prenotazioni.jsp?id=" + lezione.getIdLezione() + "&error=prenotazione_fallita");
             }
             
         } catch (NumberFormatException e) {
             session.setAttribute("errorMessage", "ID slot non valido");
-            response.sendRedirect("cercaLezione.jsp?error=id_invalido");
+            response.sendRedirect("listaLezioni.jsp?error=id_invalido");
         } catch (IllegalArgumentException e) {
             session.setAttribute("errorMessage", e.getMessage());
-            response.sendRedirect("cercaLezione.jsp?error=parametri_mancanti");
+            response.sendRedirect("listaLezioni.jsp?error=parametri_mancanti");
         } catch (SQLException e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore di database durante la prenotazione");

@@ -82,9 +82,11 @@ public class GestioneLezioneDAO {
 	    private static final String SELECT_PRENOTAZIONI_BY_TUTOR = 
 	        "SELECT p.*, l.*, " +
 	        "u_studente.idUtente as studente_id, u_studente.nome as studente_nome, " +
+	        "u_tutor.nome as tutor_nome, u_tutor.cognome as tutor_cognome, u_tutor.email as tutor_email, " + 
 	        "u_studente.cognome as studente_cognome, u_studente.email as studente_email " +
 	        "FROM Prenotazione p " +
 	        "JOIN Lezione l ON p.idLezione = l.idLezione " +
+	        "Join Utente u_tutor ON p.idTutor = u_tutor.idUtente " +
 	        "JOIN Utente u_studente ON p.idStudente = u_studente.idUtente " +
 	        "WHERE l.idTutor = ? " +
 	        "ORDER BY l.dataInizio DESC";

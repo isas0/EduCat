@@ -59,7 +59,7 @@ public class StoricoLezioniServlet extends HttpServlet {
                 prenotazioni = lezioneDAO.getPrenotazioniByTutor(utente.getUID());
             } else {
                 session.setAttribute("errorMessage", "Utente non autorizzato a visualizzare lo storico");
-                response.sendRedirect("accessoNegato.jsp");
+                response.sendRedirect("login.jsp");
                 return;
             }
             
@@ -83,12 +83,12 @@ public class StoricoLezioniServlet extends HttpServlet {
             
         } catch (SQLException e) {
             e.printStackTrace();
-            session.setAttribute("errorMessage", "Errore di database nel recupero dello storico");
-            response.sendRedirect("homePageStudenteGenitore.jsp");
+            session.setAttribute("errorMessage", "Errore di database nel recupero dello storico");           
+            response.sendRedirect("login.jsp");
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore nel recupero dello storico: " + e.getMessage());
-            response.sendRedirect("homePageStudenteGenitore.jsp");
+            response.sendRedirect("login.jsp");
         }
     }
 }
