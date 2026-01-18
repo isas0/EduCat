@@ -175,7 +175,7 @@
                     </div>
 
                     <div class="card-actions">
-                        <a href="<%=request.getContextPath()%>/DettaglioLezioneServlet?id=<%= l.getIdLezione() %>" class="btn-details">
+                        <a href="<%=request.getContextPath()%>/info-lezione?idLezione=<%= l.getIdLezione() %>" class="btn-details">
                             Vedi Dettagli
                         </a>
                     </div>
