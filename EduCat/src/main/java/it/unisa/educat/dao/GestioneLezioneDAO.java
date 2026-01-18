@@ -330,9 +330,10 @@ public class GestioneLezioneDAO {
             
             // 2. Aggiorna la lezione associata a PIANIFICATA
             String sqlLezione = 
-                "UPDATE Lezione SET statoLezione = 'PIANIFICATA', " +
-                "idStudente = NULL, idPrenotazione = NULL " +
-                "WHERE idPrenotazione = ?";
+                "UPDATE Lezione l "
+                + "JOIN Prenotazione p ON l.idLezione = p.idLezione "
+                + "SET l.statoLezione = 'PIANIFICATA' "
+                + "WHERE p.idPrenotazione = ?";
             
             psLezione = conn.prepareStatement(sqlLezione);
             psLezione.setInt(1, idPrenotazione);

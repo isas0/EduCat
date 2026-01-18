@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import it.unisa.educat.dao.GestioneLezioneDAO;
 import it.unisa.educat.model.*;
@@ -118,15 +119,18 @@ public class PrenotaLezioneServlet extends HttpServlet {
             
             // Effettua la prenotazione dello slot
             boolean success = lezioneDAO.prenotaLezione(prenotazione);
+            List<PrenotazioneDTO> prenotazioni =  lezioneDAO.getPrenotazioniByStudente(studente.getUID());
+            request.setAttribute("prenotazioni", prenotazioni);
+            
             
             if (success) {
                 // Successo: reindirizza con messaggio di successo
                 session.setAttribute("successMessage", "Slot prenotato con successo!");
-                response.sendRedirect("prenotazioni.jsp?id=" + lezione.getIdLezione() + "&success=true");
+                request.getRequestDispatcher("prenotazioni.jsp?id=" + lezione.getIdLezione() + "&success=true").forward(request, response);
             } else {
                 // Fallimento
                 session.setAttribute("errorMessage", "Impossibile prenotare lo slot");
-                response.sendRedirect("prenotazioni.jsp?id=" + lezione.getIdLezione() + "&error=prenotazione_fallita");
+                request.getRequestDispatcher("prenotazioni.jsp?id=" + lezione.getIdLezione() + "&error=prenotazione_fallita").forward(request, response);
             }
             
         } catch (NumberFormatException e) {

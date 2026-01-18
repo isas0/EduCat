@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, java.util.ArrayList" %>
 <%@ page import="it.unisa.educat.model.*, it.unisa.educat.dao.GestioneLezioneDAO" %>
+<%@ page import="it.unisa.educat.model.PrenotazioneDTO.StatoPrenotazione" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 
 <%
     // Protezione Login
@@ -49,7 +51,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% for(PrenotazioneDTO p : miePrenotazioni) { 
+                        <% 
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                        for(PrenotazioneDTO p : miePrenotazioni) { 
                            // Null check per sicurezza
                            String nomeTutor = "N/D";
                            int idTutor = 0;
@@ -59,11 +63,24 @@
                            }
                         %>
                         <tr>
-                            <td><%= p.getDataPrenotazione() %></td>
+                            <td><%= p.getLezione().getDataInizio().format(formatter) %></td>
                             <td><strong><%= p.getLezione() != null ? p.getLezione().getMateria() : "-" %></strong></td>
                             <td><%= nomeTutor %></td>
                             <td><span class="status-pill"><%= p.getStato() %></span></td>
                             <td style="text-align: right;">
+                            
+                            	<%if(p.getStato().equals(StatoPrenotazione.ATTIVA)){ %>
+								<form action="annulla-prenotazione" method="post" style="display: inline;">
+								<input type="hidden" name="idPrenotazione" value="<%=p.getIdPrenotazione() %>"> 
+								
+								<button type="submit" class="action-btn btn-view"
+									onclick="return confirm('Vuoi davvero annullare la prenotazione? L'utente verrà rimborsato.');">									
+									<i class="fa-solid fa-circle-exclamation"></i> Annulla
+								</button>
+								
+								</form>
+								<%} %>
+                            
                                 <button class="btn-report" onclick="apriSegnalazione(<%= idTutor %>, '<%= nomeTutor %>')">
                                     <i class="fa-solid fa-circle-exclamation"></i> Segnala
                                 </button>

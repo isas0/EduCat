@@ -141,7 +141,7 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
                             else badgeClass = "status-conclusa";
                         %>
 						<tr>
-							<td><span class="td-bold"><%= p.getDataPrenotazione().format(formatter) %></span>
+							<td><span class="td-bold"><%= p.getLezione().getDataInizio().format(formatter) %></span>
 							</td>
 							<td><%= p.getStudente().getNome() %> <%= p.getStudente().getCognome() %>
 							</td>
@@ -153,9 +153,27 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
 
 
 							<td style="text-align: right;">
+							
+								<%if(p.getStato().equals(StatoPrenotazione.ATTIVA)){ %>
+								<form action="annulla-prenotazione" method="post" style="display: inline;">
+								<input type="hidden" name="idPrenotazione" value="<%=p.getIdPrenotazione() %>"> 
+								
+								<button type="submit" class="action-btn btn-view"
+									onclick="return confirm('Vuoi davvero annullare la prenotazione? L'utente verrà rimborsato.');">									
+									<i class="fa-solid fa-circle-exclamation"></i> Annulla
+								</button>
+								
+								</form>
+								<%} %>
+							
 								<button class="btn-report"
-									onclick="apriSegnalazione(<%= p.getStudente().getUID()%>, '<%= p.getStudente().getNome()%> <%= p.getStudente().getCognome()%>')">									<i class="fa-solid fa-circle-exclamation"></i> Segnala
-								</button> <% } %>
+									onclick="apriSegnalazione(<%= p.getStudente().getUID()%>, '<%= p.getStudente().getNome()%> <%= p.getStudente().getCognome()%>')">
+									<i class="fa-solid fa-circle-exclamation"></i> Segnala
+								</button> 
+							<% } %>
+								
+								
+								
 							</td>
 						</tr>
 					</tbody>

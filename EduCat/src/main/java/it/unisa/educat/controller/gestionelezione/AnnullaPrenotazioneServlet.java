@@ -55,7 +55,7 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             int idPrenotazione = Integer.parseInt(idPrenotazioneStr);
             
             // Verifica che l'utente sia uno studente o un tutor
-            if (!"STUDENTE".equals(utente.getTipo().toString()) && !"TUTOR".equals(utente.getTipo().toString())) {
+            if (!"STUDENTE".equals(utente.getTipo().toString()) && !"TUTOR".equals(utente.getTipo().toString()) && !"GENITORE".equals(utente.getTipo().toString())) {
                 session.setAttribute("errorMessage", "Solo studenti o tutor possono annullare prenotazioni");
                 response.sendRedirect("accessoNegato.jsp");
                 return;
@@ -67,9 +67,9 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             
             
             // Verifica autorizzazione
-            boolean autorizzato = false;
+           /* boolean autorizzato = false;
             
-            if ("STUDENTE".equals(utente.getTipo().toString())) {
+            if ("STUDENTE".equals(utente.getTipo().toString()) || "GENITORE".equals(utente.getTipo().toString())) {
                 // Studente: deve essere il proprietario della prenotazione
                 if (prenotazione.getStudente().getUID() == utente.getUID()) {
                     autorizzato = true;
@@ -88,7 +88,7 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
                 response.sendRedirect("accessoNegato.jsp");
                 return;
             }
-            
+            */
             // Verifica che la prenotazione sia ancora attiva
             if (prenotazione.getStato() != PrenotazioneDTO.StatoPrenotazione.ATTIVA) {
                 session.setAttribute("errorMessage", "Impossibile annullare una prenotazione che non è attiva");
@@ -109,11 +109,21 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             if (success) {
                 // Successo
                 session.setAttribute("successMessage", "Prenotazione annullata con successo!");
-                response.sendRedirect("storicoPrenotazioni.jsp?success=true");
+                if ("STUDENTE".equals(utente.getTipo().toString())) {
+                
+                response.sendRedirect("storico-lezioni");
+                } else {
+                	response.sendRedirect("storico-lezioni");
+                }
+                
             } else {
                 // Fallimento
                 session.setAttribute("errorMessage", "Impossibile annullare la prenotazione");
+                
+                
                 response.sendRedirect("storicoPrenotazioni.jsp?error=annullamento_fallito");
+                
+                
             }
             
         } catch (NumberFormatException e) {
