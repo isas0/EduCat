@@ -95,11 +95,11 @@ public class RegistrazioneServlet extends HttpServlet {
 			}
             
 			if(tipoUtente.equals("STUDENTE")) {
-	            request.getRequestDispatcher("/homePageGenitoreStudente.jsp").forward(request, response);
+	            request.getRequestDispatcher("/homePageStudenteGenitore.jsp").forward(request, response);
 	            
 			} else if(tipoUtente.equals("GENITORE")) {
 				
-	            request.getRequestDispatcher("/homePageGenitoreStudente.jsp").forward(request, response);
+	            request.getRequestDispatcher("/homePageStudenteGenitore.jsp").forward(request, response);
 	            
 			} else if(tipoUtente.equals("TUTOR")) {
 					request.getRequestDispatcher("/nuovaLezione.jsp").forward(request, response);

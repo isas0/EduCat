@@ -93,7 +93,7 @@ String nomeCompletoTutor = tutor.getNome() + " " + tutor.getCognome();
                         <span class="prezzo-dettaglio">(€ <%= String.format("%.2f", lezione.getPrezzo()) %>/ora)</span>
                     </div>
 
-                    <form action="<%=request.getContextPath()%>/checkout.jsp" method="POST">
+                    <form action="<%=request.getContextPath()%>/checkout.jsp?" method="POST">
                         <input type="hidden" name="idLezione" value="<%= lezione.getIdLezione() %>">
                         
                         <button type="submit" class="btn-prenota">

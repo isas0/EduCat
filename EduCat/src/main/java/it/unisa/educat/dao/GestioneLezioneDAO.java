@@ -50,8 +50,9 @@ public class GestioneLezioneDAO {
 
 	//Prenotazione
 	private static final String INSERT_PRENOTAZIONE = 
-	        "INSERT INTO Prenotazione (idStudente, idLezione, dataPrenotazione, stato, importoPagato) " +
-	        "VALUES (?, ?, ?, ?, ?)";
+	        "INSERT INTO Prenotazione (idStudente, idLezione, dataPrenotazione, stato, importoPagato, indirizzoFatturazione, intestatario, "
+	        + "numeroCarta, scadenza, cvv, idTutor) " +
+	        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	    
 	    private static final String UPDATE_STATO_PRENOTAZIONE = 
 	        "UPDATE Prenotazione SET stato = ? WHERE idPrenotazione = ?";
@@ -238,7 +239,8 @@ public class GestioneLezioneDAO {
     					prenotazione.getLezione().getDurata();
     			prenotazione.setImportoPagato(importo);
     		}
-
+    		// indirizzoFatturazione, intestatario, "
+    			//        + "numeroCarta, scadenza, cv
     		ps = conn.prepareStatement(INSERT_PRENOTAZIONE, Statement.RETURN_GENERATED_KEYS);
 
     		ps.setInt(1, prenotazione.getStudente().getUID());
@@ -246,6 +248,12 @@ public class GestioneLezioneDAO {
     		ps.setDate(3, Date.valueOf(LocalDate.now()));
     		ps.setString(4, prenotazione.getStato().name());
     		ps.setFloat(5, prenotazione.getImportoPagato());
+    		ps.setString(6, prenotazione.getIndirizzoFatturazione());
+    		ps.setString(7, prenotazione.getIntestatario());
+    		ps.setString(8, prenotazione.getNumeroCarta());
+    		ps.setString(9, prenotazione.getDataScadenza());
+    		ps.setInt(10, prenotazione.getCvv());
+    		ps.setInt(11, prenotazione.getIdTutor());
 
     		int rowsAffected = ps.executeUpdate();
 
@@ -260,8 +268,8 @@ public class GestioneLezioneDAO {
     		return false;
 
     	} catch (SQLException e) {
-    		if (conn != null) conn.rollback();
-    		throw e;
+    		e.printStackTrace();
+    		return false;
     	} finally {
     		DatasourceManager.closeResources(conn, ps, rs);
     	}

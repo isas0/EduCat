@@ -5,10 +5,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.sql.SQLException;
 
 import it.unisa.educat.dao.GestioneLezioneDAO;
+import it.unisa.educat.model.LezioneDTO;
 
 /**
  * Servlet implementation class InfoLezioneServlet
@@ -27,7 +30,12 @@ public class InfoLezioneServlet extends HttpServlet {
 		int idLezione = Integer.parseInt(request.getParameter("idLezione"));
 		
 		try {
-			request.setAttribute("lezione", lezioneDao.getLezioneById(idLezione));
+			LezioneDTO lezione = lezioneDao.getLezioneById(idLezione);
+			request.setAttribute("lezione", lezione);
+			
+			HttpSession session = request.getSession();
+			session.setAttribute("lezioneCheckout", lezione);
+			
 			request.getRequestDispatcher("/singolaLezione.jsp").forward(request, response);
 		} catch (SQLException e) {
 			 e.printStackTrace();

@@ -8,6 +8,13 @@ public class PrenotazioneDTO {
 	private StatoPrenotazione stato;
 	private float importoPagato;
 	
+	private String indirizzoFatturazione;
+	private String numeroCarta;
+	private String dataScadenza;
+	private String intestatario;
+	private int cvv;
+	
+	private int idTutor;
 	
 	// Riferimenti (non specificati ma necessari)
 	private UtenteDTO studente;
@@ -83,5 +90,67 @@ public class PrenotazioneDTO {
 	public void setImportoPagato(float importoPagato) {
 		this.importoPagato = importoPagato;
 	}
+
+
+	public String getIndirizzoFatturazione() {
+		return indirizzoFatturazione;
+	}
+
+
+	public void setIndirizzoFatturazione(String indirizzoFatturazione) {
+		this.indirizzoFatturazione = indirizzoFatturazione;
+	}
+
+
+	public String getNumeroCarta() {
+		return numeroCarta;
+	}
+
+
+	public void setNumeroCarta(String numeroCarta) {
+		this.numeroCarta = numeroCarta;
+	}
+
+
+	public String getDataScadenza() {
+		return dataScadenza;
+	}
+
+
+	public void setDataScadenza(String dataScadenza) {
+		this.dataScadenza = dataScadenza;
+	}
+
+
+	public String getIntestatario() {
+		return intestatario;
+	}
+
+
+	public void setIntestatario(String intestatario) {
+		this.intestatario = intestatario;
+	}
+
+
+	public int getCvv() {
+		return cvv;
+	}
+
+
+	public void setCvv(int cvv) {
+		this.cvv = cvv;
+	}
+
+	
+
+	public int getIdTutor() {
+		return idTutor;
+	}
+
+
+	public void setIdTutor(int uid) {
+		this.idTutor = uid;
+	}
+	
 	
 }

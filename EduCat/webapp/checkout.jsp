@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="it.unisa.educat.model.UtenteDTO" %>
+<%@ page import="it.unisa.educat.model.*" %>
 
 <%
     // 1. Controllo Login (Sicurezza)
@@ -9,6 +9,8 @@
         return;
     }
 
+    LezioneDTO lezione = (LezioneDTO) session.getAttribute("lezioneCheckout");
+    
     // --- MOCK DATA: SIMULAZIONE CARRELLO ---
     // In produzione: PrenotazioneDTO p = (PrenotazioneDTO) session.getAttribute("prenotazioneInCorso");
     
@@ -44,7 +46,7 @@
     <div class="checkout-container">
         <h1 class="page-title">Conferma e Paga</h1>
 
-        <form action="<%= request.getContextPath() %>/PagamentoServlet" method="POST" class="checkout-grid">
+        <form action="<%= request.getContextPath() %>/prenota-lezione" method="POST" class="checkout-grid">
             
             <div class="payment-section card-box">
                 <div class="section-title">
@@ -59,7 +61,7 @@
                 <div class="form-group">
                     <label class="form-label">Indirizzo di Fatturazione</label>
                     <input type="text" name="indirizzo" class="form-input" 
-                           value="<%= (utente.getIndirizzo() != null) ? utente.getIndirizzo() : "" %>" required>
+                           value="<%=utente.getCAP()+", "+utente.getCittà()+", "+utente.getVia()+" "+utente.getCivico()%>" required>
                 </div>
 
                 <div class="form-group">
@@ -88,34 +90,36 @@
 
             </div>
 
+			<input type="hidden" name="idLezione" value=<%=lezione.getIdLezione() %>>
+
             <div class="summary-section card-box">
                 <div class="section-title">Riepilogo Ordine</div>
 
                 <div class="summary-item highlight">
                     <span>Materia</span>
-                    <span><%= materia %></span>
+                    <span><%= lezione.getMateria() %></span>
                 </div>
                 
                 <div class="summary-item">
                     <span>Tutor</span>
-                    <span><%= tutorNome %></span>
+                    <span><%= lezione.getTutor().getNome() %> <%= lezione.getTutor().getCognome() %></span>
                 </div>
 
                 <div class="summary-item">
                     <span>Data</span>
-                    <span><%= dataLezione %></span>
+                    <span><%= lezione.getDataInizio().getDayOfMonth() %>/<%=lezione.getDataInizio().getMonthValue() %></span>
                 </div>
 
                 <div class="summary-item">
                     <span>Orario</span>
-                    <span><%= orario %></span>
+                    <span><%= lezione.getDataInizio().getHour() %>:<%=lezione.getDataInizio().getMinute() %></span>
                 </div>
 
                 <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
 
                 <div class="summary-item">
                     <span>Prezzo Lezione (<%= ore %>h)</span>
-                    <span>€ <%= String.format("%.2f", totale) %></span>
+                    <span>€ <%=String.format("%.2f",lezione.getPrezzo()) %></span>
                 </div>
                 
                 <div class="summary-item">
@@ -125,7 +129,7 @@
 
                 <div class="total-row">
                     <span>Totale</span>
-                    <span>€ <%= String.format("%.2f", totaleFinale) %></span>
+                    <span>€ <%= String.format("%.2f",lezione.getPrezzo() + costiServizio) %></span>
                 </div>
 
                 <button type="submit" class="btn-pay">
