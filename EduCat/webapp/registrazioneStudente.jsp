@@ -14,7 +14,19 @@
 
     <div class="form-page-container">
         <div class="form-box">
-            <h2 style="text-align: center; color: #38B4BC; margin-bottom: 10px;">Studente Maggiorenne</h2>
+            <h2 style="text-align: center; color: #38B4BC; margin-bottom: 10px;">
+			<%
+				if (request.getAttribute("errorMessage") != null) {
+				%>
+				<%=request.getAttribute("errorMessage")%>
+				<%
+				} else {
+				%>
+				Studente Maggiorenne
+				<%
+				}
+				%>
+			</h2>
             <p style="text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9rem;">
                 Se sei minorenne, chiedi a un genitore di registrarsi.
             </p>

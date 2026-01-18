@@ -31,11 +31,25 @@ public class RegistrazioneServlet extends HttpServlet {
 		// Verifica se email già esiste
 		String email = request.getParameter("email");
 
+		String tipoUtente = request.getParameter("tipoUtente");
 		try {
 			UtenteDTO esistente = utenzaDAO.doRetrieveByEmail(email);
 			if (esistente != null) {
+				
 				request.setAttribute("errorMessage", "Email già registrata");
-				request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
+				if(tipoUtente.equals("STUDENTE")) {
+					
+					request.getRequestDispatcher("/registrazioneStudente.jsp").forward(request, response);
+					
+				} else if(tipoUtente.equals("GENITORE")) {
+					
+					request.getRequestDispatcher("/registrazioneGenitore.jsp").forward(request, response);
+					
+				} else if(tipoUtente.equals("TUTOR")) {
+					
+					request.getRequestDispatcher("/registrazioneTutor.jsp").forward(request, response);
+					
+				}
 				return;
 			}
 
@@ -47,7 +61,7 @@ public class RegistrazioneServlet extends HttpServlet {
 			nuovoUtente.setPassword(toHash(request.getParameter("password")));
 			nuovoUtente.setDataNascita(request.getParameter("dataNascita").toString());
 			
-			String tipoUtente = request.getParameter("tipoUtente");
+			
 			if(tipoUtente.equals("STUDENTE")) {
 				
 				nuovoUtente.setTipo(TipoUtente.STUDENTE);

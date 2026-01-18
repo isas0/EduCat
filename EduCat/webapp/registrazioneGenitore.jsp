@@ -23,7 +23,17 @@
             <form action="<%= request.getContextPath() %>/registrazione" method="POST" id="parentForm">
                 
                 <div class="step-content active" id="step1">
-                    <h2 style="text-align: center; color: #E6B800; margin-bottom: 20px;">Dati Genitore</h2>
+                    <h2 style="text-align: center; color: #E6B800; margin-bottom: 20px;"><%
+				if (request.getAttribute("errorMessage") != null) {
+				%>
+				<%=request.getAttribute("errorMessage")%>
+				<%
+				} else {
+				%>
+				Bentornato!
+				<%
+				}
+				%></h2>
                     <p style="text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 20px;">
                         Il genitore deve essere maggiorenne.
                     </p>

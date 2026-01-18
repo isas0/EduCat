@@ -15,7 +15,17 @@
 
     <div class="form-page-container">
         <div class="form-box">
-            <h2 style="text-align: center; color: #1A5C61; margin-bottom: 10px;">Diventa Insegnante</h2>
+            <h2 style="text-align: center; color: #1A5C61; margin-bottom: 10px;"><%
+				if (request.getAttribute("errorMessage") != null) {
+				%>
+				<%=request.getAttribute("errorMessage")%>
+				<%
+				} else {
+				%>
+				Diventa Insegnante
+				<%
+				}
+				%></h2>
             <p style="text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9rem;">
                 Devi essere maggiorenne per insegnare su EduCat.
             </p>
