@@ -9,6 +9,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 /**
  * DAO per la gestione delle segnalazioni (versione semplificata)
  */
@@ -39,6 +41,26 @@ public class GestioneSegnalazioneDAO {
     private static final String DELETE_SEGNALAZIONE = 
         "DELETE FROM Segnalazione WHERE idSegnalazione = ?";
     
+    private DataSource dataSource; // Nullable
+    
+    // Metodo protetto per ottenere connessione (facilita il mocking)
+    protected Connection getConnection() throws SQLException {
+    	if (dataSource != null) {
+            return dataSource.getConnection();
+        }
+        // Fallback al DatasourceManager originale
+        return DatasourceManager.getConnection();
+    }
+    
+    // Costruttore per injection (opzionale)
+    public GestioneSegnalazioneDAO() {
+        // Costruttore vuoto per compatibilità
+    }
+    
+    public GestioneSegnalazioneDAO(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
     /**
      * Salva una nuova segnalazione nel database
      */
@@ -48,7 +70,7 @@ public class GestioneSegnalazioneDAO {
     	ResultSet rs = null;
 
     	try {
-    		conn = DatasourceManager.getConnection();
+    		conn = getConnection();
     		ps = conn.prepareStatement(INSERT_SEGNALAZIONE, Statement.RETURN_GENERATED_KEYS);
 
     		// Imposta i parametri
@@ -68,7 +90,8 @@ public class GestioneSegnalazioneDAO {
     		}
     		return false;
     	}catch(Exception e) {e.printStackTrace();
-    	return false;}
+    	return false;
+    	}
 
 
     	finally {
@@ -86,7 +109,7 @@ public class GestioneSegnalazioneDAO {
         List<SegnalazioneDTO> segnalazioni = new ArrayList<>();
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(SELECT_ALL_SEGNALAZIONI);
             rs = ps.executeQuery();
             
@@ -166,7 +189,7 @@ public class GestioneSegnalazioneDAO {
         PreparedStatement ps = null;
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(SET_AS_SOLVED);
             ps.setInt(1, idSegnalazione);
             
@@ -186,7 +209,7 @@ public class GestioneSegnalazioneDAO {
         PreparedStatement ps = null;
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(DELETE_SEGNALAZIONE);
             ps.setInt(1, idSegnalazione);
             

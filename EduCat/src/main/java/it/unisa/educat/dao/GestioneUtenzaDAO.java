@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.sql.DataSource;
+
 /**
  * Implementazione concreta di GestioneUtenzaDAO usando JDBC e MySQL
  */
@@ -28,7 +30,7 @@ public class GestioneUtenzaDAO {
         "INSERT INTO Utente (nome, cognome, email, password, dataNascita, via, civico, citta, cap, tipoUtente) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
-    private static final String INSERT_UTENTE_CON_FIGLIO = 
+    public static final String INSERT_UTENTE_CON_FIGLIO = 
             "INSERT INTO Utente (nome, cognome, email, password, dataNascita, via, civico, citta, cap, tipoUtente, nomeFiglio, cognomeFiglio, dataNascitaFiglio) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     
@@ -52,13 +54,35 @@ public class GestioneUtenzaDAO {
     private static final String SELECT_BY_CRITERIO = 
     		"SELECT * FROM Utente WHERE nome LIKE '%?%' OR cognome LIKE '%?%' OR email LIKE '%?%' OR citta LIKE '%?%' OR tipoUtente LIKE '%?%'";
     
+    
+    
+    private DataSource dataSource; // Nullable
+    
+    // Metodo protetto per ottenere connessione (facilita il mocking)
+    protected Connection getConnection() throws SQLException {
+    	if (dataSource != null) {
+            return dataSource.getConnection();
+        }
+        // Fallback al DatasourceManager originale
+        return DatasourceManager.getConnection();
+    }
+    
+    // Costruttore per injection (opzionale)
+    public GestioneUtenzaDAO() {
+        // Costruttore vuoto per compatibilità
+    }
+    
+    public GestioneUtenzaDAO(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
     public boolean doSave(UtenteDTO u) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             if(u.getTipo().toString().equals("GENITORE"))
             	ps = conn.prepareStatement(INSERT_UTENTE_CON_FIGLIO, Statement.RETURN_GENERATED_KEYS);
             else
@@ -114,7 +138,7 @@ public class GestioneUtenzaDAO {
         ResultSet rs = null;
         
         try {
-        	conn = DatasourceManager.getConnection();
+        	conn = getConnection();
             ps = conn.prepareStatement(SELECT_BY_EMAIL);
             ps.setString(1, email);
             rs = ps.executeQuery();
@@ -141,7 +165,7 @@ public class GestioneUtenzaDAO {
         List<UtenteDTO> utenti = new ArrayList<>();
         
         try {
-        	conn = DatasourceManager.getConnection();
+        	conn = getConnection();
             ps = conn.prepareStatement(SELECT_ALL);
             rs = ps.executeQuery();
             
@@ -165,7 +189,7 @@ public class GestioneUtenzaDAO {
         ResultSet rs = null;
         
         try {
-        	conn = DatasourceManager.getConnection();
+        	conn = getConnection();
             ps = conn.prepareStatement(SELECT_BY_CRITERIO);
             ps.setString(1, stringa);
             rs = ps.executeQuery();
@@ -190,7 +214,7 @@ public class GestioneUtenzaDAO {
         PreparedStatement ps = null;
         
         try {
-        	conn = DatasourceManager.getConnection();
+        	conn = getConnection();
             ps = conn.prepareStatement(DELETE_UTENTE);
             ps.setInt(1, id);
             
@@ -211,7 +235,7 @@ public class GestioneUtenzaDAO {
         ResultSet rs = null;
         
         try {
-        	conn = DatasourceManager.getConnection();
+        	conn = getConnection();
             ps = conn.prepareStatement(SELECT_BY_ID);
             ps.setInt(1, id);
             rs = ps.executeQuery();
@@ -235,7 +259,7 @@ public class GestioneUtenzaDAO {
         PreparedStatement ps = null;
         
         try {
-        	conn = DatasourceManager.getConnection();
+        	conn = getConnection();
             ps = conn.prepareStatement(UPDATE_UTENTE);
             
             

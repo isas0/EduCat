@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.sql.DataSource;
+
 /**
  * DAO per la gestione delle lezioni e prenotazioni
  */
@@ -93,7 +95,27 @@ public class GestioneLezioneDAO {
 	        "WHERE l.idTutor = ? " +
 	        "ORDER BY l.dataInizio DESC";
         
-    
+	    private DataSource dataSource; // Nullable
+	    
+	    // Metodo protetto per ottenere connessione (facilita il mocking)
+	    protected Connection getConnection() throws SQLException {
+	    	if (dataSource != null) {
+	            return dataSource.getConnection();
+	        }
+	        // Fallback al DatasourceManager originale
+	        return DatasourceManager.getConnection();
+	    }
+	    
+	    // Costruttore per injection (opzionale)
+	    public GestioneLezioneDAO() {
+	        // Costruttore vuoto per compatibilità
+	    }
+	    
+	    public GestioneLezioneDAO(DataSource dataSource) {
+	        this.dataSource = dataSource;
+	    }
+	    
+	    
     /**
      * Salva una nuova lezione nel database
      */
@@ -103,7 +125,7 @@ public class GestioneLezioneDAO {
         ResultSet rs = null;
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(INSERT_LEZIONE, Statement.RETURN_GENERATED_KEYS);
             
             // Imposta i parametri
@@ -145,7 +167,7 @@ public class GestioneLezioneDAO {
         List<LezioneDTO> lezioni = new ArrayList<>();
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             
             // Costruzione dinamica della query
             StringBuilder sql = new StringBuilder(SELECT_LEZIONI_BASE);
@@ -235,7 +257,7 @@ public class GestioneLezioneDAO {
     	ResultSet rs = null;
 
     	try {
-    		conn = DatasourceManager.getConnection();
+    		conn = getConnection();
 
     		// Se l'importo non è specificato, calcolalo dalla lezione
     		if (prenotazione.getImportoPagato() <= 0 && prenotazione.getLezione() != null) {
@@ -287,7 +309,7 @@ public class GestioneLezioneDAO {
         PreparedStatement ps = null;
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(UPDATE_STATO_PRENOTAZIONE);
             
             ps.setString(1, nuovoStato);
@@ -310,7 +332,7 @@ public class GestioneLezioneDAO {
         PreparedStatement psLezione = null;
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             conn.setAutoCommit(false);
             
             // 1. Annulla la prenotazione
@@ -368,7 +390,7 @@ public class GestioneLezioneDAO {
         List<LezioneDTO> lezioni = new ArrayList<>();
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             
             ps = conn.prepareStatement(SELECT_STORICO_LEZIONI);
             ps.setInt(1, idUtente);
@@ -445,17 +467,6 @@ public class GestioneLezioneDAO {
             }
         }
         
-        // Studente e prenotazione
-        /*int idStudente = rs.getInt("idStudente");
-        if (idStudente > 0) {
-            lezione.setIdStudentePrenotato(idStudente);
-        }
-        
-        int idPrenotazione = rs.getInt("idPrenotazione");
-        if (idPrenotazione > 0) {
-            lezione.setIdPrenotazione(idPrenotazione);
-        }*/
-        
         return lezione;
     }    
     /**
@@ -467,7 +478,7 @@ public class GestioneLezioneDAO {
         ResultSet rs = null;
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(SELECT_LEZIONE_BY_ID);
             ps.setInt(1, idLezione);
             rs = ps.executeQuery();
@@ -492,7 +503,7 @@ public class GestioneLezioneDAO {
         ResultSet rs = null;
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             String sql = 
                 "SELECT COUNT(*) FROM Prenotazione " +
                 "WHERE idStudente = ? AND idLezione = ? AND stato = 'ATTIVA'";
@@ -523,7 +534,7 @@ public class GestioneLezioneDAO {
         List<PrenotazioneDTO> prenotazioni = new ArrayList<>();
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(SELECT_PRENOTAZIONI_BY_STUDENTE);
             ps.setInt(1, idStudente);
             rs = ps.executeQuery();
@@ -550,7 +561,7 @@ public class GestioneLezioneDAO {
     	ResultSet rs = null;
 
     	try {
-    		conn = DatasourceManager.getConnection();
+    		conn = getConnection();
     		ps = conn.prepareStatement(SELECT_PRENOTAZIONE_BY_ID);
     		ps.setInt(1, idPrenotazione);
     		rs = ps.executeQuery();
@@ -663,7 +674,7 @@ public class GestioneLezioneDAO {
         List<PrenotazioneDTO> prenotazioni = new ArrayList<>();
         
         try {
-            conn = DatasourceManager.getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(SELECT_PRENOTAZIONI_BY_TUTOR);
             ps.setInt(1, idTutor);
             rs = ps.executeQuery();
