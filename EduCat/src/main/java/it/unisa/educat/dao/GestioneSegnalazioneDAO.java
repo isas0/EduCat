@@ -128,60 +128,6 @@ public class GestioneSegnalazioneDAO {
     }
     
     /**
-     * Recupera segnalazioni fatte da un utente
-     */
-   /* public List<SegnalazioneDTO> doRetrieveBySegnalante(int idSegnalante) throws SQLException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        List<SegnalazioneDTO> segnalazioni = new ArrayList<>();
-        
-        try {
-            conn = DatasourceManager.getConnection();
-            ps = conn.prepareStatement(SELECT_SEGNALAZIONI_BY_SEGNALANTE);
-            ps.setInt(1, idSegnalante);
-            rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                SegnalazioneDTO segnalazione = mapResultSetToSegnalazione(rs);
-                segnalazioni.add(segnalazione);
-            }
-            
-            return segnalazioni;
-            
-        } finally {
-            DatasourceManager.closeResources(conn, ps, rs);
-        }
-    }*/
-    
-    /**
-     * Recupera segnalazioni ricevute da un utente
-     */
-    /*public List<SegnalazioneDTO> doRetrieveBySegnalato(int idSegnalato) throws SQLException {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        List<SegnalazioneDTO> segnalazioni = new ArrayList<>();
-        
-        try {
-            conn = DatasourceManager.getConnection();
-            ps = conn.prepareStatement(SELECT_SEGNALAZIONI_BY_SEGNALATO);
-            ps.setInt(1, idSegnalato);
-            rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                SegnalazioneDTO segnalazione = mapResultSetToSegnalazione(rs);
-                segnalazioni.add(segnalazione);
-            }
-            
-            return segnalazioni;
-            
-        } finally {
-            DatasourceManager.closeResources(conn, ps, rs);
-        }
-    }*/
-    
-    /**
      * Imposta una segnalazione come risolta
      */
     public boolean setAsSolved(int idSegnalazione) throws SQLException {
@@ -237,8 +183,9 @@ public class GestioneSegnalazioneDAO {
         case "RISOLTA":
         	segnalazione.setStato(StatoSegnalazione.RISOLTA);
             break;
+         default:
+        	break;
         }
-        
         UtenteDTO segnalante = new UtenteDTO();
         segnalante.setUID(rs.getInt("idSegnalante"));
         segnalante.setNome(rs.getString("segnalante_nome"));
