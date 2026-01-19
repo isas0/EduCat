@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,9 +19,6 @@ import java.util.List;
 import it.unisa.educat.dao.GestioneLezioneDAO;
 import it.unisa.educat.model.*;
 
-/**
- * Servlet implementation class StoricoLezioniServlet
- */
 @WebServlet("/storico-lezioni")
 public class StoricoLezioniServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -48,48 +47,58 @@ public class StoricoLezioniServlet extends HttpServlet {
         }
         
         try {
+            // Gestisci messaggi da URL
+            String error = request.getParameter("error");
+            String success = request.getParameter("success");
+            
+            if (error != null && !error.trim().isEmpty()) {
+                request.setAttribute("errorMessage", URLDecoder.decode(error, "UTF-8"));
+            }
+            
+            if (success != null && !success.trim().isEmpty()) {
+                request.setAttribute("successMessage", URLDecoder.decode(success, "UTF-8"));
+            }
+            
             String tipoUtente = utente.getTipo().toString();
             List<PrenotazioneDTO> prenotazioni = new ArrayList<>();
             
             if ("STUDENTE".equals(tipoUtente) || "GENITORE".equals(tipoUtente)) {
-                // Per studente: tutte le sue prenotazioni CON SLOT
                 prenotazioni = lezioneDAO.getPrenotazioniByStudente(utente.getUID());
             } else if ("TUTOR".equals(tipoUtente)) {
-                // Per tutor: tutte le prenotazioni delle sue lezioni CON SLOT
                 prenotazioni = lezioneDAO.getPrenotazioniByTutor(utente.getUID());
             } else {
-                session.setAttribute("errorMessage", "Utente non autorizzato a visualizzare lo storico");
-                response.sendRedirect("login.jsp");
+                response.sendRedirect("login.jsp?error=" + 
+                    URLEncoder.encode("Utente non autorizzato a visualizzare lo storico", "UTF-8"));
                 return;
             }
             
-            
             // Imposta attributi per la JSP
             request.setAttribute("prenotazioni", prenotazioni);
-            //request.setAttribute("lezioniFuture", lezioniFuture);
-            //request.setAttribute("lezioniAnnullate", lezioniAnnullate);
             request.setAttribute("tipoUtente", tipoUtente);
             request.setAttribute("utente", utente);
             
             // Inoltra alla pagina JSP
-            
-            
-            if ("STUDENTE".equals(tipoUtente)) {
-            	request.getRequestDispatcher("/prenotazioni.jsp").forward(request, response);
+            if ("STUDENTE".equals(tipoUtente) || "GENITORE".equals(tipoUtente)) {
+                request.getRequestDispatcher("/prenotazioni.jsp").forward(request, response);
             } else if ("TUTOR".equals(tipoUtente)) {
-            	request.getRequestDispatcher("/homeTutor.jsp").forward(request, response);
+                request.getRequestDispatcher("/homeTutor.jsp").forward(request, response);
             }
-            
             
         } catch (SQLException e) {
             e.printStackTrace();
-            session.setAttribute("errorMessage", "Errore di database nel recupero dello storico");           
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("login.jsp?error=" + 
+                URLEncoder.encode("Errore di database nel recupero dello storico", "UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("errorMessage", "Errore nel recupero dello storico: " + e.getMessage());
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("login.jsp?error=" + 
+                URLEncoder.encode("Errore nel recupero dello storico: " + e.getMessage(), "UTF-8"));
         }
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        doGet(request, response);
     }
 }
 

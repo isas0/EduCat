@@ -20,11 +20,8 @@ import java.util.List;
 @WebServlet("/cerca-lezione")
 public class CercaLezioneServlet extends HttpServlet {
     
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private GestioneLezioneDAO lezioneDAO;
+    private static final long serialVersionUID = 1L;
+    private GestioneLezioneDAO lezioneDAO;
     
     @Override
     public void init() throws ServletException {

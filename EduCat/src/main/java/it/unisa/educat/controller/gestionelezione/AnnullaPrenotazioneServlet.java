@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,9 +16,6 @@ import java.util.List;
 import it.unisa.educat.dao.GestioneLezioneDAO;
 import it.unisa.educat.model.*;
 
-/**
- * Servlet implementation class AnnullaPrenotazioneServlet
- */
 @WebServlet("/annulla-prenotazione")
 public class AnnullaPrenotazioneServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -56,8 +54,8 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             
             // Verifica che l'utente sia uno studente o un tutor
             if (!"STUDENTE".equals(utente.getTipo().toString()) && !"TUTOR".equals(utente.getTipo().toString()) && !"GENITORE".equals(utente.getTipo().toString())) {
-                session.setAttribute("errorMessage", "Solo studenti o tutor possono annullare prenotazioni");
-                response.sendRedirect("accessoNegato.jsp");
+                response.sendRedirect("login.jsp?error=" + 
+                    URLEncoder.encode("Solo studenti o tutor possono annullare prenotazioni", "UTF-8"));
                 return;
             }
             
@@ -65,41 +63,17 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             PrenotazioneDTO prenotazione = lezioneDAO.getPrenotazioneById(idPrenotazione);
             LezioneDTO lezione = prenotazione.getLezione();
             
-            
-            // Verifica autorizzazione
-           /* boolean autorizzato = false;
-            
-            if ("STUDENTE".equals(utente.getTipo().toString()) || "GENITORE".equals(utente.getTipo().toString())) {
-                // Studente: deve essere il proprietario della prenotazione
-                if (prenotazione.getStudente().getUID() == utente.getUID()) {
-                    autorizzato = true;
-                }
-            } else if ("TUTOR".equals(utente.getTipo().toString())) {
-                // Tutor: deve essere il tutor della lezione associata allo slot
-                // Per questo abbiamo bisogno dello slot
-                int idTutor = lezione.getTutor().getUID();
-                if (idTutor == utente.getUID()) {
-                    autorizzato = true;
-                }
-            }
-            
-            if (!autorizzato) {
-                session.setAttribute("errorMessage", "Non sei autorizzato ad annullare questa prenotazione");
-                response.sendRedirect("accessoNegato.jsp");
-                return;
-            }
-            */
             // Verifica che la prenotazione sia ancora attiva
             if (prenotazione.getStato() != PrenotazioneDTO.StatoPrenotazione.ATTIVA) {
-                session.setAttribute("errorMessage", "Impossibile annullare una prenotazione che non è attiva");
-                response.sendRedirect("storicoPrenotazioni.jsp?error=stato_non_valido");
+                response.sendRedirect("storico-lezioni?error=" + 
+                    URLEncoder.encode("Impossibile annullare una prenotazione che non è attiva", "UTF-8"));
                 return;
             }
             
             // Verifica che lo slot sia almeno un giorno prima
             if (lezione.getDataInizio().minusDays(1).isBefore(LocalDateTime.now())) {
-                session.setAttribute("errorMessage", "Impossibile annullare: manca meno di un giorno alla lezione");
-                response.sendRedirect("storicoPrenotazioni.jsp?error=troppo_tardi");
+                response.sendRedirect("storico-lezioni?error=" + 
+                    URLEncoder.encode("Impossibile annullare: manca meno di un giorno alla lezione", "UTF-8"));
                 return;
             }
             
@@ -108,39 +82,28 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             
             if (success) {
                 // Successo
-                session.setAttribute("successMessage", "Prenotazione annullata con successo!");
-                if ("STUDENTE".equals(utente.getTipo().toString())) {
-                
-                response.sendRedirect("storico-lezioni");
-                } else {
-                	response.sendRedirect("storico-lezioni");
-                }
-                
+                response.sendRedirect("storico-lezioni?success=" + 
+                    URLEncoder.encode("Prenotazione annullata con successo!", "UTF-8"));
             } else {
                 // Fallimento
-                session.setAttribute("errorMessage", "Impossibile annullare la prenotazione");
-                
-                
-                response.sendRedirect("storicoPrenotazioni.jsp?error=annullamento_fallito");
-                
-                
+                response.sendRedirect("storico-lezioni?error=" + 
+                    URLEncoder.encode("Impossibile annullare la prenotazione", "UTF-8"));
             }
             
         } catch (NumberFormatException e) {
-            session.setAttribute("errorMessage", "ID prenotazione non valido");
-            response.sendRedirect("storicoPrenotazioni.jsp?error=id_invalido");
+            response.sendRedirect("storico-lezioni?error=" + 
+                URLEncoder.encode("ID prenotazione non valido", "UTF-8"));
         } catch (IllegalArgumentException e) {
-            session.setAttribute("errorMessage", e.getMessage());
-            response.sendRedirect("storicoPrenotazioni.jsp?error=parametri_mancanti");
+            response.sendRedirect("storico-lezioni?error=" + 
+                URLEncoder.encode(e.getMessage(), "UTF-8"));
         } catch (SQLException e) {
             e.printStackTrace();
-            session.setAttribute("errorMessage", "Errore di database durante l'annullamento");
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("storico-lezioni?error=" + 
+                URLEncoder.encode("Errore di database durante l'annullamento", "UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("errorMessage", "Errore durante l'annullamento: " + e.getMessage());
-            response.sendRedirect("error.jsp");
+            response.sendRedirect("storico-lezioni?error=" + 
+                URLEncoder.encode("Errore durante l'annullamento: " + e.getMessage(), "UTF-8"));
         }
     }
-    
 }

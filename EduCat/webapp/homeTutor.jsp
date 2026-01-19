@@ -6,7 +6,6 @@
 <%@ page import="it.unisa.educat.model.PrenotazioneDTO.StatoPrenotazione" %>
 <%@ page import="it.unisa.educat.model.*" %>
 <%
-
 UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
 if (utente == null) {
 	response.sendRedirect("../login.jsp");
@@ -23,39 +22,79 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
 	return;
 }
 
-	
+//Messaggi di error/success
+String errorMessage = null;
+String successMessage = null;
 
-    // --- MOCK DATA (CLASSI FINTE PER VISUALIZZAZIONE) ---
-    
-    // 1. Utente Finto
-    class UtenteMock {
-        private String nome, cognome;
-        public UtenteMock(String n, String c) { this.nome=n; this.cognome=c; }
-        public String getNome() { return nome; }
-        public String getCognome() { return cognome; }
-    }
+// 1. PRIMA controlla la SESSIONE (per redirect)
+errorMessage = (String) session.getAttribute("errorMessage");
+successMessage = (String) session.getAttribute("successMessage");
 
-   
-    // 3. Recensione Finta
-    class RecensioneMock {
-        public String autore;
-        public String testo;
-        public int stelle;
-        public RecensioneMock(String a, String t, int s) { autore=a; testo=t; stelle=s; }
-    }
+// Rimuovi dalla sessione dopo averli letti (IMPORTANTE!)
+if (errorMessage != null) {
+	session.removeAttribute("errorMessage");
+}
+if (successMessage != null) {
+	session.removeAttribute("successMessage");
+}
 
-    // --- POPOLAZIONE DATI ---
-    
-    // Lista Recensioni
-    List<RecensioneMock> listaRecensioni = new ArrayList<>();
-    listaRecensioni.add(new RecensioneMock("Marco R.", "Spiegazione chiarissima, ho passato l'esame!", 5));
-    listaRecensioni.add(new RecensioneMock("Giulia B.", "Molto paziente e preparato.", 4));
-    listaRecensioni.add(new RecensioneMock("Luca S.", "Tutto ok, lezione utile.", 4));
+// 2. POI controlla la REQUEST (per forward)
+if (errorMessage == null && request.getAttribute("errorMessage") != null) {
+	errorMessage = (String) request.getAttribute("errorMessage");
+}
 
-    // Helpers
-    UtenteMock studente1 = new UtenteMock("Giovanni", "Muciaccia");
-    UtenteMock studente2 = new UtenteMock("Neil", "Armstrong");
-    
+// 3. Infine controlla PARAMETRI URL
+if (errorMessage == null && request.getParameter("error") != null) {
+	errorMessage = request.getParameter("error");
+}
+if (successMessage == null && request.getParameter("success") != null) {
+	successMessage = request.getParameter("success");
+}
+
+// --- MOCK DATA (CLASSI FINTE PER VISUALIZZAZIONE) ---
+
+// 1. Utente Finto
+class UtenteMock {
+	private String nome, cognome;
+
+	public UtenteMock(String n, String c) {
+		this.nome = n;
+		this.cognome = c;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public String getCognome() {
+		return cognome;
+	}
+}
+
+// 3. Recensione Finta
+class RecensioneMock {
+	public String autore;
+	public String testo;
+	public int stelle;
+
+	public RecensioneMock(String a, String t, int s) {
+		autore = a;
+		testo = t;
+		stelle = s;
+	}
+}
+
+// --- POPOLAZIONE DATI ---
+
+// Lista Recensioni
+List<RecensioneMock> listaRecensioni = new ArrayList<>();
+listaRecensioni.add(new RecensioneMock("Marco R.", "Spiegazione chiarissima, ho passato l'esame!", 5));
+listaRecensioni.add(new RecensioneMock("Giulia B.", "Molto paziente e preparato.", 4));
+listaRecensioni.add(new RecensioneMock("Luca S.", "Tutto ok, lezione utile.", 4));
+
+// Helpers
+UtenteMock studente1 = new UtenteMock("Giovanni", "Muciaccia");
+UtenteMock studente2 = new UtenteMock("Neil", "Armstrong");
 %>
 
 <!DOCTYPE html>
@@ -77,6 +116,11 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
     <jsp:include page="navbar.jsp" />
 
     <div class="tutor-container">
+    
+    
+    <%if(errorMessage!=null){ %>
+        <h2 class="page-title"><%=errorMessage %></h2>
+    <%} %>
         
         <div class="reviews-section">
             <div class="section-header">

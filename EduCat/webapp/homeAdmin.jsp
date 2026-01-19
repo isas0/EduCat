@@ -9,6 +9,36 @@ if (utente == null) {
 	return;
 }
 
+//Messaggi di error/success
+String errorMessage = null;
+String successMessage = null;
+
+//1. PRIMA controlla la SESSIONE (per redirect)
+errorMessage = (String) session.getAttribute("errorMessage");
+successMessage = (String) session.getAttribute("successMessage");
+
+//Rimuovi dalla sessione dopo averli letti (IMPORTANTE!)
+if (errorMessage != null) {
+	session.removeAttribute("errorMessage");
+}
+if (successMessage != null) {
+	session.removeAttribute("successMessage");
+}
+
+//2. POI controlla la REQUEST (per forward)
+if (errorMessage == null && request.getAttribute("errorMessage") != null) {
+	errorMessage = (String) request.getAttribute("errorMessage");
+}
+
+//3. Infine controlla PARAMETRI URL
+if (errorMessage == null && request.getParameter("error") != null) {
+	errorMessage = request.getParameter("error");
+}
+if (successMessage == null && request.getParameter("success") != null) {
+	successMessage = request.getParameter("success");
+}
+
+
 // Verifica che l'utente sia admin o abbia permessi
 if (!"AMMINISTRATORE_UTENTI".equals(utente.getTipo().toString())) {
 	request.setAttribute("errorMessage", "Accesso negato. \nIdentificati come amministratore.");

@@ -56,7 +56,7 @@
 
                 <form action="<%= request.getContextPath() %>/elimina-account" method="POST" id="deleteForm">
                     <input type="hidden" name="idUtente" value="<%= utente.getUID() %>">
-                    <button type="button" class="action-btn btn-delete" onclick="confermaEliminazione()">
+                    <button type="submit" class="action-btn btn-delete">
                         <i class="fa-solid fa-trash-can"></i> Elimina Account
                     </button>
                 </form>

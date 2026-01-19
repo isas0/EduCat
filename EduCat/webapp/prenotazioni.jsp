@@ -9,6 +9,43 @@
     UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
     if (utente == null) { response.sendRedirect("login.jsp"); return; }
 
+    
+    
+    
+    //Messaggi di error/success
+    String errorMessage = null;
+    String successMessage = null;
+    
+ 	// 1. PRIMA controlla la SESSIONE (per redirect)
+    errorMessage = (String) session.getAttribute("errorMessage");
+    successMessage = (String) session.getAttribute("successMessage");
+    
+    // Rimuovi dalla sessione dopo averli letti (IMPORTANTE!)
+    if (errorMessage != null) {
+        session.removeAttribute("errorMessage");
+    }
+    if (successMessage != null) {
+        session.removeAttribute("successMessage");
+    }
+    
+    // 2. POI controlla la REQUEST (per forward)
+    if (errorMessage == null && request.getAttribute("errorMessage") != null) {
+        errorMessage = (String) request.getAttribute("errorMessage");
+    }
+    
+    // 3. Infine controlla PARAMETRI URL
+    if (errorMessage == null && request.getParameter("error") != null) {
+        errorMessage = request.getParameter("error");
+    }
+    if (successMessage == null && request.getParameter("success") != null) {
+        successMessage = request.getParameter("success");
+    }
+    
+    
+    
+    
+    
+    
  	// Verifica Permessi
     if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente.getTipo().toString())) {
     	session.invalidate();
@@ -37,6 +74,11 @@
 
     <div class="prenotazioni-container">
         <h1 class="page-title">Le mie Prenotazioni</h1>
+        
+        <%if(errorMessage!=null){ %>
+        <h2 class="page-title"><%=errorMessage %></h2>
+        <%} %>
+        
         
         <div class="table-wrapper">
             <% if (miePrenotazioni == null) { %>
@@ -73,8 +115,7 @@
 								<form action="annulla-prenotazione" method="post" style="display: inline;">
 								<input type="hidden" name="idPrenotazione" value="<%=p.getIdPrenotazione() %>"> 
 								
-								<button type="submit" class="action-btn btn-view"
-									onclick="return confirm('Vuoi davvero annullare la prenotazione? L'utente verrà rimborsato.');">									
+								<button type="submit" class="action-btn btn-view"	>									
 									<i class="fa-solid fa-circle-exclamation"></i> Annulla
 								</button>
 								
