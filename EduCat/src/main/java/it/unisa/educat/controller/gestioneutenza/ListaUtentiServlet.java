@@ -29,7 +29,7 @@ public class ListaUtentiServlet extends HttpServlet {
         UtenteDTO admin = (UtenteDTO) session.getAttribute("utente");
         if (admin == null || !"AMMINISTRATORE_UTENTI".equals(admin.getTipo())) {
             request.setAttribute("errorMessage", "Accesso negato. Solo amministratori possono visualizzare la lista utenti.");
-            request.getRequestDispatcher("/accessoNegato.jsp").forward(request, response);
+            request.getRequestDispatcher(request.getContextPath()+"/login.jsp").forward(request, response);
             return;
         }
         
@@ -47,12 +47,12 @@ public class ListaUtentiServlet extends HttpServlet {
             request.setAttribute("emailFiltro", emailFiltro);
             request.setAttribute("nomeFiltro", nomeFiltro);
             
-            request.getRequestDispatcher("/admin/gestioneUtenti.jsp").forward(request, response);
+            request.getRequestDispatcher(request.getContextPath()+"/homeAdmin.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Errore nel recupero della lista utenti: " + e.getMessage());
-            request.getRequestDispatcher("/error.jsp").forward(request, response);
+            request.getRequestDispatcher(request.getContextPath()+"/error.jsp").forward(request, response);
         }
     }
     

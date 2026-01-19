@@ -45,23 +45,23 @@ public class LoginServlet extends HttpServlet {
                 // Redirect alla dashboard in base al ruolo
                 
                 if(utente.getTipo().toString().equals("STUDENTE") || utente.getTipo().toString().equals("GENITORE")) {
-                	response.sendRedirect("homePageStudenteGenitore.jsp");
+                	response.sendRedirect(request.getContextPath()+"/homePageStudenteGenitore.jsp");
                 } else if(utente.getTipo().toString().equals("TUTOR")) {
-                	response.sendRedirect("storico-lezioni");
+                	response.sendRedirect(request.getContextPath()+"/storico-lezioni");
                 } else if(utente.getTipo().toString().equals("AMMINISTRATORE_UTENTI")) {
-                	response.sendRedirect("lista-segnalazioni");
+                	response.sendRedirect(request.getContextPath()+"/lista-segnalazioni");
                 }
                 
             } else {
                 // Login fallito
                 request.setAttribute("errorMessage", "Email o password errati");
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
+                request.getRequestDispatcher(request.getContextPath()+"/login.jsp").forward(request, response);
             }
             
         } catch (Exception e) {
             request.setAttribute("errorMessage", "Errore durante il login");
             e.printStackTrace();
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher(request.getContextPath()+"/login.jsp").forward(request, response);
         }
     }
     

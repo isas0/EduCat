@@ -36,13 +36,13 @@ public class StoricoLezioniServlet extends HttpServlet {
         
         HttpSession session = request.getSession(false);
         if (session == null) {
-            response.sendRedirect("../login.jsp");
+            response.sendRedirect(request.getContextPath()+"/login.jsp");
             return;
         }
         
         UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
         if (utente == null) {
-            response.sendRedirect("../login.jsp");
+            response.sendRedirect(request.getContextPath()+"/login.jsp");
             return;
         }
         
@@ -67,7 +67,7 @@ public class StoricoLezioniServlet extends HttpServlet {
             } else if ("TUTOR".equals(tipoUtente)) {
                 prenotazioni = lezioneDAO.getPrenotazioniByTutor(utente.getUID());
             } else {
-                response.sendRedirect("login.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
                     URLEncoder.encode("Utente non autorizzato a visualizzare lo storico", "UTF-8"));
                 return;
             }
@@ -79,18 +79,18 @@ public class StoricoLezioniServlet extends HttpServlet {
             
             // Inoltra alla pagina JSP
             if ("STUDENTE".equals(tipoUtente) || "GENITORE".equals(tipoUtente)) {
-                request.getRequestDispatcher("/prenotazioni.jsp").forward(request, response);
+                request.getRequestDispatcher(request.getContextPath()+"/prenotazioni.jsp").forward(request, response);
             } else if ("TUTOR".equals(tipoUtente)) {
-                request.getRequestDispatcher("/homeTutor.jsp").forward(request, response);
+                request.getRequestDispatcher(request.getContextPath()+"/homeTutor.jsp").forward(request, response);
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("login.jsp?error=" + 
+            response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
                 URLEncoder.encode("Errore di database nel recupero dello storico", "UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("login.jsp?error=" + 
+            response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
                 URLEncoder.encode("Errore nel recupero dello storico: " + e.getMessage(), "UTF-8"));
         }
     }

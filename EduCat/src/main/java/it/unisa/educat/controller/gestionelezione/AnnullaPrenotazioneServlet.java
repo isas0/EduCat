@@ -33,13 +33,13 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
         
         HttpSession session = request.getSession(false);
         if (session == null) {
-            response.sendRedirect("../login.jsp");
+            response.sendRedirect(request.getContextPath()+"/login.jsp");
             return;
         }
         
         UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
         if (utente == null) {
-            response.sendRedirect("../login.jsp");
+            response.sendRedirect(request.getContextPath()+"//login.jsp");
             return;
         }
         
@@ -54,7 +54,7 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             
             // Verifica che l'utente sia uno studente o un tutor
             if (!"STUDENTE".equals(utente.getTipo().toString()) && !"TUTOR".equals(utente.getTipo().toString()) && !"GENITORE".equals(utente.getTipo().toString())) {
-                response.sendRedirect("login.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
                     URLEncoder.encode("Solo studenti o tutor possono annullare prenotazioni", "UTF-8"));
                 return;
             }
@@ -65,14 +65,14 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             
             // Verifica che la prenotazione sia ancora attiva
             if (prenotazione.getStato() != PrenotazioneDTO.StatoPrenotazione.ATTIVA) {
-                response.sendRedirect("storico-lezioni?error=" + 
+                response.sendRedirect(request.getContextPath()+"/storico-lezioni?error=" + 
                     URLEncoder.encode("Impossibile annullare una prenotazione che non è attiva", "UTF-8"));
                 return;
             }
             
             // Verifica che lo slot sia almeno un giorno prima
             if (lezione.getDataInizio().minusDays(1).isBefore(LocalDateTime.now())) {
-                response.sendRedirect("storico-lezioni?error=" + 
+                response.sendRedirect(request.getContextPath()+"/storico-lezioni?error=" + 
                     URLEncoder.encode("Impossibile annullare: manca meno di un giorno alla lezione", "UTF-8"));
                 return;
             }
@@ -82,27 +82,27 @@ public class AnnullaPrenotazioneServlet extends HttpServlet {
             
             if (success) {
                 // Successo
-                response.sendRedirect("storico-lezioni?success=" + 
+                response.sendRedirect(request.getContextPath()+"/storico-lezioni?success=" + 
                     URLEncoder.encode("Prenotazione annullata con successo!", "UTF-8"));
             } else {
                 // Fallimento
-                response.sendRedirect("storico-lezioni?error=" + 
+                response.sendRedirect(request.getContextPath()+"/storico-lezioni?error=" + 
                     URLEncoder.encode("Impossibile annullare la prenotazione", "UTF-8"));
             }
             
         } catch (NumberFormatException e) {
-            response.sendRedirect("storico-lezioni?error=" + 
+            response.sendRedirect(request.getContextPath()+"/storico-lezioni?error=" + 
                 URLEncoder.encode("ID prenotazione non valido", "UTF-8"));
         } catch (IllegalArgumentException e) {
-            response.sendRedirect("storico-lezioni?error=" + 
+            response.sendRedirect(request.getContextPath()+"/storico-lezioni?error=" + 
                 URLEncoder.encode(e.getMessage(), "UTF-8"));
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("storico-lezioni?error=" + 
+            response.sendRedirect(request.getContextPath()+"/storico-lezioni?error=" + 
                 URLEncoder.encode("Errore di database durante l'annullamento", "UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("storico-lezioni?error=" + 
+            response.sendRedirect(request.getContextPath()+"/storico-lezioni?error=" + 
                 URLEncoder.encode("Errore durante l'annullamento: " + e.getMessage(), "UTF-8"));
         }
     }

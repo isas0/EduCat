@@ -40,15 +40,15 @@ public class RegistrazioneServlet extends HttpServlet {
 				request.setAttribute("errorMessage", "Email già registrata");
 				if(tipoUtente.equals("STUDENTE")) {
 					
-					request.getRequestDispatcher("/registrazioneStudente.jsp").forward(request, response);
+					request.getRequestDispatcher(request.getContextPath()+"/registrazioneStudente.jsp").forward(request, response);
 					
 				} else if(tipoUtente.equals("GENITORE")) {
 					
-					request.getRequestDispatcher("/registrazioneGenitore.jsp").forward(request, response);
+					request.getRequestDispatcher(request.getContextPath()+"/registrazioneGenitore.jsp").forward(request, response);
 					
 				} else if(tipoUtente.equals("TUTOR")) {
 					
-					request.getRequestDispatcher("/registrazioneTutor.jsp").forward(request, response);
+					request.getRequestDispatcher(request.getContextPath()+"/registrazioneTutor.jsp").forward(request, response);
 					
 				}
 				return;
@@ -91,18 +91,18 @@ public class RegistrazioneServlet extends HttpServlet {
             
             if (!success) {
 				request.setAttribute("errorMessage", "Errore durante la registrazione");
-				request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
+				request.getRequestDispatcher(request.getContextPath()+"/registrazione.jsp").forward(request, response);
 			}
             
 			if(tipoUtente.equals("STUDENTE")) {
-	            request.getRequestDispatcher("/homePageStudenteGenitore.jsp").forward(request, response);
+	            request.getRequestDispatcher(request.getContextPath()+"/homePageStudenteGenitore.jsp").forward(request, response);
 	            
 			} else if(tipoUtente.equals("GENITORE")) {
 				
-	            request.getRequestDispatcher("/homePageStudenteGenitore.jsp").forward(request, response);
+	            request.getRequestDispatcher(request.getContextPath()+"/homePageStudenteGenitore.jsp").forward(request, response);
 	            
 			} else if(tipoUtente.equals("TUTOR")) {
-					request.getRequestDispatcher("/nuovaLezione.jsp").forward(request, response);
+					request.getRequestDispatcher(request.getContextPath()+"/nuovaLezione.jsp").forward(request, response);
 			}
 			// Contratto OCL post: self.utenti → includes(nuovoUtente) and nuovoUtente.stato = CONFIRMED
 			

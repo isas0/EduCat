@@ -38,14 +38,14 @@ public class PrenotaLezioneServlet extends HttpServlet {
         
     	HttpSession session = request.getSession(false);
         if (session == null) {
-            response.sendRedirect("../login.jsp?error=" + 
+            response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
                 URLEncoder.encode("Sessione scaduta", "UTF-8"));
             return;
         }
         
         UtenteDTO studente = (UtenteDTO) session.getAttribute("utente");
         if (studente == null) {
-            response.sendRedirect("../login.jsp?error=" + 
+            response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
                 URLEncoder.encode("Accesso richiesto", "UTF-8"));
             return;
         }
@@ -54,7 +54,7 @@ public class PrenotaLezioneServlet extends HttpServlet {
             // Ottieni parametri dalla richiesta
             String idLezioneStr = request.getParameter("idLezione");
             if (idLezioneStr == null || idLezioneStr.trim().isEmpty()) {
-                response.sendRedirect("cerca-lezione?error=" + 
+                response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
                     URLEncoder.encode("ID lezione non specificato", "UTF-8"));
                 return;
             }
@@ -63,7 +63,7 @@ public class PrenotaLezioneServlet extends HttpServlet {
             
             // Verifica che l'utente sia effettivamente uno studente
             if (!"STUDENTE".equals(studente.getTipo().toString())) {
-                response.sendRedirect("cerca-lezione?error=" + 
+                response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
                     URLEncoder.encode("Solo gli studenti possono prenotare lezioni", "UTF-8"));
                 return;
             }
@@ -72,21 +72,21 @@ public class PrenotaLezioneServlet extends HttpServlet {
             LezioneDTO lezione = lezioneDAO.getLezioneById(idLezione);
             
             if (lezione == null) {
-                response.sendRedirect("cerca-lezione?error=" + 
+                response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
                     URLEncoder.encode("Lezione non trovata", "UTF-8"));
                 return;
             }
             
             // Verifica che la lezione sia disponibile
             if (lezione.getStato() != StatoLezione.PIANIFICATA) {
-                response.sendRedirect("info-lezione?idLezione=" + idLezione + "&error=" + 
+                response.sendRedirect(request.getContextPath()+"/info-lezione?idLezione=" + idLezione + "&error=" + 
                     URLEncoder.encode("Questa lezione non è più disponibile", "UTF-8"));
                 return;
             }
             
             // Verifica che la lezione non sia già passata
             if (lezione.getDataInizio().isBefore(LocalDateTime.now())) {
-                response.sendRedirect("info-lezione?idLezione=" + idLezione + "&error=" + 
+                response.sendRedirect(request.getContextPath()+"/info-lezione?idLezione=" + idLezione + "&error=" + 
                     URLEncoder.encode("Impossibile prenotare una lezione già passata", "UTF-8"));
                 return;
             }
@@ -118,27 +118,27 @@ public class PrenotaLezioneServlet extends HttpServlet {
             
             if (success) {
                 // Successo
-                response.sendRedirect("storico-lezioni?success=" + 
+                response.sendRedirect(request.getContextPath()+"/storico-lezioni?success=" + 
                     URLEncoder.encode("Lezione prenotata con successo!", "UTF-8"));
             } else {
                 // Fallimento
-                response.sendRedirect("info-lezione?idLezione=" + idLezione + "&error=" + 
+                response.sendRedirect(request.getContextPath()+"/info-lezione?idLezione=" + idLezione + "&error=" + 
                     URLEncoder.encode("Impossibile prenotare la lezione", "UTF-8"));
             }
             
         } catch (NumberFormatException e) {
-            response.sendRedirect("cerca-lezione?error=" + 
+            response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
                 URLEncoder.encode("ID lezione non valido", "UTF-8"));
         } catch (IllegalArgumentException e) {
             response.sendRedirect("cerca-lezione?error=" + 
                 URLEncoder.encode(e.getMessage(), "UTF-8"));
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("cerca-lezione?error=" + 
+            response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
                 URLEncoder.encode("Errore di database durante la prenotazione", "UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("cerca-lezione?error=" + 
+            response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
                 URLEncoder.encode("Errore durante la prenotazione: " + e.getMessage(), "UTF-8"));
         }    
     }

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 
 import it.unisa.educat.dao.GestioneSegnalazioneDAO;
@@ -36,15 +37,15 @@ public class InviaSegnalazioneServlet extends HttpServlet {
         
         HttpSession session = request.getSession(false);
         if (session == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("{\"success\": false, \"message\": \"Utente non autenticato\"}");
+            response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
+                URLEncoder.encode("Sessione scaduta", "UTF-8"));
             return;
         }
         
         UtenteDTO segnalante = (UtenteDTO) session.getAttribute("utente");
         if (segnalante == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.write("{\"success\": false, \"message\": \"Utente non autenticato\"}");
+        	response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
+                    URLEncoder.encode("Accesso richiesto", "UTF-8"));
             return;
         }
         
