@@ -52,7 +52,7 @@ public class GestioneUtenzaDAO {
         "DELETE FROM Utente WHERE idUtente = ?";
     
     private static final String SELECT_BY_CRITERIO = 
-    		"SELECT * FROM Utente WHERE nome LIKE '%?%' OR cognome LIKE '%?%' OR email LIKE '%?%' OR citta LIKE '%?%' OR tipoUtente LIKE '%?%'";
+    	    "SELECT * FROM Utente WHERE nome LIKE ? OR cognome LIKE ? OR email LIKE ? OR citta LIKE ? OR tipoUtente LIKE ?";
     
     
     
@@ -189,9 +189,19 @@ public class GestioneUtenzaDAO {
         ResultSet rs = null;
         
         try {
-        	conn = getConnection();
+            conn = getConnection();
             ps = conn.prepareStatement(SELECT_BY_CRITERIO);
-            ps.setString(1, stringa);
+            
+            // Prepara il pattern di ricerca
+            String pattern = "%" + stringa + "%";
+            
+            // Imposta TUTTI i parametri con lo stesso pattern
+            ps.setString(1, pattern); // nome LIKE '%stringa%'
+            ps.setString(2, pattern); // cognome LIKE '%stringa%'
+            ps.setString(3, pattern); // email LIKE '%stringa%'
+            ps.setString(4, pattern); // citta LIKE '%stringa%'
+            ps.setString(5, pattern); // tipoUtente LIKE '%stringa%'
+            
             rs = ps.executeQuery();
             
             if (rs.next()) {
@@ -201,14 +211,12 @@ public class GestioneUtenzaDAO {
             return null;
             
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Errore: " + stringa, e);
+            LOGGER.log(Level.SEVERE, "Errore ricerca utente per criterio: " + stringa, e);
             throw e;
         } finally {
             closeResources(conn, ps, rs);
         }
-    }
-
-    
+    }    
     public boolean doDelete(int id) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
@@ -276,7 +284,7 @@ public class GestioneUtenzaDAO {
             
             // Determina tipoUtente
             //String tipoUtente = determineTipoUtente(u);
-            //ps.setString(10, tipoUtente);
+            ps.setString(10, u.getTipo().toString());
             
             ps.setInt(11, u.getUID());
             
@@ -309,7 +317,10 @@ public class GestioneUtenzaDAO {
             	utente.setTipo(TipoUtente.TUTOR);
                 break;
             case "GENITORE":
-            	utente.setTipo(TipoUtente.TUTOR);
+            	utente.setTipo(TipoUtente.GENITORE);
+            	utente.setNomeFiglio(rs.getString("nomeFiglio"));
+            	utente.setCognomeFiglio(rs.getString("cognomeFiglio"));
+            	utente.setDataNascitaFiglio(rs.getString("dataNascitaFiglio"));
                 break;
             case "AMMINISTRATORE_UTENTI":
             	utente.setTipo(TipoUtente.AMMINISTRATORE_UTENTI);
