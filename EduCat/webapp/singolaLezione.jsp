@@ -50,6 +50,14 @@ String nomeCompletoTutor = tutor.getNome() + " " + tutor.getCognome();
 
     <div class="container-dettaglio">
         
+        <h2 style="text-align: center; color: #1A5C61; margin-bottom: 20px;"><%
+				if (request.getParameter("error") != null) {
+				%>
+				<%=request.getParameter("error")%>
+				<%
+				}
+				%></h2>
+        
         <div class="card">
             
             <div class="card-header">

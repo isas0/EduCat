@@ -27,7 +27,7 @@ public class GestioneLezioneDAO {
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private static final String UPDATE_STATO_LEZIONE = 
-			"UPDATE Lezione SET statoLezione = ?, idStudente = ?, idPrenotazione = ? " +
+			"UPDATE Lezione SET statoLezione = ? " +
 					"WHERE idLezione = ?";
 
 	private static final String SELECT_LEZIONI_BASE = 
@@ -287,6 +287,18 @@ public class GestioneLezioneDAO {
     			rs = ps.getGeneratedKeys();
     			if (rs.next()) {
     				prenotazione.setIdPrenotazione(rs.getInt(1));
+    				
+
+    				Connection conn2 = null;
+    				PreparedStatement ps2 = null;
+    		    	ResultSet rs2 = null;
+    				
+    		    	conn2 = getConnection();
+    				ps2 = conn2.prepareStatement(UPDATE_STATO_LEZIONE);
+    				ps2.setString(1, "PRENOTATA");
+    				ps2.setInt(2, prenotazione.getLezione().getIdLezione());
+    				 
+    				ps2.executeUpdate();
     			}
     			return true;
     		}
@@ -472,6 +484,27 @@ public class GestioneLezioneDAO {
     /**
      * Ottieni lezione by ID
      */
+    
+    public boolean setLezioneAsConclusa(int idLezione) throws SQLException{
+    	
+    	 Connection conn = null;
+         PreparedStatement ps = null;
+         ResultSet rs = null;
+         
+         try {
+             conn = getConnection();
+             ps = conn.prepareStatement(UPDATE_STATO_LEZIONE);
+             
+             ps.setString(1, "CONCLUSA");
+             ps.setInt(2, idLezione);
+             
+             return true;
+             
+         } finally {
+             DatasourceManager.closeResources(conn, ps, rs);
+         }
+    }
+    
     public LezioneDTO getLezioneById(int idLezione) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;

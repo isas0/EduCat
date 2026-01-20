@@ -63,7 +63,7 @@ public class PrenotaLezioneServlet extends HttpServlet {
             
             // Verifica che l'utente sia effettivamente uno studente
             if (!"STUDENTE".equals(studente.getTipo().toString())) {
-                response.sendRedirect("/cerca-lezione?error=" + 
+                response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
                     URLEncoder.encode("Solo gli studenti possono prenotare lezioni", "UTF-8"));
                 return;
             }
@@ -72,27 +72,27 @@ public class PrenotaLezioneServlet extends HttpServlet {
             LezioneDTO lezione = lezioneDAO.getLezioneById(idLezione);
             
             if (lezione == null) {
-                response.sendRedirect("/cerca-lezione?error=" + 
+                response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
                     URLEncoder.encode("Lezione non trovata", "UTF-8"));
                 return;
             }
             
             if(lezioneDAO.hasStudentePrenotazioneInFasciaOraria(studente.getUID(), lezione.getDataInizio(), lezione.getDataFine())) {
-            	response.sendRedirect("/info-lezione?idLezione=" + idLezione + "&error=" + 
+            	response.sendRedirect(request.getContextPath()+"/info-lezione?idLezione=" + idLezione + "&error=" + 
                     URLEncoder.encode("Hai già prenotato una lezione in questa fascia oraria", "UTF-8"));
                 return;
             }
             
             // Verifica che la lezione sia disponibile
             if (lezione.getStato() != StatoLezione.PIANIFICATA) {
-                response.sendRedirect("/info-lezione?idLezione=" + idLezione + "&error=" + 
+                response.sendRedirect(request.getContextPath()+"/info-lezione?idLezione=" + idLezione + "&error=" + 
                     URLEncoder.encode("Questa lezione non è più disponibile", "UTF-8"));
                 return;
             }
             
             // Verifica che la lezione non sia già passata
             if (lezione.getDataInizio().isBefore(LocalDateTime.now())) {
-                response.sendRedirect("/info-lezione?idLezione=" + idLezione + "&error=" + 
+                response.sendRedirect(request.getContextPath()+"/info-lezione?idLezione=" + idLezione + "&error=" + 
                     URLEncoder.encode("Impossibile prenotare una lezione già passata", "UTF-8"));
                 return;
             }
