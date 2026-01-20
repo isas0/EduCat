@@ -25,7 +25,6 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
 
 // Recupero prenotazioni
 List<PrenotazioneDTO> prenotazioni = (List<PrenotazioneDTO>) request.getAttribute("prenotazioni");
-// FALLBACK
 if (prenotazioni == null) {
     try {
         GestioneLezioneDAO dao = new GestioneLezioneDAO();
@@ -55,21 +54,13 @@ if (successMessage == null && request.getParameter("success") != null) {
 	successMessage = request.getParameter("success");
 }
 
-// --- MOCK DATA ---
-class UtenteMock {
-	private String nome, cognome;
-	public UtenteMock(String n, String c) { this.nome = n; this.cognome = c; }
-	public String getNome() { return nome; }
-	public String getCognome() { return cognome; }
-}
-
+// --- MOCK DATA RECENSIONI ---
 class RecensioneMock {
 	public String autore;
 	public String testo;
 	public int stelle;
 	public RecensioneMock(String a, String t, int s) { autore = a; testo = t; stelle = s; }
 }
-
 List<RecensioneMock> listaRecensioni = new ArrayList<>();
 listaRecensioni.add(new RecensioneMock("Marco R.", "Spiegazione chiarissima, ho passato l'esame!", 5));
 listaRecensioni.add(new RecensioneMock("Giulia B.", "Molto paziente e preparato.", 4));
@@ -104,13 +95,27 @@ DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px; }
-        .btn-add-lesson {
-            background-color: #38B4BC; color: white; padding: 10px 20px; text-decoration: none;
-            border-radius: 8px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px;
-            transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        /* CSS MODALE (Incluso qui per comodità, se non è nel file CSS esterno) */
+        .modal-overlay-confirm {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 9999;
+            display: none; justify-content: center; align-items: center;
         }
-        .btn-add-lesson:hover { background-color: #2a9ea6; transform: translateY(-2px); }
+        .modal-box {
+            background: white; padding: 30px; border-radius: 12px;
+            width: 90%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-icon-warning { font-size: 3rem; color: #f57f17; margin-bottom: 15px; }
+        .modal-buttons { margin-top: 25px; display: flex; gap: 10px; justify-content: center; }
+        .btn-modal-cancel {
+            background: #eee; color: #333; padding: 10px 20px; border-radius: 6px; 
+            border: none; cursor: pointer; font-weight: 600; font-family: inherit;
+        }
+        .btn-modal-confirm {
+            background: #c62828; color: white; padding: 10px 20px; border-radius: 6px;
+            border: none; cursor: pointer; font-weight: 600; font-family: inherit;
+        }
     </style>
 </head>
 <body>
@@ -179,13 +184,14 @@ DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
                             <th>Materia</th>
                             <th>Modalità</th>
                             <th>Prezzo</th>
-                            <th style="text-align: right;">Stato</th>
+                            <th>Stato</th>
+                            <th style="text-align: right;">Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% if (lezioniDisponibili == null || lezioniDisponibili.isEmpty()) { %>
                             <tr>
-                                <td colspan="5" style="text-align: center; color: #888; padding: 30px;">
+                                <td colspan="6" style="text-align: center; color: #888; padding: 30px;">
                                     Non hai lezioni in attesa. Clicca su "Nuova Lezione" per aggiungerne una.
                                 </td>
                             </tr>
@@ -196,10 +202,16 @@ DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
                                 <td><%= l.getMateria() %></td>
                                 <td><%= l.getModalitaLezione() %></td>
                                 <td style="font-family: monospace;">€ <%= String.format("%.2f", l.getPrezzo()) %></td>
-                                <td style="text-align: right;">
+                                <td>
                                     <span class="status-badge" style="background-color: #e3f2fd; color: #1565c0;">
                                         PIANIFICATA
                                     </span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <button type="button" class="action-btn btn-delete" 
+                                            onclick="apriModalElimina(<%= l.getIdLezione() %>)">
+                                        <i class="fa-solid fa-trash"></i> Elimina
+                                    </button>
                                 </td>
                             </tr>
                         <%   } 
@@ -246,13 +258,10 @@ DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 							<td style="text-align: right;">
 							
 								<%if(p.getStato().equals(StatoPrenotazione.ATTIVA)){ %>
-								<form action="annulla-prenotazione" method="post" style="display: inline;">
-								    <input type="hidden" name="idPrenotazione" value="<%=p.getIdPrenotazione() %>"> 
-								    
-                                    <button type="submit" class="action-btn btn-delete">									
-									    <i class="fa-solid fa-circle-exclamation"></i> Annulla
-								    </button>
-								</form>
+                                    <button type="button" class="action-btn btn-delete" 
+                                            onclick="apriModalAnnulla(<%= p.getIdPrenotazione() %>)">									
+    									<i class="fa-solid fa-circle-exclamation"></i> Annulla
+    								</button>
 								<%} %>
 							
 								<button class="btn-report"
@@ -272,6 +281,69 @@ DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     
 	<jsp:include page="modalSegnalazione.jsp" />
     <jsp:include page="footer.jsp" />
+
+    <div id="modalAnnulla" class="modal-overlay-confirm">
+        <div class="modal-box">
+            <i class="fa-solid fa-triangle-exclamation modal-icon-warning"></i>
+            <h3 style="margin-top:0; color:#333;">Conferma Annullamento</h3>
+            <p style="color:#666; margin-bottom: 20px;">
+                Vuoi davvero annullare la prenotazione? <br>
+                Lo studente verrà rimborsato.
+            </p>
+            <form action="annulla-prenotazione" method="POST">
+                <input type="hidden" name="idPrenotazione" id="idPrenotazioneInput" value="">
+                <div class="modal-buttons">
+                    <button type="button" class="btn-modal-cancel" onclick="chiudiModal('modalAnnulla')">Indietro</button>
+                    <button type="submit" class="btn-modal-confirm">Sì, Annulla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalElimina" class="modal-overlay-confirm">
+        <div class="modal-box">
+            <i class="fa-solid fa-trash modal-icon-warning" style="color: #c62828;"></i>
+            <h3 style="margin-top:0; color:#333;">Rimuovi Disponibilità</h3>
+            <p style="color:#666; margin-bottom: 20px;">
+                Vuoi rimuovere questa lezione dalle disponibilità? <br>
+                Non sarà più visibile agli studenti.
+            </p>
+            <form action="annulla-prenotazione" method="POST">
+                <input type="hidden" name="tipoOperazione" value="rimuoviDisponibilita">
+                <input type="hidden" name="idLezione" id="idLezioneEliminaInput" value="">
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn-modal-cancel" onclick="chiudiModal('modalElimina')">Indietro</button>
+                    <button type="submit" class="btn-modal-confirm">Sì, Rimuovi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function chiudiModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Modale Annulla Prenotazione (Esistente)
+        function apriModalAnnulla(idPrenotazione) {
+            document.getElementById('idPrenotazioneInput').value = idPrenotazione;
+            document.getElementById('modalAnnulla').style.display = 'flex';
+        }
+
+        // Modale Elimina Lezione Pianificata (Nuova)
+        function apriModalElimina(idLezione) {
+            document.getElementById('idLezioneEliminaInput').value = idLezione;
+            document.getElementById('modalElimina').style.display = 'flex';
+        }
+        
+        // Chiudi cliccando fuori
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay-confirm')) {
+                event.target.style.display = "none";
+            }
+        }
+    </script>
 
 </body>
 </html>

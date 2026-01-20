@@ -220,7 +220,7 @@ body {
     transform: translateY(0);
 }
 
-/* --- BOTTONI AZIONI (AGGIUNTO/CORRETTO) --- */
+/* --- BOTTONI AZIONI --- */
 .action-btn {
     text-decoration: none;
     padding: 6px 12px;
@@ -278,3 +278,28 @@ body {
     background-color: #ffecb3;
     transform: translateY(-1px);
 }
+
+/* --- MODALE DI CONFERMA (Nuovo) --- */
+.modal-overlay-confirm {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 9999;
+    display: none; justify-content: center; align-items: center;
+}
+.modal-box {
+    background: white; padding: 30px; border-radius: 12px;
+    width: 90%; max-width: 400px; text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.modal-icon-warning { font-size: 3rem; color: #f57f17; margin-bottom: 15px; }
+.modal-buttons { margin-top: 25px; display: flex; gap: 10px; justify-content: center; }
+.btn-modal-cancel {
+    background: #eee; color: #333; padding: 10px 20px; border-radius: 6px; 
+    border: none; cursor: pointer; font-weight: 600; font-family: inherit;
+}
+.btn-modal-cancel:hover { background: #ddd; }
+
+.btn-modal-confirm {
+    background: #c62828; color: white; padding: 10px 20px; border-radius: 6px;
+    border: none; cursor: pointer; font-weight: 600; font-family: inherit;
+}
+.btn-modal-confirm:hover { background: #b71c1c; }

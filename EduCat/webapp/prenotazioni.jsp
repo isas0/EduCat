@@ -16,24 +16,16 @@
     String errorMessage = null;
     String successMessage = null;
     
- 	// 1. PRIMA controlla la SESSIONE (per redirect)
     errorMessage = (String) session.getAttribute("errorMessage");
     successMessage = (String) session.getAttribute("successMessage");
     
-    // Rimuovi dalla sessione dopo averli letti (IMPORTANTE!)
-    if (errorMessage != null) {
-        session.removeAttribute("errorMessage");
-    }
-    if (successMessage != null) {
-        session.removeAttribute("successMessage");
-    }
+    if (errorMessage != null) session.removeAttribute("errorMessage");
+    if (successMessage != null) session.removeAttribute("successMessage");
     
-    // 2. POI controlla la REQUEST (per forward)
     if (errorMessage == null && request.getAttribute("errorMessage") != null) {
         errorMessage = (String) request.getAttribute("errorMessage");
     }
     
-    // 3. Infine controlla PARAMETRI URL
     if (errorMessage == null && request.getParameter("error") != null) {
         errorMessage = request.getParameter("error");
     }
@@ -100,7 +92,6 @@
                         <% 
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                         for(PrenotazioneDTO p : miePrenotazioni) { 
-                           // Null check per sicurezza
                            String nomeTutor = "N/D";
                            int idTutor = 0;
                            if(p.getLezione() != null && p.getLezione().getTutor() != null) {
@@ -116,13 +107,10 @@
                             <td style="text-align: right;">
                             
                             	<%if(p.getStato().equals(StatoPrenotazione.ATTIVA)){ %>
-								<form action="annulla-prenotazione" method="post" style="display: inline;">
-    								<input type="hidden" name="idPrenotazione" value="<%=p.getIdPrenotazione() %>"> 
-    								
-                                    <button type="submit" class="action-btn btn-delete">									
+                                    <button type="button" class="action-btn btn-delete" 
+                                            onclick="apriModalAnnulla(<%=p.getIdPrenotazione() %>)">									
     									<i class="fa-solid fa-circle-exclamation"></i> Annulla
     								</button>
-								</form>
 								<%} %>
                             
                                 <button class="btn-report" onclick="apriSegnalazione(<%= idTutor %>, '<%= nomeTutor %>')">
@@ -138,7 +126,45 @@
     </div>
 
     <jsp:include page="modalSegnalazione.jsp" />
-    
     <jsp:include page="footer.jsp" />
+    
+    <div id="modalAnnulla" class="modal-overlay-confirm">
+        <div class="modal-box">
+            <i class="fa-solid fa-triangle-exclamation modal-icon-warning"></i>
+            <h3 style="margin-top:0; color:#333;">Vuoi annullare la prenotazione?</h3>
+            <p style="color:#666; margin-bottom: 20px;">
+                L'operazione è definitiva. <br>
+                Ti verrà rimborsato l'importo pagato.
+            </p>
+            
+            <form action="annulla-prenotazione" method="POST">
+                <input type="hidden" name="idPrenotazione" id="idPrenotazioneInput" value="">
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn-modal-cancel" onclick="chiudiModalAnnulla()">Non annullare</button>
+                    <button type="submit" class="btn-modal-confirm">Sì, Conferma</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function apriModalAnnulla(idPrenotazione) {
+            document.getElementById('idPrenotazioneInput').value = idPrenotazione;
+            document.getElementById('modalAnnulla').style.display = 'flex';
+        }
+
+        function chiudiModalAnnulla() {
+            document.getElementById('modalAnnulla').style.display = 'none';
+        }
+        
+        // Chiudi se clicchi fuori dalla box
+        window.onclick = function(event) {
+            var modal = document.getElementById('modalAnnulla');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
