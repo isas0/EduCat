@@ -59,7 +59,7 @@ public class ListaSegnalazioniServlet extends HttpServlet {
         // Verifica che l'utente sia admin o abbia permessi per vedere le segnalazioni
         if (!"AMMINISTRATORE_UTENTI".equals(utente.getTipo().toString())) {
              session.setAttribute("errorMessage", "Accesso negato: solo gli amministratori possono visualizzare le segnalazioni");
-             response.sendRedirect(request.getContextPath()+"/accessoNegato.jsp");
+             response.sendRedirect(request.getContextPath()+"/login.jsp");
              return;
          }
         
@@ -83,16 +83,16 @@ public class ListaSegnalazioniServlet extends HttpServlet {
             request.setAttribute("totaleUtenti", utenti.size());
             
             // Forward alla pagina JSP
-            request.getRequestDispatcher(request.getContextPath()+"/homeAdmin.jsp").forward(request, response);
+            request.getRequestDispatcher("/homeAdmin.jsp").forward(request, response);
             
         } catch (SQLException e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore di database nel recupero delle segnalazioni");
-            response.sendRedirect("error.jsp");
+            response.sendRedirect(request.getContextPath()+"/lista-segnalazioni");
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore: " + e.getMessage());
-            response.sendRedirect("error.jsp");
+            response.sendRedirect(request.getContextPath()+"/lista-segnalazioni");
         }
     }
     

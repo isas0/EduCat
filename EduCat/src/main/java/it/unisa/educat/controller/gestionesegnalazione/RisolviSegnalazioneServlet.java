@@ -33,20 +33,20 @@ public class RisolviSegnalazioneServlet extends HttpServlet {
         
         HttpSession session = request.getSession(false);
         if (session == null) {
-            response.sendRedirect("../login.jsp");
+            response.sendRedirect(request.getContextPath()+"/login.jsp");
             return;
         }
         
         UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
         if (utente == null) {
-            response.sendRedirect("../login.jsp");
+            response.sendRedirect(request.getContextPath()+"/login.jsp");
             return;
         }
         
         // Verifica che l'utente sia admin o abbia permessi
          if (!"AMMINISTRATORE_UTENTI".equals(utente.getTipo().toString())) {
              session.setAttribute("errorMessage", "Accesso negato: solo gli amministratori possono risolvere segnalazioni");
-             response.sendRedirect("login.jsp");
+             response.sendRedirect(request.getContextPath()+"/login.jsp");
              return;
          }
         
@@ -56,7 +56,7 @@ public class RisolviSegnalazioneServlet extends HttpServlet {
             
             if (idSegnalazioneStr == null || idSegnalazioneStr.trim().isEmpty()) {
                 session.setAttribute("errorMessage", "ID segnalazione non specificato");
-                response.sendRedirect("lista-segnalazioni");
+                response.sendRedirect(request.getContextPath()+"/lista-segnalazioni");
                 return;
             }
             
@@ -81,19 +81,19 @@ public class RisolviSegnalazioneServlet extends HttpServlet {
                 session.setAttribute("errorMessage", message);
             }
             
-            response.sendRedirect("lista-segnalazioni");
+            response.sendRedirect(request.getContextPath()+"/lista-segnalazioni");
             
         } catch (NumberFormatException e) {
             session.setAttribute("errorMessage", "ID segnalazione non valido");
-            response.sendRedirect("lista-segnalazioni");
+            response.sendRedirect(request.getContextPath()+ "/lista-segnalazioni");
         } catch (SQLException e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Errore di database durante la risoluzione");
-            response.sendRedirect("error.jsp");
+            response.sendRedirect(request.getContextPath()+"/lista-segnalazioni");
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("errorMessage", "Errore: " + e.getMessage());
-            response.sendRedirect("error.jsp");
+            session.setAttribute(request.getContextPath()+ "/errorMessage", "Errore: " + e.getMessage());
+            response.sendRedirect("/lista-segnalazioni");
         }
     }
     

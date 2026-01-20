@@ -55,13 +55,13 @@ public class LoginServlet extends HttpServlet {
             } else {
                 // Login fallito
                 request.setAttribute("errorMessage", "Email o password errati");
-                request.getRequestDispatcher(request.getContextPath()+"/login.jsp").forward(request, response);
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             }
             
         } catch (Exception e) {
             request.setAttribute("errorMessage", "Errore durante il login");
             e.printStackTrace();
-            request.getRequestDispatcher(request.getContextPath()+"/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
     }
     

@@ -79,9 +79,9 @@ public class StoricoLezioniServlet extends HttpServlet {
             
             // Inoltra alla pagina JSP
             if ("STUDENTE".equals(tipoUtente) || "GENITORE".equals(tipoUtente)) {
-                request.getRequestDispatcher(request.getContextPath()+"/prenotazioni.jsp").forward(request, response);
+                request.getRequestDispatcher("/prenotazioni.jsp").forward(request, response);
             } else if ("TUTOR".equals(tipoUtente)) {
-                request.getRequestDispatcher(request.getContextPath()+"/homeTutor.jsp").forward(request, response);
+                request.getRequestDispatcher("/homeTutor.jsp").forward(request, response);
             }
             
         } catch (SQLException e) {

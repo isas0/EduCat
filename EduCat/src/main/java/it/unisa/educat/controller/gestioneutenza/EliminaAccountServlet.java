@@ -44,11 +44,11 @@ public class EliminaAccountServlet extends HttpServlet {
 			try {
 				utenzaDAO.doDelete(id);
 				request.setAttribute("successMessage", "Account eliminato con successo");
-				request.getRequestDispatcher(request.getContextPath()+"/lista-segnalazioni").forward(request, response);
+				request.getRequestDispatcher("/lista-segnalazioni").forward(request, response);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", "Errore durante l'eliminazione dell'account");
-				request.getRequestDispatcher(request.getContextPath()+"/lista-segnalazioni").forward(request, response);
+				request.getRequestDispatcher("/lista-segnalazioni").forward(request, response);
 			}
 
 		}
@@ -65,18 +65,18 @@ public class EliminaAccountServlet extends HttpServlet {
 
 					// Redirect con messaggio di successo
 					request.setAttribute("successMessage", "Account eliminato con successo");
-					request.getRequestDispatcher(request.getContextPath()+"/login.jsp").forward(request, response);
+					request.getRequestDispatcher("/login.jsp").forward(request, response);
 					System.out.println("Account eliminato");
 				} else {
 					request.setAttribute("errorMessage", "Errore durante l'eliminazione dell'account");
-					request.getRequestDispatcher(request.getContextPath()+"/account.jsp").forward(request, response);
+					request.getRequestDispatcher("/account.jsp").forward(request, response);
 				}
 
 
 			} catch (Exception e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", "Errore: " + e.getMessage());
-				request.getRequestDispatcher(request.getContextPath()+"/account.jsp").forward(request, response);
+				request.getRequestDispatcher("/account.jsp").forward(request, response);
 			}
 		}
 	}

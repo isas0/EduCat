@@ -21,12 +21,12 @@
         } 
         else if (ruolo.equals("TUTOR")) {
             // Tutor: Dashboard completa (Home e Prenotazioni sono la stessa pagina)
-            linkHome = request.getContextPath() + "/homeTutor.jsp";
-            linkPrenotazioni = request.getContextPath() + "/homeTutor.jsp";
+            linkHome = request.getContextPath() + "/storico-lezioni";
+            linkPrenotazioni = request.getContextPath() + "/storico-lezioni";
         } 
         else if (ruolo.equals("AMMINISTRATORE_UTENTI")) {
             // Admin
-            linkHome = request.getContextPath() + "/homeAdmin.jsp";
+            linkHome = request.getContextPath() + "/lista-segnalazioni";
             linkPrenotazioni = "#"; // Admin non ha prenotazioni personali
         }
     }

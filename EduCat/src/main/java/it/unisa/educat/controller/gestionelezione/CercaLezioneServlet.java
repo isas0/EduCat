@@ -110,16 +110,16 @@ public class CercaLezioneServlet extends HttpServlet {
             request.setAttribute("prezzoMaxParam", prezzoMaxStr);
             
             // Forward al risultato
-            request.getRequestDispatcher(request.getContextPath()+"/listaLezioni.jsp").forward(request, response);
+            request.getRequestDispatcher("/listaLezioni.jsp").forward(request, response);
             
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Errore di database durante la ricerca: " + e.getMessage());
-            request.getRequestDispatcher(request.getContextPath()+"/listaLezioni.jsp").forward(request, response);
+            request.getRequestDispatcher("/listaLezioni.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Errore durante la ricerca: " + e.getMessage());
-            request.getRequestDispatcher(request.getContextPath()+"/listaLezioni.jsp").forward(request, response);
+            request.getRequestDispatcher("/listaLezioni.jsp").forward(request, response);
         }
     }
 }

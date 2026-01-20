@@ -32,7 +32,7 @@ public class InfoLezioneServlet extends HttpServlet {
 		try {
 			String idLezioneStr = request.getParameter("idLezione");
 			if (idLezioneStr == null || idLezioneStr.trim().isEmpty()) {
-				response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
+				response.sendRedirect(request.getContextPath() + "/cerca-lezione?error=" + 
 					URLEncoder.encode("ID lezione non specificato", "UTF-8"));
 				return;
 			}
@@ -41,7 +41,7 @@ public class InfoLezioneServlet extends HttpServlet {
 			LezioneDTO lezione = lezioneDao.getLezioneById(idLezione);
 			
 			if (lezione == null) {
-				response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
+				response.sendRedirect(request.getContextPath() + "/cerca-lezione?error=" + 
 					URLEncoder.encode("Lezione non trovata", "UTF-8"));
 				return;
 			}
@@ -51,17 +51,17 @@ public class InfoLezioneServlet extends HttpServlet {
 			HttpSession session = request.getSession();
 			session.setAttribute("lezioneCheckout", lezione);
 			
-			request.getRequestDispatcher(request.getContextPath()+"/singolaLezione.jsp").forward(request, response);
+			request.getRequestDispatcher("/singolaLezione.jsp").forward(request, response);
 		} catch (NumberFormatException e) {
-			response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
+			response.sendRedirect(request.getContextPath() + "/cerca-lezione?error=" + 
 				URLEncoder.encode("ID lezione non valido", "UTF-8"));
 		} catch (SQLException e) {
 			e.printStackTrace();
-			response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
+			response.sendRedirect(request.getContextPath() + "/cerca-lezione?error=" + 
 				URLEncoder.encode("Errore di database: " + e.getMessage(), "UTF-8"));
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendRedirect(request.getContextPath()+"/cerca-lezione?error=" + 
+			response.sendRedirect(request.getContextPath() + "/cerca-lezione?error=" + 
 				URLEncoder.encode("Errore: " + e.getMessage(), "UTF-8"));
 		}
 	}

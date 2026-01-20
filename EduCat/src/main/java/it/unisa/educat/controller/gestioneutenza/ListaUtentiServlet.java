@@ -21,15 +21,15 @@ public class ListaUtentiServlet extends HttpServlet {
         
         HttpSession session = request.getSession(false);
         if (session == null) {
-            response.sendRedirect("../login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
         
         // Verifica che l'utente sia amministratore
         UtenteDTO admin = (UtenteDTO) session.getAttribute("utente");
-        if (admin == null || !"AMMINISTRATORE_UTENTI".equals(admin.getTipo())) {
+        if (admin == null || !"AMMINISTRATORE_UTENTI".equals(admin.getTipo().toString())) {
             request.setAttribute("errorMessage", "Accesso negato. Solo amministratori possono visualizzare la lista utenti.");
-            request.getRequestDispatcher(request.getContextPath()+"/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
         
@@ -47,12 +47,12 @@ public class ListaUtentiServlet extends HttpServlet {
             request.setAttribute("emailFiltro", emailFiltro);
             request.setAttribute("nomeFiltro", nomeFiltro);
             
-            request.getRequestDispatcher(request.getContextPath()+"/homeAdmin.jsp").forward(request, response);
+            request.getRequestDispatcher("/homeAdmin.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Errore nel recupero della lista utenti: " + e.getMessage());
-            request.getRequestDispatcher(request.getContextPath()+"/error.jsp").forward(request, response);
+            request.getRequestDispatcher("/error.jsp").forward(request, response);
         }
     }
     
