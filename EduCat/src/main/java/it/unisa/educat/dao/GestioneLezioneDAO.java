@@ -45,10 +45,12 @@ public class GestioneLezioneDAO {
 					"WHERE l.idLezione = ?";
 
 	private static final String SELECT_STORICO_LEZIONI = 
-			"SELECT * FROM Lezione " +
-					"WHERE (idTutor = ? OR idStudente = ?) " +
-					"AND dataInizio < NOW() " +
-					"ORDER BY dataInizio DESC";
+		    "SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome, u.citta as tutor_citta " +
+		    "FROM Lezione l " +
+		    "JOIN Utente u ON l.idTutor = u.idUtente " +  // JOIN prima del WHERE!
+		    "WHERE (l.idTutor = ? OR l.idStudente = ?) " +
+		    "AND l.dataInizio < NOW() " +
+		    "ORDER BY l.dataInizio DESC";
 
 	//Prenotazione
 	private static final String INSERT_PRENOTAZIONE = 
@@ -95,6 +97,9 @@ public class GestioneLezioneDAO {
 	        "WHERE l.idTutor = ? " +
 	        "ORDER BY l.dataInizio DESC";
         
+	    private static final String DELETE_LEZIONE = 
+	            "DELETE FROM Lezione WHERE idLezione = ?";
+	    
 	    private DataSource dataSource; // Nullable
 	    
 	    // Metodo protetto per ottenere connessione (facilita il mocking)
@@ -248,6 +253,26 @@ public class GestioneLezioneDAO {
         }
     }
     
+    public boolean doDeleteLezione(int id) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+        	conn = getConnection();
+            ps = conn.prepareStatement(DELETE_LEZIONE);
+            ps.setInt(1, id);
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw e;
+        } finally {
+        	DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
     /**
      * Prenota una lezione (aggiorna stato lezione + crea prenotazione)
      */
@@ -299,11 +324,13 @@ public class GestioneLezioneDAO {
     				ps2.setInt(2, prenotazione.getLezione().getIdLezione());
     				 
     				ps2.executeUpdate();
+    				
+    				return true;
     			}
-    			return true;
+    			
     		}
 
-    		return false;
+    		
 
     	} catch (SQLException e) {
     		e.printStackTrace();
@@ -311,6 +338,8 @@ public class GestioneLezioneDAO {
     	} finally {
     		DatasourceManager.closeResources(conn, ps, rs);
     	}
+    	
+    	return false;
     }
     
     /**
@@ -364,10 +393,9 @@ public class GestioneLezioneDAO {
             
             // 2. Aggiorna la lezione associata a PIANIFICATA
             String sqlLezione = 
-                "UPDATE Lezione l "
-                + "JOIN Prenotazione p ON l.idLezione = p.idLezione "
-                + "SET l.statoLezione = 'PIANIFICATA' "
-                + "WHERE p.idPrenotazione = ?";
+            	    "UPDATE Lezione " +
+            	    "SET statoLezione = 'PIANIFICATA' " +
+            	    "WHERE idLezione = (SELECT idLezione FROM Prenotazione WHERE idPrenotazione = ?)";
             
             psLezione = conn.prepareStatement(sqlLezione);
             psLezione.setInt(1, idPrenotazione);
@@ -459,8 +487,8 @@ public class GestioneLezioneDAO {
         // Crea tutor con solo ID (i dati completi saranno caricati separatamente se necessario)
         UtenteDTO tutor = new UtenteDTO();
         tutor.setUID(rs.getInt("idTutor"));
-        tutor.setNome(rs.getString("tutor_nome"));
-        tutor.setCognome(rs.getString("tutor_cognome"));
+        tutor.setNome(rs.getString("tutor_nome") != null ? rs.getString("tutor_nome") : null);
+        tutor.setCognome(rs.getString("tutor_cognome")!= null ? rs.getString("tutor_cognome") : null);
         lezione.setTutor(tutor);
         
         lezione.setCitta(rs.getString("tutor_citta"));
@@ -497,6 +525,8 @@ public class GestioneLezioneDAO {
              
              ps.setString(1, "CONCLUSA");
              ps.setInt(2, idLezione);
+             
+             ps.executeUpdate();
              
              return true;
              

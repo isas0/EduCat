@@ -308,7 +308,7 @@ DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
                 Vuoi rimuovere questa lezione dalle disponibilità? <br>
                 Non sarà più visibile agli studenti.
             </p>
-            <form action="annulla-prenotazione" method="POST">
+            <form action="cancella-lezione" method="POST">
                 <input type="hidden" name="tipoOperazione" value="rimuoviDisponibilita">
                 <input type="hidden" name="idLezione" id="idLezioneEliminaInput" value="">
                 
