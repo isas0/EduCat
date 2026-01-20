@@ -56,7 +56,8 @@
 
                 <form action="<%= request.getContextPath() %>/elimina-account" method="POST" id="deleteForm">
                     <input type="hidden" name="idUtente" value="<%= utente.getUID() %>">
-                    <button type="submit" class="action-btn btn-delete">
+                    
+                    <button type="button" class="action-btn btn-delete" onclick="apriModalElimina()">
                         <i class="fa-solid fa-trash-can"></i> Elimina Account
                     </button>
                 </form>
@@ -65,10 +66,40 @@
         </div>
     </div>
 
+    <div id="modalEliminaAccount" class="modal-overlay-confirm">
+        <div class="modal-box">
+            <i class="fa-solid fa-triangle-exclamation modal-icon-warning"></i>
+            <h3 style="margin-top:0; color:#333;">Eliminare l'account?</h3>
+            <p style="color:#666; margin-bottom: 20px; line-height: 1.5;">
+                Questa azione è <strong>irreversibile</strong>. <br>
+                Tutti i tuoi dati verranno cancellati per sempre.
+            </p>
+            
+            <div class="modal-buttons">
+                <button type="button" class="btn-modal-cancel" onclick="chiudiModalElimina()">Annulla</button>
+                <button type="button" class="btn-modal-confirm" onclick="confermaEliminazioneFinale()">Sì, Elimina per sempre</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function confermaEliminazione() {
-            if (confirm("Sei sicuro di voler eliminare l'account?")) {
-                document.getElementById("deleteForm").submit();
+        function apriModalElimina() {
+            document.getElementById('modalEliminaAccount').style.display = 'flex';
+        }
+
+        function chiudiModalElimina() {
+            document.getElementById('modalEliminaAccount').style.display = 'none';
+        }
+
+        function confermaEliminazioneFinale() {
+            document.getElementById("deleteForm").submit();
+        }
+
+        // Chiudi cliccando fuori dal box
+        window.onclick = function(event) {
+            var modal = document.getElementById('modalEliminaAccount');
+            if (event.target == modal) {
+                chiudiModalElimina();
             }
         }
     </script>

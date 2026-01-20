@@ -1,3 +1,5 @@
+/* styles/new/account.css */
+
 body {
     background-color: #f4f7f6;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -62,42 +64,41 @@ body {
 .actions-grid {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Spazio identico tra tutti i bottoni */
+    gap: 15px;
     width: 100%;
 }
 
-/* Assicuriamo che il form occupi tutto lo spazio per non stringere il bottone */
 #deleteForm {
     width: 100%;
     margin: 0;
     padding: 0;
 }
 
-/* --- STILE BASE COMUNE PER TUTTI I 3 BOTTONI --- */
+/* --- STILE BASE COMUNE PER I BOTTONI --- */
 .action-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     
-    width: 100%;       /* Larghezza Piena */
-    height: 55px;      /* Altezza fissa identica per tutti */
-    padding: 0;        /* Reset padding (usiamo flex center) */
+    width: 100%;
+    height: 55px;
+    padding: 0;
     
-    border-radius: 12px; /* Stondatura identica */
-    border: 2px solid transparent; /* Bordo base per tutti */
+    border-radius: 12px;
+    border: 2px solid transparent;
     
-    font-size: 1.1rem; /* Font uguale per tutti */
+    font-size: 1.1rem;
     font-weight: 600;
     
     cursor: pointer;
     text-decoration: none;
     transition: all 0.2s ease;
-    box-sizing: border-box; /* Assicura che il bordo non cambi la dimensione totale */
-    background: white; /* Default */
+    box-sizing: border-box;
+    background: white;
 }
 
-/* 1. CAMBIO RUOLO (Bordo Colorato) */
+/* 1. CAMBIO RUOLO */
 .btn-change-role {
     border-color: #1A5C61;
     color: #1A5C61;
@@ -107,7 +108,7 @@ body {
     background-color: #e0f2f1;
 }
 
-/* 2. LOGOUT (Sfondo Grigio, Bordo Grigio Chiaro) */
+/* 2. LOGOUT */
 .btn-logout {
     background-color: #f5f5f5;
     border-color: #e0e0e0;
@@ -118,13 +119,86 @@ body {
     color: #222;
 }
 
-/* 3. ELIMINA (Bordo Rosso) */
+/* 3. ELIMINA */
 .btn-delete {
     border-color: #ef9a9a;
     color: #c62828;
     background-color: white;
-    /* Rimosso margin-top extra che rompeva la simmetria */
 }
 .btn-delete:hover {
     background-color: #ffebee;
 }
+
+
+/* --- STILI MODALE DI CONFERMA --- */
+/* (Fondamentali per farla apparire sovrapposta e non in fondo) */
+
+.modal-overlay-confirm {
+    position: fixed; /* Blocca rispetto allo schermo */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Sfondo scuro semitrasparente */
+    z-index: 9999; /* Sopra tutto */
+    display: none; /* NASCOSTO DI DEFAULT */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-icon-warning {
+    font-size: 3rem;
+    color: #c62828;
+    margin-bottom: 15px;
+}
+
+.modal-buttons {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-modal-cancel {
+    background: #eee;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.btn-modal-cancel:hover { background: #e0e0e0; }
+
+.btn-modal-confirm {
+    background: #c62828;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.btn-modal-confirm:hover { background: #b71c1c; }
