@@ -91,13 +91,13 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             }
             
             if (prezzoStr == null || prezzoStr.trim().isEmpty()) {
-                response.sendRedirect("/nuovaLezione.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                     URLEncoder.encode("Il prezzo è obbligatorio", "UTF-8"));
                 return;
             }
             
             if (modalitaStr == null || (!"ONLINE".equals(modalitaStr) && !"PRESENZA".equals(modalitaStr))) {
-                response.sendRedirect("/nuovaLezione.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                     URLEncoder.encode("Modalità non valida", "UTF-8"));
                 return;
             }
@@ -115,15 +115,22 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             
             // Verifica che l'ora fine sia dopo l'ora inizio
             if (!dataFine.isAfter(dataInizio)) {
-                response.sendRedirect("/nuovaLezione.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                     URLEncoder.encode("L'ora di fine deve essere successiva all'ora di inizio", "UTF-8"));
                 return;
             }
             
             // Verifica che la lezione non sia nel passato
             if (dataInizio.isBefore(LocalDateTime.now())) {
-                response.sendRedirect("/nuovaLezione.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                     URLEncoder.encode("Non puoi creare lezioni nel passato", "UTF-8"));
+                return;
+            }
+            
+            // Verifica che tutor non ha altra lezione attiva nella stessa fascia oraria
+            if (lezioneDAO.hasTutorLezioneInFasciaOraria(tutor.getUID(), dataInizio, dataFine)) {
+                response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
+                    URLEncoder.encode("Hai già una lezione attiva nella stessa fascia oraria", "UTF-8"));
                 return;
             }
             
@@ -132,12 +139,12 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             try {
                 prezzo = Float.parseFloat(prezzoStr);
                 if (prezzo <= 0) {
-                    response.sendRedirect("/nuovaLezione.jsp?error=" + 
+                    response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                         URLEncoder.encode("Il prezzo deve essere maggiore di 0", "UTF-8"));
                     return;
                 }
             } catch (NumberFormatException e) {
-                response.sendRedirect("/nuovaLezione.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                     URLEncoder.encode("Formato prezzo non valido", "UTF-8"));
                 return;
             }
@@ -148,7 +155,7 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             
             // Verifica durata minima (es. almeno 30 minuti)
             if (minuti < 30) {
-                response.sendRedirect("/nuovaLezione.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                     URLEncoder.encode("La lezione deve durare almeno 30 minuti", "UTF-8"));
                 return;
             }
@@ -181,20 +188,20 @@ public class PubblicaAnnuncioServlet extends HttpServlet {
             boolean success = lezioneDAO.doSaveLezione(lezione);
             
             if (success) {
-                response.sendRedirect("/storico-lezioni?success=" + 
+                response.sendRedirect(request.getContextPath()+ "/storico-lezioni?success=" + 
                     URLEncoder.encode("Lezione creata con successo!", "UTF-8"));
             } else {
-                response.sendRedirect("/nuovaLezione.jsp?error=" + 
+                response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                     URLEncoder.encode("Errore durante il salvataggio della lezione", "UTF-8"));
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendRedirect("/nuovaLezione.jsp?error=" + 
+            response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                 URLEncoder.encode("Errore di database: " + e.getMessage(), "UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("/nuovaLezione.jsp?error=" + 
+            response.sendRedirect(request.getContextPath()+ "/nuovaLezione.jsp?error=" + 
                 URLEncoder.encode("Errore durante la creazione della lezione: " + e.getMessage(), "UTF-8"));
         }
     }

@@ -1,6 +1,7 @@
 package test;
 
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -847,5 +848,159 @@ public class GestioneLezioneDAOTest {
         when(rs.getString("tutor_nome")).thenReturn("Mario");
         when(rs.getString("tutor_cognome")).thenReturn("Rossi");
         when(rs.getString("tutor_email")).thenReturn("mario@email.com");
+    }
+    
+ // ============== TEST hasTutorLezioneInFasciaOraria() ==============
+
+    @Test
+    void testHasTutorLezioneInFasciaOraria_TutorOccupato() throws SQLException {
+        // Arrange
+        LocalDateTime dataInizio = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
+        LocalDateTime dataFine = dataInizio.plusHours(2);
+        
+        when(mockDataSource.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getInt(1)).thenReturn(1); // COUNT = 1 (trovata lezione)
+        
+        // Act
+        boolean result = dao.hasTutorLezioneInFasciaOraria(1, dataInizio, dataFine);
+        
+        // Assert
+        assertTrue(result);
+        
+        // Verify parametri
+        verify(mockPreparedStatement).setInt(eq(1), eq(1)); // idTutor
+        verify(mockPreparedStatement).setTimestamp(eq(2), eq(Timestamp.valueOf(dataInizio)));
+        verify(mockPreparedStatement).setTimestamp(eq(3), eq(Timestamp.valueOf(dataFine)));
+    }
+
+    @Test
+    void testHasTutorLezioneInFasciaOraria_TutorLibero() throws SQLException {
+        // Arrange
+        LocalDateTime dataInizio = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
+        LocalDateTime dataFine = dataInizio.plusHours(2);
+        
+        when(mockDataSource.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getInt(1)).thenReturn(0); // COUNT = 0 (nessuna lezione)
+        
+        // Act
+        boolean result = dao.hasTutorLezioneInFasciaOraria(1, dataInizio, dataFine);
+        
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void testHasTutorLezioneInFasciaOraria_ConLezioneAnnullata() throws SQLException {
+        // Test che lezioni ANNULLATE non vengono considerate
+        LocalDateTime dataInizio = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
+        LocalDateTime dataFine = dataInizio.plusHours(2);
+        
+        // Setup per simulare query (lezione annullata non dovrebbe essere contata)
+        when(mockDataSource.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getInt(1)).thenReturn(0); // Anche se c'è lezione annullata
+        
+        // Act
+        boolean result = dao.hasTutorLezioneInFasciaOraria(1, dataInizio, dataFine);
+        
+        // Assert
+        assertFalse(result); // Lezione annullata non dovrebbe bloccare
+    }
+
+    @Test
+    void testHasTutorLezioneInFasciaOraria_SovrapposizioneParziale() throws SQLException {
+        // Test vari casi di sovrapposizione
+        LocalDateTime[] casi = {
+            // Nuova: 10:00-12:00, Esistente: 9:00-11:00 (sovrappone ultima ora)
+            LocalDateTime.now().plusDays(1).withHour(10).withMinute(0),
+            LocalDateTime.now().plusDays(1).withHour(12).withMinute(0),
+            
+            // Nuova: 10:00-12:00, Esistente: 11:00-13:00 (sovrappone prima ora)
+            LocalDateTime.now().plusDays(2).withHour(10).withMinute(0),
+            LocalDateTime.now().plusDays(2).withHour(12).withMinute(0),
+            
+            // Nuova: 10:00-12:00, Esistente: 10:30-11:30 (contenuta)
+            LocalDateTime.now().plusDays(3).withHour(10).withMinute(0),
+            LocalDateTime.now().plusDays(3).withHour(12).withMinute(0),
+        };
+        
+        for (int i = 0; i < casi.length; i += 2) {
+            // Setup
+            when(mockDataSource.getConnection()).thenReturn(mockConnection);
+            when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+            when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+            when(mockResultSet.next()).thenReturn(true);
+            when(mockResultSet.getInt(1)).thenReturn(1); // Sovrapposizione trovata
+            
+            // Act
+            boolean result = dao.hasTutorLezioneInFasciaOraria(1, casi[i], casi[i + 1]);
+            
+            // Assert
+            assertTrue("Dovrebbe rilevare sovrapposizione per caso " + (i/2), result);
+            
+            // Reset mocks per prossimo ciclo
+            reset(mockConnection, mockPreparedStatement, mockResultSet);
+        }
+    }
+
+    @Test
+    void testHasTutorLezioneInFasciaOraria_NoSovrapposizione() throws SQLException {
+        // Test caso senza sovrapposizione
+        LocalDateTime dataInizio = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
+        LocalDateTime dataFine = dataInizio.plusHours(2);
+        
+        // Lezione esistente: 13:00-15:00 (dopo la nuova)
+        when(mockDataSource.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getInt(1)).thenReturn(0); // Nessuna sovrapposizione
+        
+        // Act
+        boolean result = dao.hasTutorLezioneInFasciaOraria(1, dataInizio, dataFine);
+        
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void testHasTutorLezioneInFasciaOraria_Exception() throws SQLException {
+        // Test gestione eccezioni
+        LocalDateTime dataInizio = LocalDateTime.now().plusDays(1);
+        LocalDateTime dataFine = dataInizio.plusHours(2);
+        
+        when(mockDataSource.getConnection()).thenThrow(new SQLException("Errore DB"));
+        
+        // Act & Assert
+        assertThrows(SQLException.class, () -> {
+            dao.hasTutorLezioneInFasciaOraria(1, dataInizio, dataFine);
+        });
+    }
+
+    @Test
+    void testHasTutorLezioneInFasciaOraria_ConLezioneConclusa() throws SQLException {
+        // Test che lezioni CONCLUSE non vengono considerate
+        LocalDateTime dataInizio = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
+        LocalDateTime dataFine = dataInizio.plusHours(2);
+        
+        when(mockDataSource.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getInt(1)).thenReturn(0); // Lezione conclusa non contata
+        
+        // Act
+        boolean result = dao.hasTutorLezioneInFasciaOraria(1, dataInizio, dataFine);
+        
+        // Assert
+        assertFalse(result);
     }
 }

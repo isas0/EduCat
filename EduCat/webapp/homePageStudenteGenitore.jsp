@@ -4,14 +4,14 @@
 <%
 UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
 if (utente == null) {
-	response.sendRedirect("login.jsp");
+	response.sendRedirect(request.getContextPath()+ "/login.jsp");
 	return;
 }
 
 // Verifica Permessi
 if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente.getTipo().toString())) {
 	session.invalidate();
-	response.sendRedirect("login.jsp");
+	response.sendRedirect(request.getContextPath()+ "/login.jsp");
 	return;
 }
 %>

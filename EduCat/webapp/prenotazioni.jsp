@@ -7,7 +7,9 @@
 <%
     // Protezione Login
     UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
-    if (utente == null) { response.sendRedirect("login.jsp"); return; }
+    if (utente == null) { response.sendRedirect(request.getContextPath()+ "/login.jsp");
+    return; 
+    }
 
     
     

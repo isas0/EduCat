@@ -3,7 +3,7 @@
 <%
 UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
 if (utente == null) {
-	response.sendRedirect("../login.jsp");
+	response.sendRedirect(request.getContextPath()+ "/login.jsp");
 	return;
 }
 
@@ -32,7 +32,20 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
 
     <div class="form-page-container">
         <div class="form-box">
-            <h2 style="text-align: center; color: #1A5C61; margin-bottom: 10px;">Nuova Disponibilità</h2>
+            
+            
+            <h2 style="text-align: center; color: #1A5C61; margin-bottom: 10px;"><%
+				if (request.getParameter("error") != null) {
+				%>
+				<%=request.getParameter("error")%>
+				<%
+				} else {
+				%>
+				Nuova Disponibilità!
+				<%
+				}
+				%></h2>
+           
             <p style="text-align: center; color: #888; margin-bottom: 30px; font-size: 0.9rem;">
                 Benvenuto! Imposta subito la tua prima lezione per farti trovare dagli studenti.
             </p>

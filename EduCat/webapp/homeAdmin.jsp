@@ -5,7 +5,7 @@
 <%
 UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
 if (utente == null) {
-	response.sendRedirect("../login.jsp");
+	response.sendRedirect(request.getContextPath()+ "/login.jsp");
 	return;
 }
 

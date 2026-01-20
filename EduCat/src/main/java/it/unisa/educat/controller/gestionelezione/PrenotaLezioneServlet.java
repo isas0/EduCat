@@ -77,6 +77,12 @@ public class PrenotaLezioneServlet extends HttpServlet {
                 return;
             }
             
+            if(lezioneDAO.hasStudentePrenotazioneInFasciaOraria(studente.getUID(), lezione.getDataInizio(), lezione.getDataFine())) {
+            	response.sendRedirect("/info-lezione?idLezione=" + idLezione + "&error=" + 
+                    URLEncoder.encode("Hai già prenotato una lezione in questa fascia oraria", "UTF-8"));
+                return;
+            }
+            
             // Verifica che la lezione sia disponibile
             if (lezione.getStato() != StatoLezione.PIANIFICATA) {
                 response.sendRedirect("/info-lezione?idLezione=" + idLezione + "&error=" + 

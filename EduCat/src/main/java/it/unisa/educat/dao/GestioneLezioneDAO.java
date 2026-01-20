@@ -691,6 +691,80 @@ public class GestioneLezioneDAO {
         }        
     }
     
+    /**
+     * Verifica se uno studente ha già una lezione attiva in una certa fascia oraria
+     */
+    public boolean hasStudentePrenotazioneInFasciaOraria(int idStudente, LocalDateTime dataInizio, 
+                                                         LocalDateTime dataFine) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = getConnection();
+            
+            // Logica: cerca se c'è una prenotazione attiva la cui lezione
+            // si sovrappone con l'intervallo [dataInizio, dataFine]
+            String sql = 
+                "SELECT COUNT(*) FROM Prenotazione p " +
+                "JOIN Lezione l ON p.idLezione = l.idLezione " +
+                "WHERE p.idStudente = ? " +
+                "AND p.stato = 'ATTIVA' " +
+                "AND NOT (l.dataFine <= ? OR l.dataInizio >= ?)";
+                // Traduzione: "non è vero che la lezione finisce prima della nuova inizia 
+                //              OPPURE inizia dopo che la nuova finisce"
+                // Equivale a: le due lezioni si sovrappongono
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idStudente);
+            ps.setTimestamp(2, Timestamp.valueOf(dataInizio));
+            ps.setTimestamp(3, Timestamp.valueOf(dataFine));
+            
+            rs = ps.executeQuery();
+            
+            return rs.next() && rs.getInt(1) > 0;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
+    /**
+     * Verifica se un tutor ha già una lezione (pianificata o prenotata) 
+     * in una determinata fascia oraria
+     */
+    public boolean hasTutorLezioneInFasciaOraria(int idTutor, LocalDateTime dataInizio, 
+                                                LocalDateTime dataFine) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = getConnection();
+            
+            // Controlla se c'è una lezione del tutor che si sovrappone
+            // con l'intervallo [dataInizio, dataFine]
+            // Considera solo lezioni PIANIFICATE o PRENOTATE (non annullate/concluse)
+            String sql = 
+                "SELECT COUNT(*) FROM Lezione " +
+                "WHERE idTutor = ? " +
+                "AND statoLezione IN ('PIANIFICATA', 'PRENOTATA') " +
+                "AND NOT (dataFine <= ? OR dataInizio >= ?)";
+            
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, idTutor);
+            ps.setTimestamp(2, Timestamp.valueOf(dataInizio));
+            ps.setTimestamp(3, Timestamp.valueOf(dataFine));
+            
+            rs = ps.executeQuery();
+            
+            return rs.next() && rs.getInt(1) > 0;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }
+    }
+    
     
     
     /**
