@@ -25,18 +25,7 @@
     // 3. Recupero Dati Lezione dal DB
     String idLezioneStr = request.getParameter("idLezione");
     
-    GestioneLezioneDAO lezioneDAO = new GestioneLezioneDAO();
-    LezioneDTO lezione = null;
-
-    try {
-        if (idLezioneStr != null && !idLezioneStr.isEmpty()) {
-            int idLezione = Integer.parseInt(idLezioneStr);
-            // CORREZIONE: Uso il metodo che esiste davvero nel tuo DAO
-            lezione = lezioneDAO.getLezioneById(idLezione); 
-        }
-    } catch (Exception e) { 
-        e.printStackTrace(); 
-    }
+    LezioneDTO lezione = (LezioneDTO) request.getAttribute("lezione");
 
     // Se la lezione non esiste o l'ID è sbagliato, torna alla home
     if (lezione == null) {

@@ -5,8 +5,6 @@
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="it.unisa.educat.model.PrenotazioneDTO.StatoPrenotazione" %>
 <%@ page import="it.unisa.educat.model.*" %>
-<%@ page import="it.unisa.educat.dao.GestioneLezioneDAO" %>
-<%@ page import="it.unisa.educat.dao.GestioneLezioneDAO.CriteriRicerca" %>
 
 <%
 UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
@@ -25,14 +23,8 @@ if (!"TUTOR".equals(utente.getTipo().toString())) {
 
 // Recupero prenotazioni
 List<PrenotazioneDTO> prenotazioni = (List<PrenotazioneDTO>) request.getAttribute("prenotazioni");
-if (prenotazioni == null) {
-    try {
-        GestioneLezioneDAO dao = new GestioneLezioneDAO();
-        prenotazioni = dao.getPrenotazioniByTutor(utente.getUID());
-    } catch(Exception e) {
-        prenotazioni = new ArrayList<>();
-    }
-}
+List<LezioneDTO> lezioni = (List<LezioneDTO>) request.getAttribute("lezioni");
+
 
 //Messaggi di error/success
 String errorMessage = null;
@@ -66,16 +58,6 @@ listaRecensioni.add(new RecensioneMock("Marco R.", "Spiegazione chiarissima, ho 
 listaRecensioni.add(new RecensioneMock("Giulia B.", "Molto paziente e preparato.", 4));
 listaRecensioni.add(new RecensioneMock("Luca S.", "Tutto ok, lezione utile.", 4));
 
-// --- RECUPERO LEZIONI DISPONIBILI ---
-List<LezioneDTO> lezioniDisponibili = new ArrayList<>();
-try {
-    GestioneLezioneDAO dao = new GestioneLezioneDAO();
-    CriteriRicerca criteri = new CriteriRicerca();
-    criteri.setIdTutor(utente.getUID());
-    lezioniDisponibili = dao.doRetrieveByCriteria(criteri);
-} catch(Exception e) {
-    e.printStackTrace();
-}
 
 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 %>
@@ -189,14 +171,14 @@ DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
                         </tr>
                     </thead>
                     <tbody>
-                        <% if (lezioniDisponibili == null || lezioniDisponibili.isEmpty()) { %>
+                        <% if (lezioni == null || lezioni.isEmpty()) { %>
                             <tr>
                                 <td colspan="6" style="text-align: center; color: #888; padding: 30px;">
                                     Non hai lezioni in attesa. Clicca su "Nuova Lezione" per aggiungerne una.
                                 </td>
                             </tr>
                         <% } else { 
-                             for (LezioneDTO l : lezioniDisponibili) { %>
+                             for (LezioneDTO l : lezioni) { %>
                             <tr>
                                 <td><span class="td-bold"><%= l.getDataInizio().format(formatter) %></span></td>
                                 <td><%= l.getMateria() %></td>

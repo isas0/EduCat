@@ -31,6 +31,8 @@ float prezzoTotale = lezione.getPrezzo() * lezione.getDurata();
 
 UtenteDTO tutor = lezione.getTutor();
 String nomeCompletoTutor = tutor.getNome() + " " + tutor.getCognome();
+
+request.setAttribute("lezione", lezione);
 %>
 
 <!DOCTYPE html>

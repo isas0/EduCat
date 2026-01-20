@@ -31,7 +31,7 @@ public class StoricoLezioniServlet extends HttpServlet {
     }
     
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    public void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
         HttpSession session = request.getSession(false);
@@ -61,12 +61,16 @@ public class StoricoLezioniServlet extends HttpServlet {
             
             String tipoUtente = utente.getTipo().toString();
             List<PrenotazioneDTO> prenotazioni = new ArrayList<>();
+            List<LezioneDTO> lezioni = new ArrayList<>();
             
             if ("STUDENTE".equals(tipoUtente) || "GENITORE".equals(tipoUtente)) {
                 prenotazioni = lezioneDAO.getPrenotazioniByStudente(utente.getUID());
+                
                 segnaLezioniPassateComeConcluse(prenotazioni);
             } else if ("TUTOR".equals(tipoUtente)) {
                 prenotazioni = lezioneDAO.getPrenotazioniByTutor(utente.getUID());
+                lezioni = lezioneDAO.getLezioniByTutor(utente.getUID());
+                request.setAttribute("lezioni", lezioni);
                 segnaLezioniPassateComeConcluse(prenotazioni);
             } else {
                 response.sendRedirect(request.getContextPath()+"/login.jsp?error=" + 
