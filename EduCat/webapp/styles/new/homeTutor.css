@@ -178,3 +178,103 @@ body {
     font-weight: 600;
     color: #333;
 }
+
+/* Header Dashboard per allineare titolo e bottone */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.subtitle {
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Stile Bottone "Nuova Lezione" */
+.btn-add-lesson {
+    background-color: #38B4BC; /* Turchese */
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(56, 180, 188, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-add-lesson:hover {
+    background-color: #2a9ea6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(56, 180, 188, 0.4);
+}
+
+.btn-add-lesson:active {
+    transform: translateY(0);
+}
+
+/* --- BOTTONI AZIONI (AGGIUNTO/CORRETTO) --- */
+.action-btn {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: 5px;
+    font-family: inherit; /* Mantiene il font della pagina */
+}
+
+/* Bottone ROSSO (Annulla / Elimina) */
+.btn-delete {
+    background-color: #ffebee !important;
+    color: #c62828 !important;
+    border: 1px solid #ffcdd2 !important;
+}
+
+.btn-delete:hover {
+    background-color: #ef9a9a !important;
+    color: #b71c1c !important;
+    border-color: #b71c1c !important;
+}
+
+/* Bottone VERDE (Risolvi / Visualizza) */
+.btn-view {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+/* Bottone GIALLO (Segnala) */
+.btn-report {
+    background-color: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #ffe082;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: inherit;
+}
+
+.btn-report:hover {
+    background-color: #ffecb3;
+    transform: translateY(-1px);
+}

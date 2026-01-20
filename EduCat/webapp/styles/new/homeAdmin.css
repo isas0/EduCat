@@ -126,38 +126,44 @@ body {
     color: #00695c;
 }
 
-/* BOTTONI AZIONI */
+/* --- BOTTONI AZIONI ADMIN --- */
 .action-btn {
     text-decoration: none;
-    padding: 8px 16px;
+    padding: 8px 14px;
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     transition: all 0.2s;
     border: none;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    margin: 0 2px;
 }
 
+/* Bottone ELIMINA / BAN (Rosso) */
 .btn-delete {
     background-color: #ffebee;
     color: #c62828;
+    border: 1px solid #ffcdd2;
 }
 
 .btn-delete:hover {
-    background-color: #c62828;
+    background-color: #e53935;
     color: white;
+    border-color: #b71c1c;
 }
 
+/* Bottone RISOLVI / VISUALIZZA (Viola/Verde) */
 .btn-view {
-    background-color: #f3e5f5;
-    color: #7b1fa2;
-    margin-right: 5px;
+    background-color: #e8f5e9; /* Verde chiaro per "Risolto" */
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
 }
 
 .btn-view:hover {
-    background-color: #7b1fa2;
+    background-color: #43a047;
     color: white;
+    border-color: #2e7d32;
 }

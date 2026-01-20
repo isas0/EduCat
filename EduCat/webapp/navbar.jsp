@@ -22,7 +22,7 @@
         else if (ruolo.equals("TUTOR")) {
             // Tutor: Dashboard completa (Home e Prenotazioni sono la stessa pagina)
             linkHome = request.getContextPath() + "/storico-lezioni";
-            linkPrenotazioni = request.getContextPath() + "/storico-lezioni";
+            linkPrenotazioni = "#";
         } 
         else if (ruolo.equals("AMMINISTRATORE_UTENTI")) {
             // Admin
@@ -49,7 +49,8 @@
                     <ul id="MenuItems">
                         <li><a href="<%= linkHome %>">Home</a></li>
                         
-                        <% if (!"AMMINISTRATORE_UTENTI".equals(utenteLoggato.getTipo().toString())) { %>
+                        <% String utente= utenteLoggato.getTipo().toString();
+                        if (utente.equals("GENITORE") || utente.equals("STUDENTE")) { %>
                             <li><a href="<%= linkPrenotazioni %>">Prenotazioni</a></li>
                         <% } %>
                         

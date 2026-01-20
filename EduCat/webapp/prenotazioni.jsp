@@ -7,13 +7,11 @@
 <%
     // Protezione Login
     UtenteDTO utente = (UtenteDTO) session.getAttribute("utente");
-    if (utente == null) { response.sendRedirect(request.getContextPath()+ "/login.jsp");
-    return; 
+    if (utente == null) { 
+        response.sendRedirect(request.getContextPath()+ "/login.jsp");
+        return; 
     }
 
-    
-    
-    
     //Messaggi di error/success
     String errorMessage = null;
     String successMessage = null;
@@ -43,21 +41,15 @@
         successMessage = request.getParameter("success");
     }
     
-    
-    
-    
-    
-    
  	// Verifica Permessi
     if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente.getTipo().toString())) {
     	session.invalidate();
-    	response.sendRedirect("login.jsp");
+        response.sendRedirect("login.jsp");
     	return;
     }
     
     // Recupero Dati
     List<PrenotazioneDTO> miePrenotazioni = (List<PrenotazioneDTO>) request.getAttribute("prenotazioni");
-    
 %>
 
 <!DOCTYPE html>
@@ -65,9 +57,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Le mie Prenotazioni</title>
+    
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/homeStudenteGenitore.css">
+    
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/styles/new/modalSegnalazioni.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/styles/new/navbar.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/styles/new/prenotazioni.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -78,12 +74,14 @@
         <h1 class="page-title">Le mie Prenotazioni</h1>
         
         <%if(errorMessage!=null){ %>
-        <h2 class="page-title"><%=errorMessage %></h2>
+            <h2 class="page-title" style="color: #c62828;"><%=errorMessage %></h2>
+        <%} %>
+        <%if(successMessage!=null){ %>
+            <h2 class="page-title" style="color: #2e7d32;"><%=successMessage %></h2>
         <%} %>
         
-        
         <div class="table-wrapper">
-            <% if (miePrenotazioni == null) { %>
+            <% if (miePrenotazioni == null || miePrenotazioni.isEmpty()) { %>
                 <div class="empty-state">
                     <p>Non hai ancora effettuato prenotazioni.</p>
                 </div>
@@ -91,7 +89,11 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Data</th><th>Materia</th><th>Tutor</th><th>Stato</th><th style="text-align: right;">Azioni</th>
+                            <th>Data</th>
+                            <th>Materia</th>
+                            <th>Tutor</th>
+                            <th>Stato</th>
+                            <th style="text-align: right;">Azioni</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -115,12 +117,11 @@
                             
                             	<%if(p.getStato().equals(StatoPrenotazione.ATTIVA)){ %>
 								<form action="annulla-prenotazione" method="post" style="display: inline;">
-								<input type="hidden" name="idPrenotazione" value="<%=p.getIdPrenotazione() %>"> 
-								
-								<button type="submit" class="action-btn btn-view"	>									
-									<i class="fa-solid fa-circle-exclamation"></i> Annulla
-								</button>
-								
+    								<input type="hidden" name="idPrenotazione" value="<%=p.getIdPrenotazione() %>"> 
+    								
+                                    <button type="submit" class="action-btn btn-delete">									
+    									<i class="fa-solid fa-circle-exclamation"></i> Annulla
+    								</button>
 								</form>
 								<%} %>
                             

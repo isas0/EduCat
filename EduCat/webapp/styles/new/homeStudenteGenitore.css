@@ -210,3 +210,56 @@ body {
         padding: 20px;
     }
 }
+
+/* --- NUOVI STILI AGGIUNTI PER I BOTTONI --- */
+
+.action-btn {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: 5px;
+    font-family: inherit;
+}
+
+/* Bottone ROSSO (Annulla / Elimina) */
+.btn-delete {
+    background-color: #ffebee !important;
+    color: #c62828 !important;
+    border: 1px solid #ffcdd2 !important;
+}
+
+.btn-delete:hover {
+    background-color: #ef9a9a !important;
+    color: #b71c1c !important;
+    border-color: #b71c1c !important;
+}
+
+/* Bottone GIALLO (Segnala) */
+.btn-report {
+    background-color: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #ffe082;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: inherit;
+}
+
+.btn-report:hover {
+    background-color: #ffecb3;
+    transform: translateY(-1px);
+}
