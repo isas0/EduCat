@@ -25,7 +25,7 @@
     // 3. Recupero Dati Lezione dal DB
     String idLezioneStr = request.getParameter("idLezione");
     
-    LezioneDTO lezione = (LezioneDTO) request.getAttribute("lezione");
+    LezioneDTO lezione = (LezioneDTO) session.getAttribute("lezioneCheckout");
 
     // Se la lezione non esiste o l'ID è sbagliato, torna alla home
     if (lezione == null) {

@@ -19,9 +19,9 @@ if (!"GENITORE".equals(utente.getTipo().toString()) && !"STUDENTE".equals(utente
 	return;
 }
 
-LezioneDTO lezione = (LezioneDTO) request.getAttribute("lezione");
+LezioneDTO lezione = (LezioneDTO) session.getAttribute("lezioneCheckout");
 if (lezione == null) {
-	response.sendRedirect("error.jsp");
+	response.sendRedirect("homePageStudenteGenitore.jsp");
 	return;
 }
 
