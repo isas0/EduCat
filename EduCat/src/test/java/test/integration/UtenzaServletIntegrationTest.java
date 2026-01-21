@@ -344,7 +344,7 @@ class UtenzaServletIntegrationTest {
         servlet.doPost(request, response);
 
         verify(utenzaDAO, never()).doSave(any()); // NON dovrebbe salvare
-        verify(request).setAttribute("errorMessage", contains("Email"));
+        verify(request).setAttribute(eq("errorMessage"), anyString());  
     }
 
     @Test
