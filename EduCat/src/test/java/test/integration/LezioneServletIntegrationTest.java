@@ -57,8 +57,6 @@ class LezioneServletIntegrationTest {
         studente.setTipo(TipoUtente.STUDENTE);
     }
 
-
-/*
     @Test
     @DisplayName("TC_LEZ_01_01: Tutto corretto")
     void TC_LEZ_01_01_PrenotazioneCompletata() throws Exception {
@@ -555,11 +553,10 @@ class LezioneServletIntegrationTest {
             p.getDataScadenza().equals("12-25")));
     }
     
-    */
+    
     
     // ============== TEST TC_LEZ_02 COMPLETI ==============
     
-    /*
     @Test
     @DisplayName("TC_LEZ_02_01: Happy Path - Lezione pubblicata con successo")
     void TC_LEZ_02_01_PubblicaAnnuncioSuccess() throws Exception {
@@ -893,12 +890,8 @@ class LezioneServletIntegrationTest {
         verify(response).sendRedirect(contains("Formato+prezzo+non+valido"));
         verify(lezioneDAO, never()).doSaveLezione(any());
     }
-    
-    */
-    
  // ============== TEST TC_LEZ_03: Annullamento Tutor ==============
     
-    /*
     @Test
     @DisplayName("TC_LEZ_03_01: Tutor annulla prenotazione successo (>24h)")
     void TC_LEZ_03_01_TutorAnnullaPrenotazioneSuccess() throws Exception {
@@ -1022,10 +1015,9 @@ class LezioneServletIntegrationTest {
         verify(response).sendRedirect(contains("success="));
     }
     
-    */
     
  // ============== TEST TC_LEZ_04: Annullamento Studente ==============
-    /*
+  
     @Test
     @DisplayName("TC_LEZ_04_01: Studente annulla prenotazione successo (>24h)")
     void TC_LEZ_04_01_StudenteAnnullaPrenotazioneSuccess() throws Exception {
@@ -1147,7 +1139,7 @@ class LezioneServletIntegrationTest {
         // 24h1min è PIÙ di 24h, quindi deve avere successo
         verify(lezioneDAO).annullaPrenotazione(100);
         verify(response).sendRedirect(contains("success="));
-    }*/
+    }
     
  // ============== TEST RICERCA LEZIONE (TC_LEZ_07) ==============
 

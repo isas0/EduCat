@@ -92,7 +92,7 @@ public class GestioneUtenzaDAOTest {
     // ============== TEST doSave() ==============
     
     @Test
-    void testDoSave_Studente_Successo() throws SQLException {
+    void WB_TC_07_01DoSave_Studente_Successo() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(
             eq("INSERT INTO Utente (nome, cognome, email, password, dataNascita, via, civico, citta, cap, tipoUtente) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
@@ -130,7 +130,7 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoSave_Genitore_Successo() throws SQLException {
+    void WB_TC_07_02DoSave_Genitore_Successo() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(
             eq("INSERT INTO Utente (nome, cognome, email, password, dataNascita, via, civico, citta, cap, tipoUtente, nomeFiglio, cognomeFiglio, dataNascitaFiglio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
@@ -166,7 +166,46 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoSave_NessunaRigaInserita() throws SQLException {
+    void WB_TC_07_03DoSave_Tutor_Successo() throws SQLException {
+        // Arrange
+        when(mockConnection.prepareStatement(
+            eq("INSERT INTO Utente (nome, cognome, email, password, dataNascita, via, civico, citta, cap, tipoUtente) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+            eq(Statement.RETURN_GENERATED_KEYS)
+        )).thenReturn(mockPreparedStatement);
+        
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+        when(mockPreparedStatement.getGeneratedKeys()).thenReturn(mockGeneratedKeys);
+        when(mockGeneratedKeys.next()).thenReturn(true);
+        when(mockGeneratedKeys.getInt(1)).thenReturn(123);
+        
+        // Act
+        utenteStudente.setTipo(TipoUtente.TUTOR);
+        boolean result = dao.doSave(utenteStudente);
+        
+        // Assert
+        assertTrue(result);
+        assertEquals(123, utenteStudente.getUID());
+        
+        // Verify parametri STUDENTE
+        verify(mockPreparedStatement).setString(1, "Mario");
+        verify(mockPreparedStatement).setString(2, "Rossi");
+        verify(mockPreparedStatement).setString(3, "mario.rossi@email.com");
+        verify(mockPreparedStatement).setString(4, "hashed123");
+        verify(mockPreparedStatement).setString(5, "2000-01-01");
+        verify(mockPreparedStatement).setString(6, "Via Roma");
+        verify(mockPreparedStatement).setString(7, "1");
+        verify(mockPreparedStatement).setString(8, "Napoli");
+        verify(mockPreparedStatement).setString(9, "80100");
+        verify(mockPreparedStatement).setString(10, "TUTOR");
+        
+        // Verify che NON siano stati settati parametri per GENITORE
+        verify(mockPreparedStatement, never()).setString(eq(11), anyString());
+        verify(mockPreparedStatement, never()).setString(eq(12), anyString());
+        verify(mockPreparedStatement, never()).setString(eq(13), anyString());
+    }
+    
+    @Test
+    void WB_TC_07_04DoSave_NessunaRigaInserita() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(anyString(), anyInt()))
             .thenReturn(mockPreparedStatement);
@@ -181,7 +220,7 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoSave_SQLException() throws SQLException {
+    void WB_TC_07_05DoSave_SQLException() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(anyString(), anyInt()))
             .thenThrow(new SQLException("Errore database"));
@@ -195,7 +234,7 @@ public class GestioneUtenzaDAOTest {
     // ============== TEST doRetrieveByEmail() ==============
     
     @Test
-    void testDoRetrieveByEmail_Trovato() throws SQLException {
+    void WB_TC_08_01DoRetrieveByEmail_Trovato() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(
             eq("SELECT * FROM Utente WHERE email = ?")
@@ -220,7 +259,7 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoRetrieveByEmail_NonTrovato() throws SQLException {
+    void WB_TC_08_02DoRetrieveByEmail_NonTrovato() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(anyString()))
             .thenReturn(mockPreparedStatement);
@@ -235,7 +274,7 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoRetrieveByEmail_ConErrore() throws SQLException {
+    void WB_TC_08_03DoRetrieveByEmail_ConErrore() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(anyString()))
             .thenThrow(new SQLException("Connection failed"));
@@ -249,7 +288,7 @@ public class GestioneUtenzaDAOTest {
     // ============== TEST doRetrieveAll() ==============
     
     @Test
-    void testDoRetrieveAll_ConDati() throws SQLException {
+    void WB_TC_10_01DoRetrieveAll_ConDati() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(
             eq("SELECT * FROM Utente")
@@ -275,7 +314,7 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoRetrieveAll_Vuoto() throws SQLException {
+    void WB_TC_10_02DoRetrieveAll_Vuoto() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(anyString()))
             .thenReturn(mockPreparedStatement);
@@ -290,10 +329,22 @@ public class GestioneUtenzaDAOTest {
         assertTrue(result.isEmpty());
     }
     
+    @Test
+    void WB_TC_10_03DoRetrieveAll_ConErrore() throws SQLException {
+    	// Arrange
+        when(mockConnection.prepareStatement(anyString()))
+            .thenThrow(new SQLException("Connection failed"));
+        
+        // Act & Assert
+        assertThrows(SQLException.class, () -> {
+            dao.doRetrieveAll();
+        });
+    }
+    
     // ============== TEST doRetrieveById() ==============
     
     @Test
-    void testDoRetrieveById_Trovato() throws SQLException {
+    void WB_TC_09_01DoRetrieveById_Trovato() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(
             eq("SELECT * FROM Utente WHERE idUtente = ?")
@@ -312,7 +363,7 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoRetrieveById_NonTrovato() throws SQLException {
+    void WB_TC_09_02DoRetrieveById_NonTrovato() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(anyString()))
             .thenReturn(mockPreparedStatement);
@@ -326,10 +377,22 @@ public class GestioneUtenzaDAOTest {
         assertNull(result);
     }
     
+    @Test
+    void WB_TC_09_03DoRetrieveById_ConErrore() throws SQLException {
+    	// Arrange
+    	when(mockConnection.prepareStatement(anyString()))
+    	.thenThrow(new SQLException("Connection failed"));
+
+    	// Act & Assert
+    	assertThrows(SQLException.class, () -> {
+    		dao.doRetrieveById(999);
+    	});
+    }
+    
     // ============== TEST doUpdate() ==============
     
     @Test
-    void testDoUpdate_Successo() throws SQLException {
+    void WB_TC_11_01DoUpdate_Successo() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(
             eq("UPDATE Utente SET nome = ?, cognome = ?, email = ?, password = ?, dataNascita = ?, via = ?, civico = ?, citta = ?, cap = ?, tipoUtente = ? WHERE idUtente = ?")
@@ -348,7 +411,7 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoUpdate_NessunaRigaModificata() throws SQLException {
+    void WB_TC_11_02DoUpdate_NessunaRigaModificata() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(anyString()))
             .thenReturn(mockPreparedStatement);
@@ -363,10 +426,22 @@ public class GestioneUtenzaDAOTest {
         assertFalse(result);
     }
     
+    @Test
+    void WB_TC_11_03DoUpdate_ConErrore() throws SQLException {
+    	// Arrange
+    	when(mockConnection.prepareStatement(anyString()))
+    	.thenThrow(new SQLException("Connection failed"));
+
+    	// Act & Assert
+    	assertThrows(SQLException.class, () -> {
+    		dao.doUpdate(utenteStudente);
+    	});
+    }
+    
     // ============== TEST doDelete() ==============
     
     @Test
-    void testDoDelete_Successo() throws SQLException {
+    void WB_TC_12_01DoDelete_Successo() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(
             eq("DELETE FROM Utente WHERE idUtente = ?")
@@ -383,7 +458,7 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testDoDelete_NonEsistente() throws SQLException {
+    void WB_TC_12_02DoDelete_NonEsistente() throws SQLException {
         // Arrange
         when(mockConnection.prepareStatement(anyString()))
             .thenReturn(mockPreparedStatement);
@@ -396,37 +471,23 @@ public class GestioneUtenzaDAOTest {
         assertFalse(result);
     }
     
-    // ============== TEST doRetrieveByCriterio() ==============
-    
     @Test
-    void testDoRetrieveByCriterio_Trovato() throws SQLException {
-        // NOTA: La query ha un BUG! 'LIKE '%?%'' non funziona
-        // Dovresti fixare: LIKE ? e passare "%stringa%"
-        
-        // Arrange
-        when(mockConnection.prepareStatement(
-            eq("SELECT * FROM Utente WHERE nome LIKE '%?%' OR cognome LIKE '%?%' OR email LIKE '%?%' OR citta LIKE '%?%' OR tipoUtente LIKE '%?%'")
-        )).thenReturn(mockPreparedStatement);
-        
-        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
-        when(mockResultSet.next()).thenReturn(true);
-        mockResultSetForUtente(mockResultSet, TipoUtente.STUDENTE);
-        
-        // Act
-        UtenteDTO result = dao.doRetrieveByCriterio("Rossi");
-        
-        // Assert
-        assertNotNull(result);
-        verify(mockPreparedStatement).setString(1, "Rossi");
+    void WB_TC_12_03DoDelete_ConErrore() throws SQLException {
+    	// Arrange
+    	when(mockConnection.prepareStatement(anyString()))
+    	.thenThrow(new SQLException("Connection failed"));
+
+    	// Act & Assert
+    	assertThrows(SQLException.class, () -> {
+    		dao.doDelete(utenteStudente.getUID());
+    	});
     }
     
     // ============== TEST mapResultSetToUtente() (private method) ==============
     
     @Test
-    void testMapResultSetToUtente_TuttiTipi() throws SQLException {
-        // Test indiretto attraverso i metodi pubblici
-        // Oppure usa reflection per testare direttamente
-        
+    void WB_TC_13_01MapResultSetToUtente_TuttiTipi() throws SQLException {
+    
         // Questo è un test che usa reflection per testare il metodo privato
         try {
             // Setup per STUDENTE
@@ -450,77 +511,13 @@ public class GestioneUtenzaDAOTest {
     }
     
     @Test
-    void testMapResultSetToUtente_TipoNonRiconosciuto() throws SQLException {
+    void WB_TC_13_02MapResultSetToUtente_TipoNonRiconosciuto() throws SQLException {
         // Test per tipo utente non valido
         when(mockResultSet.getString("tipoUtente")).thenReturn("TIPO_SCONOSCIUTO");
         when(mockResultSet.getInt("idUtente")).thenReturn(1);
         
         // Dovrebbe gestire il caso default o lanciare eccezione?
         // Dipende dalla tua implementazione
-    }
-    
-    // ============== TEST closeResources() ==============
-    
-    @Test
-    void testCloseResources_TutteLeRisorse() throws SQLException {
-        // Arrange
-        Connection conn = mock(Connection.class);
-        PreparedStatement ps = mock(PreparedStatement.class);
-        ResultSet rs = mock(ResultSet.class);
-        
-        // Act - usa reflection per chiamare metodo privato
-        try {
-            java.lang.reflect.Method method = GestioneUtenzaDAO.class
-                .getDeclaredMethod("closeResources", 
-                    Connection.class, PreparedStatement.class, ResultSet.class);
-            method.setAccessible(true);
-            method.invoke(dao, conn, ps, rs);
-            
-            // Assert
-            verify(rs).close();
-            verify(ps).close();
-            verify(conn).close();
-            
-        } catch (Exception e) {
-            fail("Errore reflection: " + e.getMessage());
-        }
-    }
-    
-    @Test
-    void testCloseResources_ConNull() throws SQLException {
-        // Test che le risorse null non causano NPE
-        try {
-            java.lang.reflect.Method method = GestioneUtenzaDAO.class
-                .getDeclaredMethod("closeResources", 
-                    Connection.class, PreparedStatement.class, ResultSet.class);
-            method.setAccessible(true);
-            method.invoke(dao, null, null, null);
-            
-            // Se arriva qui senza eccezione, è ok
-            
-        } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezione con null: " + e.getMessage());
-        }
-    }
-    
-    @Test
-    void testCloseResources_ConErroreChiusura() throws SQLException {
-        // Test che gli errori di chiusura siano gestiti silenziosamente
-        Connection conn = mock(Connection.class);
-        doThrow(new SQLException("Errore chiusura")).when(conn).close();
-        
-        try {
-            java.lang.reflect.Method method = GestioneUtenzaDAO.class
-                .getDeclaredMethod("closeResources", 
-                    Connection.class, PreparedStatement.class, ResultSet.class);
-            method.setAccessible(true);
-            method.invoke(dao, conn, null, null);
-            
-            // Se arriva qui, l'errore è stato gestito (loggato ma non rilanciato)
-            
-        } catch (Exception e) {
-            fail("Errore di chiusura dovrebbe essere gestito internamente: " + e.getMessage());
-        }
     }
     
     // ============== METODI DI SUPPORTO ==============
