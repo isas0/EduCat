@@ -99,6 +99,11 @@ public class GestioneLezioneDAO {
         
 	    private static final String DELETE_LEZIONE = 
 	            "DELETE FROM Lezione WHERE idLezione = ?";
+
+		private static final String SELECT_LEZIONI_BY_TUTOR = "SELECT l.*, u.nome as tutor_nome, u.cognome as tutor_cognome, u.citta as tutor_citta "
+			+ " FROM Lezione l "
+			+ "JOIN Utente u ON l.idTutor = u.idUtente "
+			+ "WHERE l.idTutor = ?";;
 	    
 	    private DataSource dataSource; // Nullable
 	    
@@ -730,6 +735,30 @@ public class GestioneLezioneDAO {
         return prenotazione;
     }
    
+    public List<LezioneDTO> getLezioniByTutor(int idTutor) throws SQLException {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<LezioneDTO> lezioni = new ArrayList<>();
+        
+        try {
+            conn = getConnection();
+            ps = conn.prepareStatement(SELECT_LEZIONI_BY_TUTOR);
+            ps.setInt(1, idTutor);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                LezioneDTO lezione = mapResultSetToLezione(rs);
+                lezioni.add(lezione);
+            }
+            
+            return lezioni;
+            
+        } finally {
+            DatasourceManager.closeResources(conn, ps, rs);
+        }        
+	}
+    
     public List<PrenotazioneDTO> getPrenotazioniByTutor(int idTutor) throws SQLException {
     	Connection conn = null;
         PreparedStatement ps = null;
@@ -876,6 +905,10 @@ public class GestioneLezioneDAO {
         public int getOffset() { return offset; }
         public void setOffset(int offset) { this.offset = offset; }
     }
+
+
+
+	
 
 	
 }

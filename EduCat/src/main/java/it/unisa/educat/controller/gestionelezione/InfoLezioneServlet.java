@@ -27,7 +27,7 @@ public class InfoLezioneServlet extends HttpServlet {
         lezioneDao = new GestioneLezioneDAO();
     }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		try {
 			String idLezioneStr = request.getParameter("idLezione");

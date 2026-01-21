@@ -16,7 +16,7 @@ import it.unisa.educat.model.UtenteDTO;
 @WebServlet("/admin/lista-utenti")
 public class ListaUtentiServlet extends HttpServlet {
     
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+	public void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
         HttpSession session = request.getSession(false);

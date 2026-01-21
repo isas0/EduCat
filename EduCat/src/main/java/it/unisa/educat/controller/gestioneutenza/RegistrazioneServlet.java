@@ -20,12 +20,12 @@ public class RegistrazioneServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private GestioneUtenzaDAO utenzaDAO = new GestioneUtenzaDAO();
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		request.getRequestDispatcher("/registrazione.jsp").forward(request, response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 
 		// Contratto OCL pre: !self.utenti → includes(nuovoUtente)

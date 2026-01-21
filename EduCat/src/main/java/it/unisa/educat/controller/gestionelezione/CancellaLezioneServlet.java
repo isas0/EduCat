@@ -16,7 +16,7 @@ import java.util.List;
 import it.unisa.educat.dao.GestioneLezioneDAO;
 import it.unisa.educat.model.*;
 
-@WebServlet("/annulla-prenotazione")
+@WebServlet("/cancella-lezione")
 public class CancellaLezioneServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
@@ -28,7 +28,7 @@ public class CancellaLezioneServlet extends HttpServlet {
     }
     
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+    public void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
         HttpSession session = request.getSession(false);

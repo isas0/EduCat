@@ -10,21 +10,27 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import it.unisa.educat.dao.GestioneLezioneDAO;
 import it.unisa.educat.dao.GestioneUtenzaDAO;
 import it.unisa.educat.model.UtenteDTO;
 
 @WebServlet("/elimina-account")
 public class EliminaAccountServlet extends HttpServlet {
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+	private GestioneUtenzaDAO utenzaDAO;
+	
+	@Override
+    public void init() throws ServletException {
+		utenzaDAO = new GestioneUtenzaDAO();
+    }
+	
+	public void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		doPost(request,response);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+	public void doPost(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
-
-		GestioneUtenzaDAO utenzaDAO = new GestioneUtenzaDAO();
 
 		HttpSession session = request.getSession(false);
 		if (session == null) {
