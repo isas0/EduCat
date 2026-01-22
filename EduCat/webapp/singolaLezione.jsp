@@ -106,7 +106,7 @@ request.setAttribute("lezione", lezione);
                     <form action="<%=request.getContextPath()%>/checkout.jsp?" method="POST">
                         <input type="hidden" name="idLezione" value="<%= lezione.getIdLezione() %>">
                         
-                        <button type="submit" class="btn-prenota">
+                        <button type="submit" class="btn-prenota" id="pay">
                             Procedi al Pagamento <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </form>
