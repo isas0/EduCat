@@ -91,7 +91,7 @@ request.setAttribute("lezione", lezione);
 
                     <div class="info-item">
                         <span class="label"><i class="fa-solid fa-location-dot"></i> Luogo</span>
-                        <span class="value"><%= lezione.getCitta() %></span>
+                        <span class="value"><%= lezione.getCitta()!=null ?  lezione.getCitta()!=null : "Online" %></span>
                     </div>
                 </div>
 
